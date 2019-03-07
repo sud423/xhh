@@ -1,32 +1,32 @@
 package cn.xhh.dto;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 public class UserDto {
-	private static final SimpleDateFormat dateFormat
-    = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
 	private int id;
-	
+
 	private int tenantId;
-	
-	private String userName;
-	
+
 	private String name;
-	
-	private String email;
-	
+
 	private String cell;
-	
-	private Date created;
-	
+
 	private byte status;
-	
-	private List<Integer> roles;
-	
+
+	private String idNumber;
+
+	private String openId;
+
+	private String nickName;
+
+	private String headImg;
+
+	private byte type;
+
+	private Date addTime;
 
 	public int getId() {
 		return id;
@@ -35,21 +35,13 @@ public class UserDto {
 	public void setId(int id) {
 		this.id = id;
 	}
-	
+
 	public int getTenantId() {
 		return tenantId;
 	}
 
 	public void setTenantId(int tenantId) {
 		this.tenantId = tenantId;
-	}
-
-	public String getUserName() {
-		return userName;
-	}
-
-	public void setUserName(String userName) {
-		this.userName = userName;
 	}
 
 	public String getName() {
@@ -60,30 +52,12 @@ public class UserDto {
 		this.name = name;
 	}
 
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
 	public String getCell() {
 		return cell;
 	}
 
 	public void setCell(String cell) {
 		this.cell = cell;
-	}
-	
-	public String getCreated() {
-		if(this.created==null)
-			return "";
-		return dateFormat.format(created);
-	}
-
-	public void setCreated(String created) throws ParseException {
-		this.created = dateFormat.parse(created);
 	}
 
 	public byte getStatus() {
@@ -94,11 +68,55 @@ public class UserDto {
 		this.status = status;
 	}
 
-	public List<Integer> getRoles() {
-		return roles;
+	public String getIdNumber() {
+		return idNumber;
 	}
 
-	public void setRoles(List<Integer> roles) {
-		this.roles = roles;
+	public void setIdNumber(String idNumber) {
+		this.idNumber = idNumber;
 	}
+
+	public String getOpenId() {
+		return openId;
+	}
+
+	public void setOpenId(String openId) {
+		this.openId = openId;
+	}
+
+	public String getNickName() {
+		return nickName;
+	}
+
+	public void setNickName(String nickName) {
+		this.nickName = nickName;
+	}
+
+	public String getHeadImg() {
+		return headImg;
+	}
+
+	public void setHeadImg(String headImg) {
+		this.headImg = headImg;
+	}
+
+	public byte getType() {
+		return type;
+	}
+
+	public void setType(byte type) {
+		this.type = type;
+	}
+
+	public String getAddTime() {
+		if (addTime != null)
+			return dateFormat.format(addTime);
+		
+		return null;
+	}
+
+	public void setAddTime(Date addTime) {
+		this.addTime = addTime;
+	}
+
 }

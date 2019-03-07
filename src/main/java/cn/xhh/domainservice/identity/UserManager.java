@@ -4,17 +4,15 @@ import cn.xhh.infrastructure.OptResult;
 
 public interface UserManager {
 	/**
-	 * 鐧诲綍
+	 * 登录
 	 * 
-	 * @param userName   鐢ㄦ埛鍚?
-	 * @param password   瀵嗙爜
-	 * @param rememberMe 璁颁綇鎴?
-	 * @return 杩斿洖韬唤楠岃瘉缁撴灉
+	 * @param openId   微信授权openId
+	 * @return 返回身份验证结果
 	 */
-	public OptResult signIn(String userName, String password, boolean rememberMe);
+	public OptResult signIn(String openId);
 
 	/**
-	 * 鐧诲嚭
+	 * 登出
 	 */
 	public void signOut();
 }

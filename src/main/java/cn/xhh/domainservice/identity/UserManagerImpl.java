@@ -7,77 +7,71 @@ import org.apache.shiro.authc.ExpiredCredentialsException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.LockedAccountException;
 import org.apache.shiro.authc.UnknownAccountException;
-import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import cn.xhh.domain.identity.UserRepository;
+import cn.xhh.dto.UserDto;
 import cn.xhh.infrastructure.OptResult;
 
 @Service
 public class UserManagerImpl implements UserManager {
 
 
-//	@Autowired
-//	private UserRepository sysUserRepository;
+	@Autowired
+	private UserRepository userRepository;
 	
 	/**
-	 * 鐧诲綍
+	 * 登录
 	 * 
-	 * @param userName   鐢ㄦ埛鍚?
-	 * @param password   瀵嗙爜
-	 * @param rememberMe 璁颁綇鎴?
-	 * @return 杩斿洖韬唤楠岃瘉缁撴灉
+	 * @param userName   用户名
+	 * @return 返回身份验证结果
 	 */
-	public OptResult signIn(String userName, String password, boolean rememberMe) {
+	public OptResult signIn(String openId) {
 		
-		if(userName==null)
-			return OptResult.Failed("鐢ㄦ埛鍚嶄笉鑳戒负绌?");
+		if(openId==null)
+			return OptResult.Failed("微信openId不能为空");
+				
+		FreesecretToken token = new FreesecretToken(openId);
 		
-		if(password==null)
-			return OptResult.Failed("瀵嗙爜涓嶈兘涓虹┖");
-			
-		
-		UsernamePasswordToken token = new UsernamePasswordToken(userName, password);
-		token.setRememberMe(rememberMe);
-
 		Subject subject = SecurityUtils.getSubject();
 		try {
 
 			subject.login(token);
 
 			if (subject.isAuthenticated()) {
+				UserDto user = (UserDto)token.getPrincipal();
 				//更新最后登录时间
-//				sysUserRepository.updateLastLoginTime(userName);
+				userRepository.updateLastLoginTime(user.getId());
 				
 				return OptResult.Successed();
 			} else {
-				return OptResult.Failed("鐢ㄦ埛鍚嶅拰瀵嗙爜涓嶅尮閰嶏紒");
+				return OptResult.Failed("用户名和密码不匹配！");
 			}
 
 		} catch (IncorrectCredentialsException e) {
 			System.out.println(e);
-			return OptResult.Failed("鐢ㄦ埛鍚嶅拰瀵嗙爜涓嶅尮閰嶏紒");
+			return OptResult.Failed("用户名和密码不匹配！");
 		} catch (ExcessiveAttemptsException e) {
 			System.out.println(e);
-			return OptResult.Failed("鐢变簬鎮ㄧ櫥褰曠殑澶辫触娆℃暟宸茶秴杩?5娆★紝璐︽埛宸茶閿佸畾锛岃10鍒嗛挓鍚庡啀璇曪紒");
+			return OptResult.Failed("由于您登录的失败次数已超过5次，账户已被锁定，请10分钟后再试！");
 		} catch (LockedAccountException e) {
 			System.out.println(e);
-			return OptResult.Failed("鎮ㄧ殑璐︽埛宸插喕缁擄紝璇蜂笌绠＄悊鍛樿仈绯伙紒");
+			return OptResult.Failed("您的账户已冻结，请与管理员联系！");
 		} catch (DisabledAccountException e) {
 			System.out.println(e);
-			return OptResult.Failed("鎮ㄧ殑璐︽埛宸茬鐢紝璇蜂笌绠＄悊鍛樿仈绯伙紒");
-		} catch (ExpiredCredentialsException e) {// 韬唤宸茶繃鏈?
+			return OptResult.Failed("您的账户已禁用，请与管理员联系！");
+		} catch (ExpiredCredentialsException e) {// 身份已过期！
 			System.out.println(e);
-			return OptResult.Failed("韬唤宸茶繃鏈燂紒");
-		} catch (UnknownAccountException e) {// 鏈煡鐨勮处鍙?
+			return OptResult.Failed("身份已过期！");
+		} catch (UnknownAccountException e) {// 未知的账号
 			System.out.println(e);
-			return OptResult.Failed("璐﹀彿鍜屽瘑鐮佷笉鍖归厤锛?");
-		} catch (UnauthorizedException e) {// 鏈煡鐨勬巿鏉?
+			return OptResult.Failed("账号和密码不匹配！");
+		} catch (UnauthorizedException e) {// 未知的授权
 			System.out.println(e);
-			return OptResult.Failed("鐢ㄦ埛鍚嶅拰瀵嗙爜涓嶅尮閰嶏紒");
+			return OptResult.Failed("用户名和密码不匹配！");
 		}
 
 	}

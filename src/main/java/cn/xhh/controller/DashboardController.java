@@ -8,6 +8,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
 public class DashboardController {
+	
+	/**
+	 * 
+	 * @return Ê×Ò³
+	 */
+	@RequestMapping(value = { "/","/dashboard"}, method = RequestMethod.GET)
+	public String index() {
+		return "index";
+	}
+	
 	/**
 	 * 
 	 * @return hello

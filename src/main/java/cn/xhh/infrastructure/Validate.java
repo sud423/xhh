@@ -23,10 +23,10 @@ public class Validate {
 	}
 
 	/**
-	 * 鍒ゆ柇瀹炰綋鏄惁閫氳繃楠岃瘉锛宼rue琛ㄧず閫氳繃锛屽惁鍒欎负false
+	 * 判断实体是否通过验证，true表示通过，否则为false
 	 * 
-	 * @param t 寰呴獙璇佸疄渚?
-	 * @return 鎴愬姛锛歵rue
+	 * @param t 待验证实例
+	 * @return 成功：true
 	 */
 	public static <T> boolean isValid(T t) {
 		Set<ConstraintViolation<T>> constraintViolations = validator.validate(t);

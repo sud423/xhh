@@ -28,12 +28,12 @@ public class Utils {
 //		Iterator<String> keys = map.keySet().iterator();
 //		while (keys.hasNext()) {
 //			String key = keys.next();
-//			System.out.println(key + "閲嶅" + map.get(key).intValue() + "娆?");
+//			System.out.println(key + "重复" + map.get(key).intValue() + "次");
 //		}
 //	}
 
 	public static String generateCode() {
-		long now = System.currentTimeMillis();// 涓?涓?13浣嶇殑鏃堕棿鎴?
+		long now = System.currentTimeMillis();// 一个13位的时间戳
 		
 		int hashCode = Math.abs(UUID.randomUUID().toString().hashCode());
 		

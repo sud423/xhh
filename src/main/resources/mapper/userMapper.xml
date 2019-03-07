@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.xhh.domain.identity.UserRepository">
+
+	<resultMap id="driverMap" type="com.susd.domain.site.User">
+		<id column="id" property="id" />
+		<result column="tenant_id" property="tenantId" />
+		<result column="name" property="name" />
+		<result column="cell" property="cell" />
+		<result column="id_number" property="idNumber" />
+		<result column="status" property="status" />
+		<result column="type" property="type" />
+		<result column="audit_reason" property="auditReason" />
+		<result column="add_time" property="addTime" />
+		<association property="userLogin"
+			javaType="com.susd.domain.site.UserLogin" resultMap="userLoginMap" />
+		<association property="carNumber" javaType="String">
+			<result column="car_number" />
+		</association>
+		<collection property="attach" ofType="String">
+			<result column="path" />
+		</collection>
+	</resultMap>
+
+	<resultMap id="userLoginMap"
+		type="com.susd.domain.site.UserLogin">
+		<result column="user_id" property="userId" />
+		<result column="provide" property="provide" />
+		<result column="open_id" property="openId" />
+		<result column="nick_name" property="nickName" />
+		<result column="head_img" property="headImg" />
+	</resultMap>
+
+	<select id="findDriverByKeyword" parameterType="String"
+		resultMap="driverMap">
+		select
+		u.id,u.tenant_id,`name`,cell,id_number,u.type,u.`status`,u.add_time,ul.provide,
+		ul.open_id,ul.nick_name,ul.head_img,path,c.`status`
+		car_status,c.car_number
+		from `user` u
+		inner join user_login ul on
+		u.id=ul.user_id
+		left join attach a on a.source_id=u.id and
+		a.source_name='user'
+		left join car c on c.driver_id=u.id
+		where
+		u.tenant_id=#{tenantId} and ul.open_id=#{openId}
+	</select>
+	<!-- 更新最后登录时间 -->
+	<update id="updateLastLoginTime" parameterType="int">
+		update user set
+		last_login_time=now() where id = ${userId};
+	</update>
+</mapper>

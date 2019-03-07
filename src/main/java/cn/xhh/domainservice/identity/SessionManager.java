@@ -7,14 +7,14 @@ import org.apache.shiro.subject.Subject;
 import cn.xhh.dto.UserDto;
 
 /**
- * 鎺у埗灞傚熀绫?
+ * 用户身份管理
  * @author TY
  *
  */
 public class SessionManager {
 
 	/**
-	 * 鑾峰彇鐢ㄦ埛缂栧彿
+	 * 获取用户编号
 	 * @return
 	 */
 	public static int getUserId() {
@@ -30,7 +30,7 @@ public class SessionManager {
 	}
 	
 	/**
-	 * 鑾峰彇鐢ㄦ埛淇℃伅瀵硅薄
+	 * 获取用户信息对象
 	 * @return
 	 */
 	public static UserDto getUser() {
