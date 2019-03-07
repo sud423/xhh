@@ -1,4 +1,4 @@
-package cn.xhh.controller;
+package cn.xhh.controllers;
 
 import java.util.Map;
 

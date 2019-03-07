@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.xhh.domain.identity.UserRepository">
 
-	<resultMap id="driverMap" type="com.susd.domain.site.User">
+	<resultMap id="driverMap" type="cn.xhh.domain.identity.User">
 		<id column="id" property="id" />
 		<result column="tenant_id" property="tenantId" />
 		<result column="name" property="name" />
@@ -13,7 +13,7 @@
 		<result column="audit_reason" property="auditReason" />
 		<result column="add_time" property="addTime" />
 		<association property="userLogin"
-			javaType="com.susd.domain.site.UserLogin" resultMap="userLoginMap" />
+			javaType="cn.xhh.domain.identity.UserLogin" resultMap="userLoginMap" />
 		<association property="carNumber" javaType="String">
 			<result column="car_number" />
 		</association>
@@ -23,7 +23,7 @@
 	</resultMap>
 
 	<resultMap id="userLoginMap"
-		type="com.susd.domain.site.UserLogin">
+		type="cn.xhh.domain.identity.UserLogin">
 		<result column="user_id" property="userId" />
 		<result column="provide" property="provide" />
 		<result column="open_id" property="openId" />

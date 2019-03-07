@@ -12,16 +12,13 @@
    http://www.springframework.org/schema/mvc 
    http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd">
 
-	<context:component-scan
-		base-package="com.susd.controllers" />
-
-	<mvc:annotation-driven />
 
 	<!-- 配置组件扫描器，使用注解方式开发,不用配置dao和service -->
 	<context:component-scan
-		base-package="cn.xhh.domainservice.identity,cn.xhh.application" />
+		base-package="cn.xhh.domainservice.identity,cn.xhh.application,cn.xhh.controllers" />
 
-
+	<mvc:annotation-driven />
+	
 	<mvc:default-servlet-handler />
 
 	<!-- 配置freeMarker模板加载地址 -->
