@@ -2,29 +2,43 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop"
 	xmlns:mvc="http://www.springframework.org/schema/mvc"
 	xsi:schemaLocation="
    http://www.springframework.org/schema/beans 
    http://www.springframework.org/schema/beans/spring-beans-4.3.xsd 
    http://www.springframework.org/schema/context 
    http://www.springframework.org/schema/context/spring-context-4.3.xsd   
+   http://www.springframework.org/schema/aop
+   http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
    http://www.springframework.org/schema/mvc 
    http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd">
 
 
 	<!-- 配置组件扫描器，使用注解方式开发,不用配置dao和service -->
 	<context:component-scan
-		base-package="cn.xhh.domainservice.identity,cn.xhh.application,cn.xhh.controllers" />
+		base-package="cn.xhh.domainservice.*,cn.xhh.application,cn.xhh.controllers">
+		
+		<!-- 扫描@Controller -->
+		<context:include-filter type="annotation"
+			expression="org.springframework.stereotype.Controller" />
+		<!-- 控制器增强，使一个Contoller成为全局的异常处理类，类中用@ExceptionHandler方法注解的方法可以处理所有Controller发生的异常 -->
+		<context:include-filter type="annotation"
+			expression="org.springframework.web.bind.annotation.ControllerAdvice" />
+		
+	</context:component-scan>
+
+	<!-- 支持Controller的AOP代理 -->
+	<aop:aspectj-autoproxy />
 
 	<mvc:annotation-driven />
-	
+
 	<mvc:default-servlet-handler />
 
 	<!-- 配置freeMarker模板加载地址 -->
-	<bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
-	<!-- <bean id="freemarkerConfig"
-		class="com.susd.infrastructure.ShiroTagFreeMarkerConfigurer"> -->
+	<bean id="freemarkerConfig"
+		class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+		<!-- <bean id="freemarkerConfig" class="com.susd.infrastructure.ShiroTagFreeMarkerConfigurer"> -->
 		<!-- 视图解析器在/views/路径下扫描视图文件 -->
 		<property name="templateLoaderPaths">
 			<list>

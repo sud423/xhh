@@ -55,7 +55,7 @@
 			value="sqlSessionFactory" />
 		<!-- 给出需要扫描Dao接口包 -->
 		<property name="basePackage"
-			value="cn.xhh.domain.identity,cn.xhh.domain.bill" />
+			value="cn.xhh.domain.*" />
 	</bean>
 
 	<!-- 配置事务管理器 -->
