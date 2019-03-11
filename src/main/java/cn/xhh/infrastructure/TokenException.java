@@ -1,7 +1,7 @@
 package cn.xhh.infrastructure;
 
 /**
- * ×Ô¶¨ÒåµÄRuntimeException Token¹ıÆÚÊ±Å×³ö
+ * ç”¨æˆ·æˆæƒå¤±æ•ˆè‡ªå®šä¹‰å¼‚å¸¸
  * 
  * @author susd
  *

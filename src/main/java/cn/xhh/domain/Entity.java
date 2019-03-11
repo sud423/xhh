@@ -3,7 +3,7 @@ package cn.xhh.domain;
 
 
 /**
- * ÊµÌå
+ * å®ä½“
  * @author sushu
  *
  * @param <T> 
@@ -11,9 +11,9 @@ package cn.xhh.domain;
 public interface Entity<T> {
 	
 	/**
-	 * Í¨¹ıÉí·İ½øĞĞÁ½ÊµÌå±È½Ï£¬¶ø²»ÊÇÍ¨¹ıÊôĞÔ
-	 * @param other ´ı±È½ÏµÄÊµÌå
-	 * @return ÎŞÂÛÆäËüÊôĞÔÈç¹û£¬Èç¹ûÉí·İÏàÍ¬Ôò·µ»Øtrue
+	 * é€šè¿‡èº«ä»½è¿›è¡Œä¸¤å®ä½“æ¯”è¾ƒï¼Œè€Œä¸æ˜¯é€šè¿‡å±æ€§
+	 * @param other å¾…æ¯”è¾ƒçš„å®ä½“
+	 * @return æ— è®ºå…¶å®ƒå±æ€§å¦‚æœï¼Œå¦‚æœèº«ä»½ç›¸åŒåˆ™è¿”å›true
 	 */
 	boolean sameIdentityAs(T other);
 }

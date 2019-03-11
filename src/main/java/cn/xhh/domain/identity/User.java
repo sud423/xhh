@@ -18,55 +18,55 @@ public class User implements Entity<User> {
 	private int id;
 
 	/**
-	 * ×â»§±àºÅ
+	 * ç§Ÿæˆ·ç¼–å·
 	 */
 	private int tenantId;
 
-	@Size(max = 30, message = "ĞÕÃû×î´ó³¤¶ÈÎª30¸ö×Ö·û")
-	@NotNull(message = "ĞÕÃû²»ÄÜÎª¿Õ")
+	@Size(max = 30, message = "å§“åæœ€å¤§é•¿åº¦ä¸º30ä¸ªå­—ç¬¦")
+	@NotNull(message = "å§“åä¸èƒ½ä¸ºç©º")
 	private String name;
 
 	/**
-	 * ÊÖ»úºÅ
+	 * æ‰‹æœºå·
 	 */
-	@Size(max = 15, message = "ÊÖ»úºÅ×î´ó³¤¶ÈÎª15¸ö×Ö·û")
-	@NotNull(message = "ÊÖ»úºÅ²»ÄÜÎª¿Õ")
+	@Size(max = 15, message = "æ‰‹æœºå·æœ€å¤§é•¿åº¦ä¸º15ä¸ªå­—ç¬¦")
+	@NotNull(message = "æ‰‹æœºå·ä¸èƒ½ä¸ºç©º")
 	private String cell;
 	
 	/**
-	 * Éí·İÖ¤ºÅ
+	 * èº«ä»½è¯å·
 	 */
-	@Size(max = 18, message = "Éí·İÖ¤ºÅ×î´ó³¤¶ÈÎª18¸ö×Ö·û")
-	@NotNull(message = "Éí·İÖ¤ºÅ²»ÄÜÎª¿Õ")
+	@Size(max = 18, message = "èº«ä»½è¯å·æœ€å¤§é•¿åº¦ä¸º18ä¸ªå­—ç¬¦")
+	@NotNull(message = "èº«ä»½è¯å·ä¸èƒ½ä¸ºç©º")
 	private String idNumber;
 	
 	/**
-	 * ÆôÓÃÀàĞÍ 10£º¿Í»§£¨»áÔ±£© 20£º¼İÊ»Ô±
+	 * å¯ç”¨ç±»å‹ 10ï¼šå®¢æˆ·ï¼ˆä¼šå‘˜ï¼‰ 20ï¼šé©¾é©¶å‘˜
 	 */
 	private byte type;
 
 	/**
-	 * ×´Ì¬ 1£ºÕı³£ 10£ºÀëÖ° Ö»ÄÜ²é¿´£¬²»ÄÜ²Ù×÷ 20£º¶³½á
+	 * çŠ¶æ€ 1ï¼šæ­£å¸¸ 10ï¼šç¦»èŒ åªèƒ½æŸ¥çœ‹ï¼Œä¸èƒ½æ“ä½œ 20ï¼šå†»ç»“
 	 */
 	private byte status;
 
 	/**
-	 * ÉóºË²»Í¨¹ıÔ­Òò
+	 * å®¡æ ¸ä¸é€šè¿‡åŸå› 
 	 */
 	private String auditReason;
 	
 	/**
-	 * Ìí¼ÓÊ±¼ä
+	 * æ·»åŠ æ—¶é—´
 	 */
 	private Date addTime;
 
 	/**
-	 * °æ±¾ºÅ
+	 * ç‰ˆæœ¬å·
 	 */
 	private int version;
 
 	/**
-	 * ¸½¼ş
+	 * é™„ä»¶
 	 */
 	private List<String> attach;
 	

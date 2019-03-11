@@ -24,7 +24,7 @@ public class UserRealm extends AuthorizingRealm {
 	@Autowired
 	private UserRepository userRepository;
 
-	// ÉèÖÃrealmµÄÃû³Æ
+	// è®¾ç½®realmçš„åç§°
 	@Override
 	public void setName(String name) {
 		super.setName("userRealm");
@@ -52,10 +52,10 @@ public class UserRealm extends AuthorizingRealm {
 		String openId = freeToken.getUsername();
 		User user = userRepository.findByOpenId(openId);
 		if (user == null) {
-			throw new UnknownAccountException();// Ã»ÕÒµ½ÕÊºÅ
+			throw new UnknownAccountException();// æ²¡æ‰¾åˆ°å¸å·
 		}
 		if (user.getStatus() == 20) {
-			throw new LockedAccountException(); // ÕÊºÅËø¶¨
+			throw new LockedAccountException(); // å¸å·é”å®š
 		}
 
 		Subject subject = SecurityUtils.getSubject();

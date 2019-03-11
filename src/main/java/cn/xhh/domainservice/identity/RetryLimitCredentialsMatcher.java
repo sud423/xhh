@@ -12,13 +12,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * ÑéÖ¤Æ÷£¬Ôö¼ÓÁËµÇÂ¼´ÎÊıĞ£Ñé¹¦ÄÜ
+ * éªŒè¯å™¨ï¼Œå¢åŠ äº†ç™»å½•æ¬¡æ•°æ ¡éªŒåŠŸèƒ½
  */
 public class RetryLimitCredentialsMatcher extends HashedCredentialsMatcher {
 
 	private static final Logger log = LoggerFactory.getLogger(RetryLimitCredentialsMatcher.class);
 
-	// ¼¯ÈºÖĞ¿ÉÄÜ»áµ¼ÖÂ³öÏÖÑéÖ¤¶à¹ı5´ÎµÄÏÖÏó£¬ÒòÎªAtomicIntegerÖ»ÄÜ±£Ö¤µ¥½Úµã²¢·¢
+	// é›†ç¾¤ä¸­å¯èƒ½ä¼šå¯¼è‡´å‡ºç°éªŒè¯å¤šè¿‡5æ¬¡çš„ç°è±¡ï¼Œå› ä¸ºAtomicIntegeråªèƒ½ä¿è¯å•èŠ‚ç‚¹å¹¶å‘
 	private Cache<String, AtomicInteger> lgoinRetryCache;
 
 	private int maxRetryCount = 5;
@@ -34,6 +34,7 @@ public class RetryLimitCredentialsMatcher extends HashedCredentialsMatcher {
 	@Override
 	public boolean doCredentialsMatch(AuthenticationToken token, AuthenticationInfo info) {
 
+		//å¦‚æœä¸ºå…å¯†ç™»å½•ï¼Œå¯ä»¥å–æ¶ˆç™»å½•å¤±è´¥ç»Ÿè®¡æ¬¡æ•°
 		FreesecretToken freeToken = (FreesecretToken) token;
 		if (freeToken.getType().equals(LoginType.NOPASSWD)) {
 			return true;

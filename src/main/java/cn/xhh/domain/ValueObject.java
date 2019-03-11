@@ -2,12 +2,13 @@ package cn.xhh.domain;
 
 import java.io.Serializable;
 
+
 public interface ValueObject<T> extends Serializable {
 
 	/**
-	 * Öµ¶ÔÏóÍ¨¹ıÆäÊôĞÔÖµ½øĞĞ±È½Ï£¬ËüÃÇÃ»ÓĞ±êÊ¶¡£
-	 * @param other ÆäËüÖµ¶ÔÏó
-	 * @return Èç¹û¸ø¶¨Öµ¶ÔÏóºÍ´ËÖµ¶ÔÏóµÄÊôĞÔÏàÍ¬¾Í·µ»Øtrue
+	 * å€¼å¯¹è±¡é€šè¿‡å…¶å±æ€§å€¼è¿›è¡Œæ¯”è¾ƒï¼Œå®ƒä»¬æ²¡æœ‰æ ‡è¯†ã€‚
+	 * @param other å…¶å®ƒå€¼å¯¹è±¡
+	 * @return å¦‚æœç»™å®šå€¼å¯¹è±¡å’Œæ­¤å€¼å¯¹è±¡çš„å±æ€§ç›¸åŒå°±è¿”å›true
 	 */
 	boolean sameValueAs(T other);
 }

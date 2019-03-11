@@ -3,14 +3,14 @@ package cn.xhh.domain.identity;
 public interface UserRepository {
 
 	/**
-	 * 根据openid
+	 * 鏍规嵁openId鏌ヨ鐢ㄦ埛
 	 * @param openId
 	 * @return
 	 */
 	public User findByOpenId(String openId);
 	
 	/**
-	 * 更新登录 时间
+	 * 鏇存柊鐢ㄦ埛鐧诲綍鏃堕棿
 	 * @param userId
 	 * @return
 	 */

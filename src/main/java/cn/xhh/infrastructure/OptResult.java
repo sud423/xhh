@@ -1,7 +1,6 @@
 package cn.xhh.infrastructure;
-
 /**
- * 业务逻辑操作统一返回结果
+ * 涓氬姟閫昏緫鎿嶄綔缁熶竴杩斿洖缁撴灉
  * @author TY
  *
  */
@@ -11,48 +10,48 @@ public class OptResult {
 		this.result=result;
 	}
 	
-	//结果编码
+	//缁撴灉缂栫爜
 	private int errcode;
 	
-	//结果内容
+	//缁撴灉鍐呭
 	private Object result;
 
 	/**
-	 * 获取结果编码
-	 * @return 返回结果编码
+	 * 鑾峰彇缁撴灉缂栫爜
+	 * @return 杩斿洖缁撴灉缂栫爜
 	 */
 	public int getCode() {
 		return this.errcode;
 	}
 	
 	/**
-	 * 设置结果编码
-	 * @param errcode 错误编码
+	 * 璁剧疆缁撴灉缂栫爜
+	 * @param errcode 閿欒缂栫爜
 	 */
 	public void setCode(int errcode) {
 		this.errcode=errcode;
 	}
 	
 	/**
-	 * 获取结果内容
-	 * @return 返回结果内容
+	 * 鑾峰彇缁撴灉鍐呭
+	 * @return 杩斿洖缁撴灉鍐呭
 	 */
 	public Object getResult() {
 		return result;
 	}
 
 	/**
-	 * 设置结果内容
-	 * @param result 结果内容
+	 * 璁剧疆缁撴灉鍐呭
+	 * @param result 缁撴灉鍐呭
 	 */
 	public void setResult(Object result) {
 		this.result = result;
 	}
 	
 	/**
-	 * 请求成功
-	 * @param msg 成功消息
-	 * @return 成功结果
+	 * 璇锋眰鎴愬姛
+	 * @param msg 鎴愬姛娑堟伅
+	 * @return 鎴愬姛缁撴灉
 	 */
 	public static OptResult Successed(Object msg) {
 		OptResult res= new OptResult(0,msg);		
@@ -60,8 +59,8 @@ public class OptResult {
 	}
 	
 	/**
-	 * 请求成功
-	 * @return 成功结果
+	 * 璇锋眰鎴愬姛
+	 * @return 鎴愬姛缁撴灉
 	 */
 	public static OptResult Successed() {
 		OptResult res= new OptResult(0,"ok");
@@ -69,10 +68,10 @@ public class OptResult {
 	}
 	
 	/**
-	 * 请求失败
-	 * @param errcode 错误代码
-	 * @param errmsg 错误消息
-	 * @return 返回错误结果
+	 * 璇锋眰澶辫触
+	 * @param errcode 閿欒浠ｇ爜
+	 * @param errmsg 閿欒娑堟伅
+	 * @return 杩斿洖閿欒缁撴灉
 	 */
 	public static OptResult Failed(int errcode,Object errmsg) {
 		OptResult res= new OptResult(errcode,errmsg);
@@ -80,9 +79,9 @@ public class OptResult {
 	}
 	
 	/**
-	 * 请求失败
-	 * @param errcode 错误代码
-	 * @return 返回错误结果
+	 * 璇锋眰澶辫触
+	 * @param errcode 閿欒浠ｇ爜
+	 * @return 杩斿洖閿欒缁撴灉
 	 */
 	public static OptResult Failed(Object errmsg) {
 		OptResult res= new OptResult(50001,errmsg);

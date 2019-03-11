@@ -2,17 +2,18 @@ package cn.xhh.domainservice.identity;
 
 import cn.xhh.infrastructure.OptResult;
 
+
 public interface UserManager {
 	/**
-	 * 登录
+	 * 鐧诲綍
 	 * 
-	 * @param openId   微信授权openId
-	 * @return 返回身份验证结果
+	 * @param openId   寰俊鎺堟潈openId
+	 * @return 杩斿洖韬唤楠岃瘉缁撴灉
 	 */
 	public OptResult signIn(String openId);
 
 	/**
-	 * 登出
+	 * 鐧诲嚭
 	 */
 	public void signOut();
 }

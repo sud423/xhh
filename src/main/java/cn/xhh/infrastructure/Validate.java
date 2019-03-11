@@ -23,10 +23,10 @@ public class Validate {
 	}
 
 	/**
-	 * ÅĞ¶ÏÊµÌåÊÇ·ñÍ¨¹ıÑéÖ¤£¬true±íÊ¾Í¨¹ı£¬·ñÔòÎªfalse
+	 * åˆ¤æ–­å®ä½“æ˜¯å¦é€šè¿‡éªŒè¯ï¼Œtrueè¡¨ç¤ºé€šè¿‡ï¼Œå¦åˆ™ä¸ºfalse
 	 * 
-	 * @param t ´ıÑéÖ¤ÊµÀı
-	 * @return ³É¹¦£ºtrue
+	 * @param t å¾…éªŒè¯å®ä¾‹
+	 * @return æˆåŠŸï¼štrue
 	 */
 	public static <T> boolean isValid(T t) {
 		Set<ConstraintViolation<T>> constraintViolations = validator.validate(t);

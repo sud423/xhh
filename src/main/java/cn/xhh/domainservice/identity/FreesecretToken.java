@@ -3,7 +3,7 @@ package cn.xhh.domainservice.identity;
 import org.apache.shiro.authc.UsernamePasswordToken;
 
 /**
- * ×Ô¶¨Òåtoken Í¨¹ı¹¹Ôì·½·¨À´Çø·Ö ÕËºÅÃÜÂëµÇÂ½ºÍ ÃâÃÜµÇÂ½
+ * è‡ªå®šä¹‰token é€šè¿‡æ„é€ æ–¹æ³•æ¥åŒºåˆ† è´¦å·å¯†ç ç™»é™†å’Œ å…å¯†ç™»é™†
  * 
  * @author susd
  *
@@ -23,13 +23,13 @@ public class FreesecretToken extends UsernamePasswordToken {
 		this.type = type;
 	}
 
-	/** ÃâÃÜµÇÂ¼ */
+	/** å…å¯†ç™»å½• */
 	public FreesecretToken(String username) {
 		super(username, "", false, null);
 		this.type = LoginType.NOPASSWD;
 	}
 
-	/** ÕËºÅÃÜÂëµÇÂ¼ */
+	/** è´¦å·å¯†ç ç™»å½• */
 	public FreesecretToken(String username, String password) {
 		super(username, password, false, null);
 		this.type = LoginType.PASSWORD;

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.xhh.domain.business.PriceRepository">
+	<select id="priceCount"
+		resultType="cn.xhh.domain.business.PriceSearchResult">
+
+		select (@i:=@i+1) as seqNo,text
+		express,if(${volume}*100*100*100/coefficient>${weight},${volume}*100*100*100/coefficient,${weight})
+		weight,
+		if(if(${volume}*100*100*100/coefficient>${weight},${volume}*100*100*100/coefficient,${weight})
+		*standard_price>lowest_price,
+		if(${volume}*100*100*100/coefficient>${weight},${volume}*100*100*100/coefficient,${weight})
+		*standard_price,lowest_price) price
+		from price_config
+		inner join dict on `value`=express and `key`='express' ,(select @i:=0) as
+		it
+		where tenant_id=#{tenantId} and province=#{province}
+		<if test="city != null and city != ''">
+			<bind name="keyinfo" value="'%' + city + '%'" />
+			and city like #{keyinfo}
+		</if>
+		order by price asc
+	</select>
+</mapper>

@@ -21,7 +21,7 @@ public class AccountController {
 	private UserManager userManager;
 	
 	/**
-	 * Î´ÏûµÇÂ¼½øÈë¸ÃµØÖ·²¢Ìø×ªµ½Î¢ĞÅ£¬ÇëÇóÎ¢ĞÅÊÚÈ¨µÇÂ¼
+	 * æœªç™»å½•è¿›å…¥è¯¥åœ°å€å¹¶è·³è½¬åˆ°å¾®ä¿¡ï¼Œè¯·æ±‚å¾®ä¿¡æˆæƒç™»å½•
 	 * @return
 	 */
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
@@ -30,7 +30,7 @@ public class AccountController {
 	}
 
 	/**
-	 * Î¢ĞÅ»Øµ÷£¬ÅĞ¶ÏÓÃ»§ÊÇ·ñ×¢²á£¬Èç¹ûÒÑ×¢²á¾ÍÌø×ªÉÏ´Î·ÃÎÊµØÖ·
+	 * å¾®ä¿¡å›è°ƒï¼Œåˆ¤æ–­ç”¨æˆ·æ˜¯å¦æ³¨å†Œï¼Œå¦‚æœå·²æ³¨å†Œå°±è·³è½¬ä¸Šæ¬¡è®¿é—®åœ°å€Ö·
 	 * @param code
 	 * @param returnUrl
 	 * @return
@@ -41,8 +41,8 @@ public class AccountController {
 	}
 	
 	/**
-	 * µÇÂ¼·½·¨
-	 * @return ·µ»Øjson¸ñÊ½µÄµÇÂ¼½á¹û
+	 * ç™»å½•æ–¹æ³•
+	 * @return è¿”å›jsonæ ¼å¼çš„ç™»å½•ç»“æœ
 	 */
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	@ResponseBody
@@ -58,7 +58,7 @@ public class AccountController {
 				result.setResult("dashboard");
 			}
 			else {
-				//·µ»ØÉÏ´ÎÇëÇóµÄµØÖ·
+				//è¿”å›ä¸Šæ¬¡è¯·æ±‚çš„åœ°å€Ö·
 				result.setResult(savedReq.getRequestUrl());
 			}
 		}
@@ -67,7 +67,7 @@ public class AccountController {
 	}
 	
 	/**
-	 * ×¢²á
+	 * æ³¨å†Œ
 	 * @param t
 	 * @return
 	 */

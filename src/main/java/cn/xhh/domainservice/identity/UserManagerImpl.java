@@ -24,15 +24,15 @@ public class UserManagerImpl implements UserManager {
 	private UserRepository userRepository;
 	
 	/**
-	 * µÇÂ¼
+	 * ç™»å½•
 	 * 
-	 * @param userName   ÓÃ»§Ãû
-	 * @return ·µ»ØÉí·İÑéÖ¤½á¹û
+	 * @param userName   ç”¨æˆ·å
+	 * @return è¿”å›èº«ä»½éªŒè¯ç»“æœ
 	 */
 	public OptResult signIn(String openId) {
 		
 		if(openId==null)
-			return OptResult.Failed("Î¢ĞÅopenId²»ÄÜÎª¿Õ");
+			return OptResult.Failed("å¾®ä¿¡openIdä¸èƒ½ä¸ºç©º");
 				
 		FreesecretToken token = new FreesecretToken(openId);
 		
@@ -43,39 +43,39 @@ public class UserManagerImpl implements UserManager {
 
 			if (subject.isAuthenticated()) {
 				UserDto user = (UserDto)token.getPrincipal();
-				//¸üĞÂ×îºóµÇÂ¼Ê±¼ä
+				//æ›´æ–°æœ€åç™»å½•æ—¶é—´
 				userRepository.updateLastLoginTime(user.getId());
 				
 				return OptResult.Successed();
 			} else {
-				return OptResult.Failed("ÓÃ»§ÃûºÍÃÜÂë²»Æ¥Åä£¡");
+				return OptResult.Failed("ç”¨æˆ·åå’Œå¯†ç ä¸åŒ¹é…ï¼");
 			}
 
 		} catch (IncorrectCredentialsException e) {
 			System.out.println(e);
-			return OptResult.Failed("ÓÃ»§ÃûºÍÃÜÂë²»Æ¥Åä£¡");
+			return OptResult.Failed("ç”¨æˆ·åå’Œå¯†ç ä¸åŒ¹é…ï¼");
 		} catch (ExcessiveAttemptsException e) {
 			System.out.println(e);
-			return OptResult.Failed("ÓÉÓÚÄúµÇÂ¼µÄÊ§°Ü´ÎÊıÒÑ³¬¹ı5´Î£¬ÕË»§ÒÑ±»Ëø¶¨£¬Çë10·ÖÖÓºóÔÙÊÔ£¡");
+			return OptResult.Failed("ç”±äºæ‚¨ç™»å½•çš„å¤±è´¥æ¬¡æ•°å·²è¶…è¿‡5æ¬¡ï¼Œè´¦æˆ·å·²è¢«é”å®šï¼Œè¯·10åˆ†é’Ÿåå†è¯•ï¼");
 		} catch (LockedAccountException e) {
 			System.out.println(e);
-			return OptResult.Failed("ÄúµÄÕË»§ÒÑ¶³½á£¬ÇëÓë¹ÜÀíÔ±ÁªÏµ£¡");
+			return OptResult.Failed("æ‚¨çš„è´¦æˆ·å·²å†»ç»“ï¼Œè¯·ä¸ç®¡ç†å‘˜è”ç³»ï¼");
 		} catch (DisabledAccountException e) {
 			System.out.println(e);
-			return OptResult.Failed("ÄúµÄÕË»§ÒÑ½ûÓÃ£¬ÇëÓë¹ÜÀíÔ±ÁªÏµ£¡");
-		} catch (ExpiredCredentialsException e) {// Éí·İÒÑ¹ıÆÚ£¡
+			return OptResult.Failed("æ‚¨çš„è´¦æˆ·å·²ç¦ç”¨ï¼Œè¯·ä¸ç®¡ç†å‘˜è”ç³»ï¼");
+		} catch (ExpiredCredentialsException e) {// èº«ä»½å·²è¿‡æœŸï¼
 			System.out.println(e);
-			return OptResult.Failed("Éí·İÒÑ¹ıÆÚ£¡");
-		} catch (UnknownAccountException e) {// Î´ÖªµÄÕËºÅ
+			return OptResult.Failed("èº«ä»½å·²è¿‡æœŸï¼");
+		} catch (UnknownAccountException e) {// æœªçŸ¥çš„è´¦å·
 			System.out.println(e);
-			return OptResult.Failed("ÕËºÅºÍÃÜÂë²»Æ¥Åä£¡");
-		} catch (UnauthorizedException e) {// Î´ÖªµÄÊÚÈ¨
+			return OptResult.Failed("è´¦å·å’Œå¯†ç ä¸åŒ¹é…ï¼");
+		} catch (UnauthorizedException e) {// æœªçŸ¥çš„æˆæƒ
 			System.out.println(e);
-			return OptResult.Failed("ÓÃ»§ÃûºÍÃÜÂë²»Æ¥Åä£¡");
+			return OptResult.Failed("ç”¨æˆ·åå’Œå¯†ç ä¸åŒ¹é…ï¼");
 		}
 
 	}
-
+	
 	/**
 	 * ç™»å‡º
 	 */

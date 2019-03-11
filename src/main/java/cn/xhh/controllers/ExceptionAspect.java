@@ -16,7 +16,7 @@ import cn.xhh.infrastructure.TokenException;
 
 
 /**
- * È«¾ÖÒì³£´¦Àí
+ * å…¨å±€å¼‚å¸¸å¤„ç†
  * 
  * @author susd
  *
@@ -35,9 +35,9 @@ public class ExceptionAspect {
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(HttpMessageNotReadableException.class)
 	public OptResult handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
-		log.error("json×Ö·û´®¸ñÊ½´íÎó", e);
+		log.error("jsonå­—ç¬¦ä¸²æ ¼å¼é”™è¯¯", e);
 
-		return OptResult.Failed(50400, "json×Ö·û´®¸ñÊ½´íÎó");
+		return OptResult.Failed(50400, "jsonå­—ç¬¦ä¸²æ ¼å¼é”™è¯¯");
 	}
 
 	/**
@@ -49,32 +49,32 @@ public class ExceptionAspect {
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public OptResult handleValidationException(MethodArgumentNotValidException e) {
-		log.error("²ÎÊı½âÎöÊ§°Ü", e);
+		log.error("å‚æ•°è§£æå¤±è´¥", e);
 
-		return OptResult.Failed(50400, "²ÎÊı½âÎöÊ§°Ü");
+		return OptResult.Failed(50400, "å‚æ•°è§£æå¤±è´¥");
 	}
 
 	/**
-	 * 405 - Method Not Allowed¡£HttpRequestMethodNotSupportedException
-	 * ÊÇServletExceptionµÄ×ÓÀà,ĞèÒªServlet APIÖ§³Ö
+	 * 405 - Method Not Allowedã€‚HttpRequestMethodNotSupportedException
+	 * æ˜¯ServletExceptionçš„å­ç±»,éœ€è¦Servlet APIæ”¯æŒ
 	 */
 	@ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
 	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
 	public OptResult handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
-		log.error("²»Ö§³Öµ±Ç°ÇëÇó·½·¨", e);
+		log.error("ä¸æ”¯æŒå½“å‰è¯·æ±‚æ–¹æ³•", e);
 
-		return OptResult.Failed(50405, "²»Ö§³Öµ±Ç°ÇëÇó·½·¨");
+		return OptResult.Failed(50405, "ä¸æ”¯æŒå½“å‰è¯·æ±‚æ–¹æ³•");
 	}
 
 	/**
-	 * 415 - Unsupported Media Type¡£HttpMediaTypeNotSupportedException
-	 * ÊÇServletExceptionµÄ×ÓÀà,ĞèÒªServlet APIÖ§³Ö
+	 * 415 - Unsupported Media Typeã€‚HttpMediaTypeNotSupportedException
+	 * æ˜¯ServletExceptionçš„å­ç±»,éœ€è¦Servlet APIæ”¯æŒ
 	 */
 	@ResponseStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
 	@ExceptionHandler({ HttpMediaTypeNotSupportedException.class })
 	public OptResult handleHttpMediaTypeNotSupportedException(Exception e) {
-		log.error("²»Ö§³Öµ±Ç°Ã½ÌåÀàĞÍ", e);
-		return OptResult.Failed(50415, "²»Ö§³Öµ±Ç°Ã½ÌåÀàĞÍ");
+		log.error("ä¸æ”¯æŒå½“å‰åª’ä½“ç±»å‹", e);
+		return OptResult.Failed(50415, "ä¸æ”¯æŒå½“å‰åª’ä½“ç±»å‹");
 	}
 
 	/**
@@ -83,8 +83,8 @@ public class ExceptionAspect {
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	@ExceptionHandler(Exception.class)
 	public OptResult handleException(Exception e) {
-		log.error("ÄÚ²¿·şÎñ³ö´í", e);
-		return OptResult.Failed(50500, "ÄÚ²¿·şÎñ³ö´í");
+		log.error("å†…éƒ¨æœåŠ¡å‡ºé”™", e);
+		return OptResult.Failed(50500, "å†…éƒ¨æœåŠ¡å‡ºé”™");
 	}
 
 	/**
@@ -93,8 +93,8 @@ public class ExceptionAspect {
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	@ExceptionHandler(TokenException.class)
 	public OptResult handleTokenException(Exception e) {
-		log.error("ÎŞĞ§µÄtoken", e);
-		return OptResult.Failed(50500, "ÎŞĞ§µÄtoken");
+		log.error("æ— æ•ˆçš„token", e);
+		return OptResult.Failed(50500, "æ— æ•ˆçš„token");
 	}
 
 }
