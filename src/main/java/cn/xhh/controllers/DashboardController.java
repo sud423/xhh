@@ -1,6 +1,5 @@
 package cn.xhh.controllers;
 
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,14 +8,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import cn.xhh.domain.business.PriceRepository;
-import cn.xhh.domain.business.PriceSearchResult;
+import cn.xhh.application.PriceService;
+import cn.xhh.infrastructure.OptResult;
 
 @Controller
 public class DashboardController {
 	
 	@Autowired
-	private PriceRepository priceRepository;
+	private PriceService priceService;
 	
 	/**
 	 * 
@@ -38,8 +37,8 @@ public class DashboardController {
 	}
 	
 	@ResponseBody
-	@RequestMapping(value = "/hello", method = RequestMethod.GET)
-	public List<PriceSearchResult> priceCount(String province, String city, float volume, float weight, int tenantId) {
-		return priceRepository.priceCount(province, city, volume, weight, tenantId);
+	@RequestMapping(value = "/search", method = RequestMethod.POST)
+	public OptResult priceCount(String province, String city, String volume, String weight, String tenantId) {
+		return priceService.priceCount(province, city, volume, weight, tenantId);
 	}
 }

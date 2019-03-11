@@ -24,8 +24,8 @@
  			选择您寄送的目的地：
           </div>
           <cascade :fields="fields" :data="cities" :value="query.dest"></cascade>
-          <von-input type="text" v-model="query.vol" placeholder="体积" label="体积(m³)"></von-input>
-		  <von-input type="text" v-model="query.weight" placeholder="重量" label="重量(kg)"></von-input>
+          <von-input type="text" v-model="query.vol" placeholder="体积" @keydown="handleInput" label="体积(m³)"></von-input>
+		  <von-input type="text" v-model="query.weight" placeholder="重量" @keydown="handleInput" label="重量(kg)"></von-input>
 		  <div class="padding">
             <div class="button button-positive button-block" @click="onSerch()">查询</div>
           </div>
@@ -41,6 +41,8 @@
 	<!-- 引用js -->
 	<script type="text/javascript"
 		src="${request.getContextPath()}/assets/js/axios.min.js"></script>
+	<script type="text/javascript"
+		src="${request.getContextPath()}/assets/js/qs.js"></script>
 	<script type="text/javascript"
 		src="${request.getContextPath()}/assets/js/vue.min.js"></script>
 	<script type="text/javascript"
@@ -62,16 +64,53 @@
 					],
 					query : {
 						dest : [],
-						vol : '',
-						weight : ''
+						vol : 0,
+						weight : 0
 					}
 				}
 			},
 			methods : {
 				onSerch : function() {
-					
-				}
+					if(this.query.dest.length==0){
+						 $toast.show('请选择配送的目的地')
+						return;
+					}
+					if(!this.query.vol){
+						 $toast.show('请输入实际体积')
+						return;
+					}
+					if(!this.query.weight){
+						 $toast.show('请输入实际重量')
+						return;
+					}
+					axios({
+						  method: 'post',
+						  url: basePath+'/search',
+						  headers:{
+							  'Content-Type':  'application/x-www-form-urlencoded;charset=UTF-8'
+						  },
+						  data: Qs.stringify({
+							  province: this.query.dest[0],
+								city: this.query.dest[1],
+								volume:this.query.vol,
+								weight:this.query.weight,
+								tenantId:1
+							  })
+						}).then(function (response) {
+						    console.log(response);
+						  })
+						  .catch(function (error) {
+						    console.log(error);
+						  });
+				},
+				handleInput(e) {
+				      let a = e.key.replace(/[^\d]/g, "");
+				      if (!a) {
+				        e.preventDefault();
+				      }
+				    }
 			}
+
 		};
 		var About = {
 			template : '#about',
