@@ -21,6 +21,26 @@ public class AccountController {
 	private UserManager userManager;
 	
 	/**
+	 * 未消登录进入该地址并跳转到微信，请求微信授权登录
+	 * @return
+	 */
+	@RequestMapping(value = "/login", method = RequestMethod.GET)
+	public String index() {
+		return "index";
+	}
+
+	/**
+	 * 微信回调，判断用户是否注册，如果已注册就跳转上次访问地址
+	 * @param code
+	 * @param returnUrl
+	 * @return
+	 */
+	@RequestMapping(value = "/callback", method = RequestMethod.POST)
+	public String redirectTo(String code, String returnUrl) {
+		return "";
+	}
+	
+	/**
 	 * 登录方法
 	 * @return 返回json格式的登录结果
 	 */
@@ -45,4 +65,15 @@ public class AccountController {
 		return result;
 		
 	}
+	
+	/**
+	 * 注册
+	 * @param t
+	 * @return
+	 */
+	@RequestMapping(value = "/reg", method = RequestMethod.POST)
+	public String reg(String t) {
+		return "account/register";
+	}
+	
 }

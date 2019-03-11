@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome =1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${title!"鑫恒辉物流"}</title>
+<link href="${request.getContextPath()}/assets/css/vonic.min.css"
+	rel="stylesheet"></link>
+
+${head!""}
+
+<script type="text/javascript">
+	var basePath = "${request.getContextPath()}";
+</script>
+</head>
+<body>
+	<von-app></von-app>
+
+	${contentBody}
+
+	<!-- 引用js -->
+	<script type="text/javascript"
+		src="${request.getContextPath()}/assets/js/axios.min.js"></script>
+	<script type="text/javascript"
+		src="${request.getContextPath()}/assets/js/vue.min.js"></script>
+	<script type="text/javascript"
+		src="${request.getContextPath()}/assets/js/vue-router.min.js"></script>
+	<script type="text/javascript"
+		src="${request.getContextPath()}/assets/js/vuex.min.js"></script>
+	${body!""}
+</body>
+</html>

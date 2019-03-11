@@ -42,6 +42,7 @@
 		<!-- 视图解析器在/views/路径下扫描视图文件 -->
 		<property name="templateLoaderPaths">
 			<list>
+				<value>/</value>
 				<value>/views/</value>
 				<value>/views/shared/</value>
 			</list>
@@ -75,7 +76,7 @@
 		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="order" value="2" />
 		<property name="prefix" value="/" />
-		<property name="suffix" value=".jsp" />
+		<property name="suffix" value=".html" />
 	</bean>
 
 	<bean id="multipartResolver"
