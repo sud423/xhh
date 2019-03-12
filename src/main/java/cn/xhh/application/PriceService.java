@@ -1,4 +1,4 @@
-package cn.xhh.application;
+﻿package cn.xhh.application;
 
 import cn.xhh.infrastructure.OptResult;
 

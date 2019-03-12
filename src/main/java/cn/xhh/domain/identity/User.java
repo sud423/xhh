@@ -1,14 +1,11 @@
 package cn.xhh.domain.identity;
 
-
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-
 
 import cn.xhh.domain.*;
 
@@ -32,21 +29,26 @@ public class User implements Entity<User> {
 	@Size(max = 15, message = "手机号最大长度为15个字符")
 	@NotNull(message = "手机号不能为空")
 	private String cell;
-	
+
 	/**
 	 * 身份证号
 	 */
 	@Size(max = 18, message = "身份证号最大长度为18个字符")
 	@NotNull(message = "身份证号不能为空")
 	private String idNumber;
-	
+
 	/**
 	 * 启用类型 10：客户（会员） 20：驾驶员
 	 */
 	private byte type;
 
 	/**
-	 * 状态 1：正常 10：离职 只能查看，不能操作 20：冻结
+	 * 状态
+	 *  1：正常/审核通过 
+	 *  2：待审核 
+	 *  10：冻结 不能登录使用系统 
+	 *  20：离职/停职 有些操作不能操作，可以查看数据 
+	 *  30：审核不通过
 	 */
 	private byte status;
 
@@ -54,7 +56,7 @@ public class User implements Entity<User> {
 	 * 审核不通过原因
 	 */
 	private String auditReason;
-	
+
 	/**
 	 * 添加时间
 	 */
@@ -69,9 +71,9 @@ public class User implements Entity<User> {
 	 * 附件
 	 */
 	private List<String> attach;
-	
+
 	private UserLogin userLogin;
-	
+
 	public int getId() {
 		return id;
 	}
@@ -154,8 +156,7 @@ public class User implements Entity<User> {
 	public void setVersion(int version) {
 		this.version = version;
 	}
-	
-		
+
 	public List<String> getAttach() {
 		return attach;
 	}

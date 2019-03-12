@@ -1,4 +1,4 @@
-package cn.xhh.controllers;
+﻿package cn.xhh.controllers;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import cn.xhh.domain.identity.User;
 import cn.xhh.domainservice.identity.UserManager;
 import cn.xhh.infrastructure.OptResult;
 
@@ -25,7 +26,7 @@ public class AccountController {
 	 * @return
 	 */
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
-	public String index() {
+	public String index(String t) {
 		return "index";
 	}
 
@@ -71,9 +72,14 @@ public class AccountController {
 	 * @param t
 	 * @return
 	 */
-	@RequestMapping(value = "/reg", method = RequestMethod.POST)
+	@RequestMapping(value = "/reg", method = RequestMethod.GET)
 	public String reg(String t) {
-		return "account/register";
+		return "register";
 	}
 	
+	@RequestMapping(value = "/uc/save", method = RequestMethod.POST)
+	@ResponseBody
+	public OptResult register(User user) {
+		return OptResult.Successed(user);
+	}
 }

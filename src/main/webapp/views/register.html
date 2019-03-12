@@ -1,0 +1,80 @@
+<#assign title> 鑫恒辉物流-注册 </#assign>
+<#assign contentBody> <script type="text/x-template"
+	id="register">
+      
+<div class="page-content padding-top">
+	<von-input type="text" v-model="reg.name" placeholder="姓名" label="姓名"></von-input>
+	<von-input type="text" v-model="reg.idNumber" placeholder="身份证号"
+		label="身份证号"></von-input>
+	<von-input type="text" v-model="reg.cell" placeholder="手机号"
+		label="手机号"></von-input>
+	<div class="item item-divider">证件上传(<span style="color:red;">仅供寄件实名制使用</span>)</div>
+<ul class="weui-uploader__files" id="uploaderFiles">
+   <li class="weui-uploader__file" v-if="reg.backImg"></li>
+   <li class="weui-uploader__file" v-if="reg.frontImg"></li>
+</ul>
+	<div class="weui-uploader__input-box" style="margin-top:1px;margin-left:10px;">
+		
+	</div>
+	<div class="padding">
+            <div class="button button-positive button-block" @click="onRegister()">注册</div>
+          </div>
+</div>
+
+</script> </#assign>
+
+<#assign body> <script type="text/javascript">
+	var register = {
+		template : '#register',
+		data : function() {
+			return {
+				reg : {
+					name : '',
+					idNumber : '',
+					cell : '',
+					backImg:'',//反面身份证
+					frontImg:'' //正面身份证
+				}
+			}
+		},
+		methods:{
+			onRegister:function(){
+				axios.post(basePath+"/uc/save",this.reg).then(function(res){
+					console.log(res);
+				}).catch(function(err){
+					console.log(err);
+				});
+			}
+		}
+	}
+
+	const routes = [ {
+		path : '/',
+		component : register
+	} ]
+
+	Vue.use(Vonic.app, {
+		routes : routes
+	})
+</script> </#assign>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<#include "/layout.html" encoding="utf-8">

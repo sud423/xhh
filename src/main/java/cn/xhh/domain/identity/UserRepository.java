@@ -15,4 +15,11 @@ public interface UserRepository {
 	 * @return
 	 */
 	public int updateLastLoginTime(int userId);
+	
+	/**
+	 * 注册新用户
+	 * @param user
+	 * @return
+	 */
+	public int reg(User user);
 }
