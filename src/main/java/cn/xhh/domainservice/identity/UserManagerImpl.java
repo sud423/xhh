@@ -1,5 +1,7 @@
 package cn.xhh.domainservice.identity;
 
+import java.util.Date;
+
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.DisabledAccountException;
 import org.apache.shiro.authc.ExcessiveAttemptsException;
@@ -11,7 +13,10 @@ import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import cn.xhh.domain.identity.User;
+import cn.xhh.domain.identity.UserLogin;
 import cn.xhh.domain.identity.UserRepository;
 import cn.xhh.dto.UserDto;
 import cn.xhh.infrastructure.OptResult;
@@ -83,4 +88,31 @@ public class UserManagerImpl implements UserManager {
 		// shiro登出清理凭证信息
 		SecurityUtils.getSubject().logout();
 	}
+
+	@Override
+	@Transactional
+	public OptResult saveReg(User user) {
+		user.setStatus((byte)2);
+		user.setAddTime(new Date());
+
+		int result=userRepository.reg(user);
+		if(result==0)
+			return OptResult.Failed("注册失败，请稍候重试");
+		
+		UserLogin login=user.getUserLogin();
+		
+		login.setUserId(user.getId());
+		login.setTenantId(user.getTenantId());
+		login.setAddTime(new Date());
+		
+		result=userRepository.saveLogin(login);
+		if(result==0)
+			return OptResult.Failed("注册失败，请稍候重试");
+		
+		signIn(login.getOpenId());
+		
+		return OptResult.Successed();
+	}
+	
+	
 }

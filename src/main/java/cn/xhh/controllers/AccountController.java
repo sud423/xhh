@@ -80,6 +80,8 @@ public class AccountController {
 	@RequestMapping(value = "/uc/save", method = RequestMethod.POST)
 	@ResponseBody
 	public OptResult register(User user) {
-		return OptResult.Successed(user);
+		OptResult result = userManager.saveReg(user);
+		
+		return result;
 	}
 }

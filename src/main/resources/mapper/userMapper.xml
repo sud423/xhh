@@ -51,4 +51,19 @@
 		update user set
 		last_login_time=now() where id = ${userId};
 	</update>
+
+	<insert id="reg" parameterType="cn.xhh.domain.identity.User"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into
+		`user`(tenant_id,`name`,cell,`status`,id_number,type,add_time,version)
+		values
+		(#{tenantId},#{name},#{cell},#{status},#{idNumber},#{type},#{addTime},1)
+	</insert>
+	<insert id="saveLogin"
+		parameterType="cn.xhh.domain.identity.UserLogin">
+		insert into user_login
+		(tenant_id,user_id,provide,open_id,nick_name,head_img,add_time)
+		values
+		(#{tenantId},#{userId},#{provide},#{openId},#{nickName},#{headImg},#{addTime})
+	</insert>
 </mapper>

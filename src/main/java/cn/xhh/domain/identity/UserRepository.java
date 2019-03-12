@@ -22,4 +22,11 @@ public interface UserRepository {
 	 * @return
 	 */
 	public int reg(User user);
+	
+	/**
+	 * 保存第三方登录信息
+	 * @param login
+	 * @return
+	 */
+	public int saveLogin(UserLogin login);
 }
