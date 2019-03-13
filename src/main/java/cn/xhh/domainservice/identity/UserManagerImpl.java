@@ -108,9 +108,7 @@ public class UserManagerImpl implements UserManager {
 		result=userRepository.saveLogin(login);
 		if(result==0)
 			return OptResult.Failed("注册失败，请稍候重试");
-		
-		signIn(login.getOpenId());
-		
+				
 		return OptResult.Successed();
 	}
 	

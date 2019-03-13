@@ -37,7 +37,8 @@ public class Utils {
 //			System.out.println(key + "重复" + map.get(key).intValue() + "次");
 //		}
 		
-		
+		String val=getValueByKey("wechat.properties","token");
+		System.out.print(val);
 	}
 
 	public static String generateCode() {
@@ -61,11 +62,12 @@ public class Utils {
 	 * @return
 	 */
 	public static String getValueByKey(String filePath, String key) {
+		
 		Properties prop = new Properties();
         String value = null;
         try {
             // 通过输入缓冲流进行读取配置文件
-            InputStream InputStream = new BufferedInputStream(new FileInputStream(new File(filePath)));
+            InputStream InputStream = new BufferedInputStream(new FileInputStream(new File("src/main/resources/"+filePath)));
             // 加载输入流
             prop.load(InputStream);
             // 根据关键字获取value值

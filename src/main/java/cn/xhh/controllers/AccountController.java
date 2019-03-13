@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.xhh.domain.identity.User;
+import cn.xhh.domain.identity.UserLogin;
 import cn.xhh.domainservice.identity.UserManager;
 import cn.xhh.infrastructure.OptResult;
+import cn.xhh.infrastructure.Utils;
 
 
 @Controller
@@ -27,7 +29,7 @@ public class AccountController {
 	 */
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
 	public String index(String t) {
-		return "index";
+		return "login";
 	}
 
 	/**
@@ -45,7 +47,7 @@ public class AccountController {
 	 * 登录方法
 	 * @return 返回json格式的登录结果
 	 */
-	@RequestMapping(value = "/login", method = RequestMethod.POST)
+	@RequestMapping(value = "/sigup", method = RequestMethod.POST)
 	@ResponseBody
 	public OptResult logon(HttpServletRequest request,String openId) {
 
@@ -80,8 +82,17 @@ public class AccountController {
 	@RequestMapping(value = "/uc/save", method = RequestMethod.POST)
 	@ResponseBody
 	public OptResult register(User user) {
-		OptResult result = userManager.saveReg(user);
 		
+		UserLogin ul=new UserLogin();
+		ul.setTenantId(ul.getTenantId());
+		ul.setNickName(Utils.generateCode());
+		ul.setOpenId(Utils.generateCode());
+		ul.setProvide((byte)1);
+		user.setUserLogin(ul);
+		OptResult result = userManager.saveReg(user);
+		if(result.getCode()==0) {
+			userManager.signIn(ul.getOpenId());
+		}
 		return result;
 	}
 }
