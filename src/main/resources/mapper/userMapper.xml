@@ -31,10 +31,10 @@
 		<result column="head_img" property="headImg" />
 	</resultMap>
 
-	<select id="findDriverByKeyword" parameterType="String"
+	<select id="findByOpenId" parameterType="String"
 		resultMap="driverMap">
 		select
-		u.id,u.tenant_id,`name`,cell,id_number,u.type,u.`status`,u.add_time,ul.provide,
+		u.id,u.tenant_id,`name`,u.`password`,u.salt,cell,id_number,u.type,u.`status`,u.add_time,ul.provide,
 		ul.open_id,ul.nick_name,ul.head_img,path,c.`status`
 		car_status,c.car_number
 		from `user` u
@@ -43,8 +43,7 @@
 		left join attach a on a.source_id=u.id and
 		a.source_name='user'
 		left join car c on c.driver_id=u.id
-		where
-		u.tenant_id=#{tenantId} and ul.open_id=#{openId}
+		where ul.open_id=#{openId}
 	</select>
 	<!-- 更新最后登录时间 -->
 	<update id="updateLastLoginTime" parameterType="int">
