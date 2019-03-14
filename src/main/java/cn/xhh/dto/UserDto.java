@@ -1,11 +1,6 @@
 package cn.xhh.dto;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 public class UserDto {
-	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-
 	private int id;
 
 	private int tenantId;
@@ -26,7 +21,7 @@ public class UserDto {
 
 	private byte type;
 
-	private Date addTime;
+	private String addTime;
 
 	public int getId() {
 		return id;
@@ -108,14 +103,11 @@ public class UserDto {
 		this.type = type;
 	}
 
-	public String getAddTime() {
-		if (addTime != null)
-			return dateFormat.format(addTime);
-		
-		return null;
+	public String getAddTime() {		
+		return addTime;
 	}
 
-	public void setAddTime(Date addTime) {
+	public void setAddTime(String addTime) {
 		this.addTime = addTime;
 	}
 

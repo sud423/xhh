@@ -58,7 +58,7 @@ public class AccountController {
 			SavedRequest savedReq=WebUtils.getSavedRequest(request);
 			
 			if(savedReq==null || savedReq.getRequestUrl()==null) {
-				result.setResult("dashboard");
+				result.setResult(request.getContextPath()+"/my");
 			}
 			else {
 				//返回上次请求的地址ַ
@@ -81,7 +81,7 @@ public class AccountController {
 	
 	@RequestMapping(value = "/uc/save", method = RequestMethod.POST)
 	@ResponseBody
-	public OptResult register(User user) {
+	public OptResult register(HttpServletRequest request,User user) {
 		
 		UserLogin ul=new UserLogin();
 		ul.setTenantId(ul.getTenantId());
@@ -91,7 +91,14 @@ public class AccountController {
 		user.setUserLogin(ul);
 		OptResult result = userManager.saveReg(user);
 		if(result.getCode()==0) {
-			userManager.signIn(ul.getOpenId());
+			SavedRequest savedReq = WebUtils.getSavedRequest(request);
+
+			if (savedReq == null || savedReq.getRequestUrl() == null) {
+				result.setResult(request.getContextPath()+"/my?t="+user.getType());
+			} else {
+				// 返回上次请求的地址
+				result.setResult(savedReq.getRequestUrl());
+			}
 		}
 		return result;
 	}

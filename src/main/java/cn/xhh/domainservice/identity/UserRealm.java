@@ -67,6 +67,7 @@ public class UserRealm extends AuthorizingRealm {
 				map().setNickName(source.getUserLogin().getNickName());
 				map().setOpenId(source.getUserLogin().getOpenId());
 				map().setHeadImg(source.getUserLogin().getHeadImg());
+				map().setAddTime(source.getAddTime());
 			}
 		};
 		ModelMapper modelMapper = new ModelMapper();
@@ -76,7 +77,7 @@ public class UserRealm extends AuthorizingRealm {
 
 		session.setAttribute("user", userDto);
 
-		return new SimpleAuthenticationInfo(openId, userDto, getName());
+		return new SimpleAuthenticationInfo(userDto, null, getName());
 
 	}
 }

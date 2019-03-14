@@ -34,7 +34,7 @@
 	<select id="findByOpenId" parameterType="String"
 		resultMap="driverMap">
 		select
-		u.id,u.tenant_id,`name`,u.`password`,u.salt,cell,id_number,u.type,u.`status`,u.add_time,ul.provide,
+		u.id,u.tenant_id,`name`,cell,id_number,u.type,u.`status`,u.add_time,ul.provide,
 		ul.open_id,ul.nick_name,ul.head_img,path,c.`status`
 		car_status,c.car_number
 		from `user` u
@@ -46,9 +46,9 @@
 		where ul.open_id=#{openId}
 	</select>
 	<!-- 更新最后登录时间 -->
-	<update id="updateLastLoginTime" parameterType="int">
+	<update id="updateLastLoginTime" parameterType="String">
 		update user set
-		last_login_time=now() where id = ${userId};
+		last_login_time=now() where id = (select user_id from user_login where open_id=#{openId});
 	</update>
 
 	<insert id="reg" parameterType="cn.xhh.domain.identity.User"

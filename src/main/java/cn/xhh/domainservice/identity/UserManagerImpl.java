@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import cn.xhh.domain.identity.User;
 import cn.xhh.domain.identity.UserLogin;
 import cn.xhh.domain.identity.UserRepository;
-import cn.xhh.dto.UserDto;
 import cn.xhh.infrastructure.OptResult;
 
 @Service
@@ -47,9 +46,9 @@ public class UserManagerImpl implements UserManager {
 			subject.login(token);
 
 			if (subject.isAuthenticated()) {
-				UserDto user = (UserDto)token.getPrincipal();
+				
 				//更新最后登录时间
-				userRepository.updateLastLoginTime(user.getId());
+				userRepository.updateLastLoginTime(openId);
 				
 				return OptResult.Successed();
 			} else {
@@ -108,8 +107,9 @@ public class UserManagerImpl implements UserManager {
 		result=userRepository.saveLogin(login);
 		if(result==0)
 			return OptResult.Failed("注册失败，请稍候重试");
-				
-		return OptResult.Successed();
+		
+		
+		return signIn(login.getOpenId());
 	}
 	
 	

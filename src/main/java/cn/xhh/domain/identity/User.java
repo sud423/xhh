@@ -68,6 +68,10 @@ public class User implements Entity<User> {
 	private int version;
 
 	/**
+	 * 车牌号
+	 */
+	private String carNumber;
+	/**
 	 * 附件
 	 */
 	private List<String> attach;
@@ -155,6 +159,14 @@ public class User implements Entity<User> {
 
 	public void setVersion(int version) {
 		this.version = version;
+	}
+
+	public String getCarNumber() {
+		return carNumber;
+	}
+
+	public void setCarNumber(String carNumber) {
+		this.carNumber = carNumber;
 	}
 
 	public List<String> getAttach() {

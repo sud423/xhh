@@ -1,22 +1,22 @@
-<#assign title> 鑫恒辉物流-注册 </#assign>
+<#assign title> 鑫恒辉物流-登录 </#assign>
 <#assign contentBody> <script type="text/x-template"
 	id="login">
       
 <div class="page-content padding-top">
 	<div class="padding">
-            <div class="button button-positive button-block" @click="onSigup()">登录</div>
+            <div class="button button-positive button-block" @click="onSigup()">确认登录</div>
           </div>
 </div>
 
 </script> </#assign>
 
 <#assign body> <script type="text/javascript">
-	var register = {
+	var login = {
 		template : '#login',
 		methods:{
 			onSigup:function(){
 				axios.post(basePath+"/sigup",{openId:'sss'}).then(function(res){
-					window.location.href=res.result;
+					window.location.href=res.data.result;
 				}).catch(function(err){
 					console.log(err);
 				});

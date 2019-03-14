@@ -1,5 +1,7 @@
 package cn.xhh.domain.identity;
 
+import org.apache.ibatis.annotations.Param;
+
 public interface UserRepository {
 
 	/**
@@ -7,14 +9,14 @@ public interface UserRepository {
 	 * @param openId
 	 * @return
 	 */
-	public User findByOpenId(String openId);
+	public User findByOpenId(@Param("openId")String openId);
 	
 	/**
 	 * 更新用户登录时间
 	 * @param userId
 	 * @return
 	 */
-	public int updateLastLoginTime(int userId);
+	public int updateLastLoginTime(@Param("openId")String openId);
 	
 	/**
 	 * 注册新用户
