@@ -1,13 +1,73 @@
-<#assign title> 鑫恒辉物流-登录 </#assign>
-<#assign contentBody> <script type="text/x-template"
-	id="login">
+<#assign title> 鑫恒辉物流-驾驶员业务管理中心 </#assign>
+<#assign contentBody> <script type="x-template" id="index">
+      <div class="page" v-tabbar="{'menus': menus, menuColor: '#B5B5B5', activeMenuColor: '#44CC00', onMenuClick: menuClicked}">
+        <router-view></router-view>
+      </div>
+    </script> <script type="text/x-template" id="order">
       
 <div class="page-content padding-top">
-	
+	<p class="text-center">Home</p>
 </div>
+
+</script> <script type="text/x-template" id="my">
+<div class="page-content padding-top">
+	<p class="text-center">
+		<img style="border-radius:10%" src="http://thirdwx.qlogo.cn/mmopen/diay05TEREjAtJ54tEoKgluJFyp40fPSPfaUWibRyMrvXgfWoQkCwVWjxAwnBZKjQkibAJAq1ONtPjq5ncQwh4cibVmG9XW1957O/132" />
+</p>
+<p class="text-center">susd</p>
+</div>
+
 
 </script> </#assign>
 
+<#assign body> <script type="text/javascript">
+var Index = {
+        template: '#index',
+        data() {
+          return {
+            menus: [
+              {
+                iconOn: 'icon ion-ios-paper',
+                iconOff: 'icon ion-ios-paper-outline',
+                text: '订单',
+                path: '/order'
+              },
+              {
+                iconOn: 'ion-ios-person',
+                iconOff: 'ion-ios-person-outline',
+                text: '我的',
+                path: '/my'
+              }
+            ]
+          }
+        },
+        methods: {
+          menuClicked(menuIndex) {
+            console.log(menuIndex)
+          }
+        },
+        beforeDestroy() {
+          $tabbar.$emit('hideTabbar')
+        }
+      }
+      var Order = { template: '#order' }
+      var My = { template: '#my' }
+      // Routes
+      var routes = [
+        { 
+          path: '/', 
+          component: Index,
+          children: [
+            { path: 'order', component: Order },
+            { path: 'my', component: My }
+          ]
+        }
+      ]
+      // Start up
+      Vue.use(Vonic.app, {
+        routes: routes
+      })
+</script> </#assign>
 
 
 
