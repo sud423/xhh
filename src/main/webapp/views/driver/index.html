@@ -5,16 +5,27 @@
       </div>
     </script> <script type="text/x-template" id="order">
       
-<div class="page-content padding-top">
-	<p class="text-center">Home</p>
-</div>
+        <div class="page-content">
+			<tabs :tab-items="tabs" :tab-index="tabIndex" :on-tab-click="onTabClick"></tabs>
+
+          <p>
+            Active Tab Index: {{ tabIndex }}
+          </p>
+
+          
+        </div>
 
 </script> <script type="text/x-template" id="my">
 <div class="page-content padding-top">
 	<p class="text-center">
-		<img style="border-radius:10%" src="http://thirdwx.qlogo.cn/mmopen/diay05TEREjAtJ54tEoKgluJFyp40fPSPfaUWibRyMrvXgfWoQkCwVWjxAwnBZKjQkibAJAq1ONtPjq5ncQwh4cibVmG9XW1957O/132" />
-</p>
-<p class="text-center">susd</p>
+		<img style="border-radius: 10%"
+			src="http://thirdwx.qlogo.cn/mmopen/diay05TEREjAtJ54tEoKgluJFyp40fPSPfaUWibRyMrvXgfWoQkCwVWjxAwnBZKjQkibAJAq1ONtPjq5ncQwh4cibVmG9XW1957O/132" />
+	</p>
+	<p class="text-center">susd</p>
+
+	<list> <item> 姓名 <span class="item-note"> 张三 </span> </item> <item>
+	手机号 <span class="item-note"> 13818696928 </span> </item> <item> 身份证 <span
+		class="item-note"> 350526199007235113 </span> </item> </list>
 </div>
 
 
@@ -50,7 +61,25 @@ var Index = {
           $tabbar.$emit('hideTabbar')
         }
       }
-      var Order = { template: '#order' }
+      var Order = { 
+		template: '#order'
+		,data:function(){
+			return {
+				tabs: [
+			        "待接单",
+			        "已接单",
+			        "已拒单"
+			      ],
+			      tabIndex:0
+			}
+		},
+		methods:{
+			onTabClick(index) {
+			      console.log(index)
+			      this.tabIndex = index
+			    }
+		}
+		}
       var My = { template: '#my' }
       // Routes
       var routes = [
