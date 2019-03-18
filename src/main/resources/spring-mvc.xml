@@ -36,9 +36,9 @@
 	<mvc:default-servlet-handler />
 
 	<!-- 配置freeMarker模板加载地址 -->
-	<bean id="freemarkerConfig"
-		class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
-		<!-- <bean id="freemarkerConfig" class="com.susd.infrastructure.ShiroTagFreeMarkerConfigurer"> -->
+	<!-- <bean id="freemarkerConfig"
+		class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer"> -->
+		<bean id="freemarkerConfig" class="cn.xhh.infrastructure.ShiroTagFreeMarkerConfigurer">
 		<!-- 视图解析器在/views/路径下扫描视图文件 -->
 		<property name="templateLoaderPaths">
 			<list>

@@ -154,7 +154,7 @@
 				/logon = anon
 				/ 	   = anon
 				/hello  = anon
-
+				/d/index =authc
 				<!-- 配置记住我或认证通过可以访问的地址 -->
 
 				<!-- /** = authc 所有url都必须认证通过才可以访问 -->

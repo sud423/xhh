@@ -1,32 +1,42 @@
 <#assign title> 鑫恒辉物流-驾驶员业务管理中心 </#assign>
+
+<#assign head>
+	<style type="text/css">
+	.tabs-top>.tabs{
+	top:0px;
+	}
+	</style>
+</#assign>
+
 <#assign contentBody> <script type="x-template" id="index">
       <div class="page" v-tabbar="{'menus': menus, menuColor: '#B5B5B5', activeMenuColor: '#44CC00', onMenuClick: menuClicked}">
         <router-view></router-view>
       </div>
-    </script> <script type="text/x-template" id="order">
-      
-        <div class="page-content">
-			<tabs :tab-items="tabs" :tab-index="tabIndex" :on-tab-click="onTabClick"></tabs>
+    </script> 
+<script type="text/x-template" id="order">
+<div class="page" v-tabbar-menu-index="0">
+	<tabs :tab-items="tabs" :tab-index="tabIndex" :on-tab-click="onTabClick" style="top:0px;"></tabs>
 
-          <p>
-            Active Tab Index: {{ tabIndex }}
-          </p>
-
+	<div class="page-content padding-top">
           
-        </div>
+	</div>
+
+</div>
 
 </script> <script type="text/x-template" id="my">
-<div class="page-content padding-top">
+
+<div class="page-content padding-top" v-tabbar-menu-index="1">
 	<p class="text-center">
 		<img style="border-radius: 10%"
-			src="http://thirdwx.qlogo.cn/mmopen/diay05TEREjAtJ54tEoKgluJFyp40fPSPfaUWibRyMrvXgfWoQkCwVWjxAwnBZKjQkibAJAq1ONtPjq5ncQwh4cibVmG9XW1957O/132" />
+			src="<@shiro.user><@shiro.principal property="headImg" /></@shiro.user>" />
 	</p>
-	<p class="text-center">susd</p>
+	<p class="text-center"><@shiro.user><@shiro.principal property="nickName" /></@shiro.user></p>
 
-	<list> <item> 姓名 <span class="item-note"> 张三 </span> </item> <item>
-	手机号 <span class="item-note"> 13818696928 </span> </item> <item> 身份证 <span
-		class="item-note"> 350526199007235113 </span> </item> </list>
+	<list> <item> 姓名 <span class="item-note"> <@shiro.user><@shiro.principal property="name" /></@shiro.user> </span> </item> <item>
+	手机号 <span class="item-note"> <@shiro.user><@shiro.principal property="cell" /></@shiro.user> </span> </item> <item> 身份证 <span
+		class="item-note"> <@shiro.user><@shiro.principal property="idNumber" /></@shiro.user> </span> </item> </list>
 </div>
+
 
 
 </script> </#assign>
