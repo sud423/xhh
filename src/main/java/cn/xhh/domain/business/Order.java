@@ -3,6 +3,7 @@ package cn.xhh.domain.business;
 import java.util.Date;
 
 import cn.xhh.domain.Entity;
+import cn.xhh.domain.identity.User;
 
 public class Order implements Entity<Order> {
 
@@ -30,6 +31,7 @@ public class Order implements Entity<Order> {
 	
 	private Date addTime;
 	
+	private User client;
 	
 	public int getId() {
 		return id;
@@ -148,6 +150,16 @@ public class Order implements Entity<Order> {
 
 	public void setAddTime(Date addTime) {
 		this.addTime = addTime;
+	}
+
+
+	public User getClient() {
+		return client;
+	}
+
+
+	public void setClient(User client) {
+		this.client = client;
 	}
 
 

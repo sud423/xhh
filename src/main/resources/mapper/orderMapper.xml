@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mapper namespace="cn.xhh.domain.business.OrderRepository">
+	<resultMap id="orderMap" type="cn.xhh.domain.business.Order">
+		<id column="id" property="id" />
+		<result column="goods" property="goods" />
+		<result column="num" property="num" />
+		<result column="weight" property="weight" />
+		<result column="addr" property="addr" />
+		<result column="remark" property="type" />
+		<association property="client"
+			javaType="cn.xhh.domain.identity.User" resultMap="clientMap" />
+	</resultMap>
+
+	<resultMap id="clientMap" type="cn.xhh.domain.identity.User">
+		<result column="name" property="name" />
+		<result column="cell" property="cell" />
+	</resultMap>
+	<select id="findOrderByDriver"
+		resultType="cn.xhh.domain.business.PriceSearchResult">
+		select o.id,o.goods,o.num,o.weight,o.addr,o.remark,u.`name`,u.cell
+		from `order` o
+		inner join `user` u on o.user_id=u.id
+		where o.driver_id=#{driverId} and o.tenant_id=#{tenantId} and o.`status`=#{status}
+		order by add_time asc
+	</select>
+</mapper>

@@ -5,6 +5,9 @@
 	.tabs-top>.tabs{
 	top:0px;
 	}
+	.tabbar{
+	overflow:hidden;
+	}
 	</style>
 </#assign>
 
@@ -18,7 +21,37 @@
 	<tabs :tab-items="tabs" :tab-index="tabIndex" :on-tab-click="onTabClick" style="top:0px;"></tabs>
 
 	<div class="page-content padding-top">
-          
+          <div class="weui-form-preview">
+            <div class="weui-form-preview__hd">
+                <!--<label class="weui-form-preview__label"></label>-->
+                <em class="weui-form-preview__value">揽件地址：上海市彭浦新村</em>
+            </div>
+            <div class="weui-form-preview__bd">
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">托寄物：</label>
+                    <span class="weui-form-preview__value">家具</span>
+                </div>
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">客户：</label>
+                    <span class="weui-form-preview__value">李四</span>
+                </div>
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">手机：</label>
+                    <span class="weui-form-preview__value">15259483686</span>
+                </div>
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">备注：</label>
+                    <span class="weui-form-preview__value">很长很长的名字</span>
+                </div>
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">总重量(kg):20 | 总件数:5</label>
+                </div>
+            </div>
+            <div class="weui-form-preview__ft">
+                <a class="weui-form-preview__btn weui-form-preview__btn_primary" href="javascript:">接单</a>
+				<a class="weui-form-preview__btn weui-form-preview__btn_default" href="javascript:">拒单</a>
+            </div>
+        </div>
 	</div>
 
 </div>
@@ -51,7 +84,7 @@ var Index = {
                 iconOn: 'icon ion-ios-paper',
                 iconOff: 'icon ion-ios-paper-outline',
                 text: '订单',
-                path: '/order'
+                path: '/'
               },
               {
                 iconOn: 'ion-ios-person',
@@ -97,7 +130,7 @@ var Index = {
           path: '/', 
           component: Index,
           children: [
-            { path: 'order', component: Order },
+            { path: '/', component: Order },
             { path: 'my', component: My }
           ]
         }
