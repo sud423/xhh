@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.xhh.application.OrderService;
+import cn.xhh.domain.business.OrderRepository;
 import cn.xhh.dto.OrderDriverDto;
+import cn.xhh.infrastructure.OptResult;
 
 @Controller
 @RequestMapping(value = "/d", method = RequestMethod.GET)
@@ -18,8 +20,11 @@ public class DriverController {
 	@Autowired
 	private OrderService orderService;
 	
+	@Autowired
+	private OrderRepository orderRepository;
+	
 	@RequestMapping(value = "/index", method = RequestMethod.GET)
-	private String index() {
+	public String index() {
 		return "driver/index";
 	}
 	
@@ -31,7 +36,12 @@ public class DriverController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/q", method = RequestMethod.POST)
-	private List<OrderDriverDto> findOrderByDriver(int status,int page){
+	public List<OrderDriverDto> findOrderByDriver(int status,int page){
 		return orderService.findOrderByDriver(status, page);
 	}
+	
+	public OptResult re() {
+		return OptResult.Successed();
+	}
+	
 }

@@ -1,50 +1,50 @@
 <#assign title> 鑫恒辉物流-驾驶员业务管理中心 </#assign>
 
 <#assign head>
-	<style type="text/css">
-	.tabs-top>.tabs{
-	top:0px;
-	}
-	.tabbar{
-	overflow:hidden;
-	}
-	</style>
+<style type="text/css">
+.tabs-top>.tabs {
+	top: 0px;
+}
+
+.tabbar {
+	overflow: hidden;
+}
+</style>
 </#assign>
 
 <#assign contentBody> <script type="x-template" id="index">
       <div class="page" v-tabbar="{'menus': menus, menuColor: '#B5B5B5', activeMenuColor: '#44CC00', onMenuClick: menuClicked}">
         <router-view></router-view>
       </div>
-    </script> 
-<script type="text/x-template" id="order">
+    </script> <script type="text/x-template" id="order">
 <div class="page" v-tabbar-menu-index="0">
-	<tabs :tab-items="tabs" :tab-index="tabIndex" :on-tab-click="onTabClick" style="top:0px;"></tabs>
+	<tabs :tab-items="tabs" :tab-index="q.status" :on-tab-click="onTabClick" style="top:0px;"></tabs>
 
-	<div class="page-content padding-top">
+	<div class="page-content padding-top" v-for="item in dataTable">
           <div class="weui-form-preview">
             <div class="weui-form-preview__hd">
                 <!--<label class="weui-form-preview__label"></label>-->
-                <em class="weui-form-preview__value">揽件地址：上海市彭浦新村</em>
+                <em class="weui-form-preview__value">揽件地址：{{item.addr}}</em>
             </div>
             <div class="weui-form-preview__bd">
                 <div class="weui-form-preview__item">
                     <label class="weui-form-preview__label">托寄物：</label>
-                    <span class="weui-form-preview__value">家具</span>
+                    <span class="weui-form-preview__value">{{item.goods}}</span>
                 </div>
                 <div class="weui-form-preview__item">
                     <label class="weui-form-preview__label">客户：</label>
-                    <span class="weui-form-preview__value">李四</span>
+                    <span class="weui-form-preview__value">{{item.name}}</span>
                 </div>
                 <div class="weui-form-preview__item">
                     <label class="weui-form-preview__label">手机：</label>
-                    <span class="weui-form-preview__value">15259483686</span>
+                    <span class="weui-form-preview__value">{{item.cell}}</span>
                 </div>
                 <div class="weui-form-preview__item">
                     <label class="weui-form-preview__label">备注：</label>
-                    <span class="weui-form-preview__value">很长很长的名字</span>
+                    <span class="weui-form-preview__value">{{item.remark}}</span>
                 </div>
                 <div class="weui-form-preview__item">
-                    <label class="weui-form-preview__label">总重量(kg):20 | 总件数:5</label>
+                    <label class="weui-form-preview__label">总重量(kg):{{item.weight}} | 总件数:{{item.num}}</label>
                 </div>
             </div>
             <div class="weui-form-preview__ft">
@@ -53,7 +53,11 @@
             </div>
         </div>
 	</div>
-
+	<div class="page-content padding-top" v-if="dataTable.length==0">
+		<div class="item item-divider text-center">
+      		暂无订单
+    	</div>
+	</div>
 </div>
 
 </script> <script type="text/x-template" id="my">
@@ -110,19 +114,35 @@ var Index = {
 			return {
 				tabs: [
 			        "待接单",
-			        "已接单",
-			        "已拒单"
+			        "已接单"//,
+			        //"已拒单"
 			      ],
-			      tabIndex:0
+			      q:{
+			    	  status:0,
+			    	  page:1
+			      },
+			      dataTable:[]
 			}
 		},
 		methods:{
-			onTabClick(index) {
-			      console.log(index)
-			      this.tabIndex = index
-			    }
+			onTabClick:function(index) {
+		      console.log(index)
+		      this.q.status = index,
+		      this.queryByStatus();
+		    },
+	        queryByStatus:function(){
+	        	var self=this;
+	        	axios.post(basePath+"/d/q",this.q).then(function(res){
+					self.dataTable=res.data;
+				}).catch(function(err){
+					console.log(err);
+				});
+	        }
+		},
+		mounted:function(){
+			this.queryByStatus();
 		}
-		}
+	}
       var My = { template: '#my' }
       // Routes
       var routes = [

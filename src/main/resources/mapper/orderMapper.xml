@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.xhh.domain.business.OrderRepository">
 	<resultMap id="orderMap" type="cn.xhh.domain.business.Order">
 		<id column="id" property="id" />
@@ -6,7 +7,7 @@
 		<result column="num" property="num" />
 		<result column="weight" property="weight" />
 		<result column="addr" property="addr" />
-		<result column="remark" property="type" />
+		<result column="remark" property="remark" />
 		<association property="client"
 			javaType="cn.xhh.domain.identity.User" resultMap="clientMap" />
 	</resultMap>
@@ -15,12 +16,18 @@
 		<result column="name" property="name" />
 		<result column="cell" property="cell" />
 	</resultMap>
-	<select id="findOrderByDriver"
-		resultType="cn.xhh.domain.business.PriceSearchResult">
+	<select id="findOrderByDriver" resultMap="orderMap">
 		select o.id,o.goods,o.num,o.weight,o.addr,o.remark,u.`name`,u.cell
 		from `order` o
 		inner join `user` u on o.user_id=u.id
 		where o.driver_id=#{driverId} and o.tenant_id=#{tenantId} and o.`status`=#{status}
-		order by add_time asc
+		order by o.add_time asc
 	</select>
+	<update id="receipt" parameterType="int">
+		update order set `status`=20 where id=#{orderId}
+	</update>
+	
+	<update id="refuseAccept" parameterType="int">
+		update order set `status`=60 where id=#{orderId}
+	</update>
 </mapper>

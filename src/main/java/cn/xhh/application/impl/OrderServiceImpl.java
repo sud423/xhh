@@ -24,12 +24,24 @@ public class OrderServiceImpl implements OrderService {
 	private OrderRepository orderRepository;
 
 	@Override
-	public List<OrderDriverDto> findOrderByDriver(int status,int page) {
+	public List<OrderDriverDto> findOrderByDriver(int status, int page) {
 		PageHelper.startPage(page, 10, true);
-		List<Order> orders = orderRepository.findOrderByDriver(SessionManager.getUserId(), SessionManager.getTenantId(),
-				status);
 
-		PropertyMap<Order, OrderDriverDto> orderMap = new PropertyMap<Order,OrderDriverDto>() {
+		int s = 10;
+
+		switch (status) {
+		case 0:
+			s = 10;
+			break;
+		case 1:
+			s = 20;
+			break;
+		}
+
+		List<Order> orders = orderRepository.findOrderByDriver(SessionManager.getUserId(), SessionManager.getTenantId(),
+				s);
+
+		PropertyMap<Order, OrderDriverDto> orderMap = new PropertyMap<Order, OrderDriverDto>() {
 			@Override
 			protected void configure() {
 				map().setName(source.getClient().getName());
@@ -39,7 +51,8 @@ public class OrderServiceImpl implements OrderService {
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.addMappings(orderMap);
 
-		List<OrderDriverDto> dtos = modelMapper.map(orders, new TypeToken<List<OrderDriverDto>>() {}.getType());
+		List<OrderDriverDto> dtos = modelMapper.map(orders, new TypeToken<List<OrderDriverDto>>() {
+		}.getType());
 		PageInfo<OrderDriverDto> pageInfo = new PageInfo<OrderDriverDto>(dtos);
 		return pageInfo.getList();
 	}
