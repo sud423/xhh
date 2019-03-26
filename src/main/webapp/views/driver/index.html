@@ -9,6 +9,14 @@
 .tabbar {
 	overflow: hidden;
 }
+.scroll-inner{
+	padding-bottom:50px;
+}
+.pull-to-refresh-layer{
+	height:50px;
+}
+
+
 </style>
 </#assign>
 
@@ -19,9 +27,9 @@
     </script> <script type="text/x-template" id="order">
 <div class="page" v-tabbar-menu-index="0">
 	<tabs :tab-items="tabs" :tab-index="q.status" :on-tab-click="onTabClick" style="top:0px;"></tabs>
-
-	<div class="page-content padding-top" v-for="item in dataTable">
-          <div class="weui-form-preview">
+	<scroll class="page-content" :on-refresh="onRefresh" :on-infinite="onInfinite">
+	<item v-for="(item, index) in dataTable" style="padding:0px;margin-top:10px;"> <!--:class="{'item-stable': index % 2 == 0}"-->
+        <div class="weui-form-preview">
             <div class="weui-form-preview__hd">
                 <!--<label class="weui-form-preview__label"></label>-->
                 <em class="weui-form-preview__value">揽件地址：{{item.addr}}</em>
@@ -47,17 +55,16 @@
                     <label class="weui-form-preview__label">总重量(kg):{{item.weight}} | 总件数:{{item.num}}</label>
                 </div>
             </div>
-            <div class="weui-form-preview__ft">
-                <a class="weui-form-preview__btn weui-form-preview__btn_primary" href="javascript:">接单</a>
-				<a class="weui-form-preview__btn weui-form-preview__btn_default" href="javascript:">拒单</a>
+            <div class="weui-form-preview__ft" v-if="q.status==0">
+                <a class="weui-form-preview__btn weui-form-preview__btn_primary" v-on:click="receipt(item.id)" href="javascript:">接单</a>
+				<a class="weui-form-preview__btn weui-form-preview__btn_default" v-on:click="refuse(item.id)" href="javascript:">拒单</a>
             </div>
         </div>
-	</div>
-	<div class="page-content padding-top" v-if="dataTable.length==0">
-		<div class="item item-divider text-center">
-      		暂无订单
-    	</div>
-	</div>
+    </item>
+	<div v-if="q.page >= pages && pages!=0" slot="infinite" class="text-center">没有更多数据</div>
+	<div v-if="pages==0" slot="infinite" class="item item-divider text-center">暂无订单</div>
+	
+    </scroll>
 </div>
 
 </script> <script type="text/x-template" id="my">
@@ -121,23 +128,102 @@ var Index = {
 			    	  status:0,
 			    	  page:1
 			      },
-			      dataTable:[]
+			      dataTable:[],
+			      pages:0
 			}
 		},
 		methods:{
 			onTabClick:function(index) {
-		      console.log(index)
-		      this.q.status = index,
-		      this.queryByStatus();
+				this.dataTable=[];
+				this.q={
+			    	  status:index,
+			    	  page:1
+			      };
+		      	this.queryByStatus();
 		    },
 	        queryByStatus:function(){
 	        	var self=this;
 	        	axios.post(basePath+"/d/q",this.q).then(function(res){
-					self.dataTable=res.data;
+	        		if (self.q.page === 1)
+	        			self.dataTable=res.data.data;
+                    else
+                    	self.dataTable = self.dataTable.concat(res.data.data);
+					
+					self.pages=res.data.totalPage;
 				}).catch(function(err){
 					console.log(err);
 				});
-	        }
+	        },
+	        receipt:function(id){
+	        	var self=this;
+	        	
+	        	let options = {
+	        	        effect: 'scale',
+	        	        title: '',
+	        	        buttons: [
+	        	          {text: '确定'},
+	        	          {text: '取消'},
+	        	        ]
+	        	      }
+
+	        	let popup = $popup.fromTemplate('<p style="margin-bottom: 0; text-align: center;">您确定要接单？</p>', options)
+
+	        	popup.show().then((buttonIndex) => {
+	        		if(buttonIndex==0){
+	        			axios.post(basePath+"/d/r",{orderId:id}).then(function(res){
+	    					self.queryByStatus();
+	    				}).catch(function(err){
+	    					console.log(err);
+	    				});
+	        		}
+	        	    console.log(buttonIndex)
+	        	});
+	        	
+	        	
+	        },
+	        refuse:function(id){
+	        	var self=this;
+	        	let options = {
+	        	        effect: 'scale',
+	        	        title: '',
+	        	        buttons: [
+	        	          {text: '确定'},
+	        	          {text: '取消'},
+	        	        ]
+	        	      }
+
+	        	let popup = $popup.fromTemplate('<p style="margin-bottom: 0; text-align: center;">您确定要拒单？</p>', options)
+
+	        	popup.show().then((buttonIndex) => {
+	        		if(buttonIndex==0){
+
+	    	        	axios.post(basePath+"/d/ra",{orderId:id}).then(function(res){
+	    					self.queryByStatus();
+	    				}).catch(function(err){
+	    					console.log(err);
+	    				});
+	        		}
+	        	    console.log(buttonIndex)
+	        	});
+	        },
+	        onRefresh:function(done){
+	        	var self=this;
+	        	setTimeout(() => {
+	                self.q.page=1;
+	                self.queryByStatus();
+	                done()
+	              }, 1500)
+	        },
+	        onInfinite:function(done) {
+	            setTimeout(() => {
+	              if (this.q.page < this.pages) {	                
+	            	  this.q.page++;
+	            	  this.queryByStatus();
+	              }
+
+	              done()
+	            }, 1500)
+	          }
 		},
 		mounted:function(){
 			this.queryByStatus();

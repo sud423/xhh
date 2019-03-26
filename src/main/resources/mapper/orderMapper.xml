@@ -24,10 +24,10 @@
 		order by o.add_time asc
 	</select>
 	<update id="receipt" parameterType="int">
-		update order set `status`=20 where id=#{orderId}
+		update `order` set `status`=20 where id=#{orderId}
 	</update>
 	
 	<update id="refuseAccept" parameterType="int">
-		update order set `status`=60 where id=#{orderId}
+		update `order` set `status`=60 where id=#{orderId}
 	</update>
 </mapper>

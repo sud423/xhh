@@ -16,6 +16,7 @@ import cn.xhh.domain.business.Order;
 import cn.xhh.domain.business.OrderRepository;
 import cn.xhh.domainservice.identity.SessionManager;
 import cn.xhh.dto.OrderDriverDto;
+import cn.xhh.infrastructure.ListResult;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -24,8 +25,8 @@ public class OrderServiceImpl implements OrderService {
 	private OrderRepository orderRepository;
 
 	@Override
-	public List<OrderDriverDto> findOrderByDriver(int status, int page) {
-		PageHelper.startPage(page, 10, true);
+	public ListResult<OrderDriverDto> findOrderByDriver(int status, int pageNum) {
+		
 
 		int s = 10;
 
@@ -40,7 +41,7 @@ public class OrderServiceImpl implements OrderService {
 
 		List<Order> orders = orderRepository.findOrderByDriver(SessionManager.getUserId(), SessionManager.getTenantId(),
 				s);
-
+		PageHelper.startPage(pageNum, 5, true);
 		PropertyMap<Order, OrderDriverDto> orderMap = new PropertyMap<Order, OrderDriverDto>() {
 			@Override
 			protected void configure() {
@@ -54,7 +55,7 @@ public class OrderServiceImpl implements OrderService {
 		List<OrderDriverDto> dtos = modelMapper.map(orders, new TypeToken<List<OrderDriverDto>>() {
 		}.getType());
 		PageInfo<OrderDriverDto> pageInfo = new PageInfo<OrderDriverDto>(dtos);
-		return pageInfo.getList();
+		return new ListResult<OrderDriverDto>(pageInfo);
 	}
 
 }
