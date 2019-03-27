@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.xhh.domain.identity.User;
 import cn.xhh.domain.identity.UserLogin;
+import cn.xhh.domainservice.identity.SessionManager;
 import cn.xhh.domainservice.identity.UserManager;
 import cn.xhh.infrastructure.OptResult;
 import cn.xhh.infrastructure.Utils;
@@ -58,7 +59,11 @@ public class AccountController {
 			SavedRequest savedReq=WebUtils.getSavedRequest(request);
 			
 			if(savedReq==null || savedReq.getRequestUrl()==null) {
-				result.setResult(request.getContextPath()+"/my");
+				
+				if(SessionManager.getUser().getType()==10)
+					result.setResult(request.getContextPath()+"/c/index");
+				else
+					result.setResult(request.getContextPath()+"/d/index");
 			}
 			else {
 				//返回上次请求的地址ַ

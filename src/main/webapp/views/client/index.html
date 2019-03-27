@@ -1,0 +1,271 @@
+<#assign title> 鑫恒辉物流-客户中心 </#assign>
+
+<#assign head>
+<style type="text/css">
+.tabs-top>.tabs {
+	top: 0px;
+}
+
+.tabbar {
+	overflow: hidden;
+}
+
+.scroll-inner {
+	padding-bottom: 50px;
+}
+
+.pull-to-refresh-layer {
+	height: 50px;
+}
+</style>
+</#assign>
+<#assign contentBody> <script type="x-template" id="index">
+      <div class="page" v-tabbar="{'menus': menus, menuColor: '#B5B5B5', activeMenuColor: '#44CC00', onMenuClick: menuClicked}">
+        <router-view></router-view>
+      </div>
+    </script> <script type="text/x-template" id="order">
+<div class="page" v-tabbar-menu-index="0">
+	<tabs :tab-items="tabs" :tab-index="q.status" :on-tab-click="onTabClick" style="top:0px;"></tabs>
+	<scroll class="page-content" :on-refresh="onRefresh" :on-infinite="onInfinite">
+	<item v-for="(item, index) in dataTable" style="padding:0px;margin-top:10px;"> <!--:class="{'item-stable': index % 2 == 0}"-->
+        <div class="weui-form-preview">
+            <div class="weui-form-preview__hd">
+                <!--<label class="weui-form-preview__label"></label>-->
+                <em class="weui-form-preview__value">揽件地址：{{item.addr}}</em>
+            </div>
+            <div class="weui-form-preview__bd">
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">托寄物：</label>
+                    <span class="weui-form-preview__value">{{item.goods}}</span>
+                </div>
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">客户：</label>
+                    <span class="weui-form-preview__value">{{item.name}}</span>
+                </div>
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">手机：</label>
+                    <span class="weui-form-preview__value">{{item.cell}}</span>
+                </div>
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">备注：</label>
+                    <span class="weui-form-preview__value">{{item.remark}}</span>
+                </div>
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">总重量(kg):{{item.weight}} | 总件数:{{item.num}}</label>
+                </div>
+            </div>
+            <div class="weui-form-preview__ft" v-if="q.status==0">
+                <a class="weui-form-preview__btn weui-form-preview__btn_primary" v-on:click="receipt(item.id)" href="javascript:">接单</a>
+				<a class="weui-form-preview__btn weui-form-preview__btn_default" v-on:click="refuse(item.id)" href="javascript:">拒单</a>
+            </div>
+        </div>
+    </item>
+	<div v-if="q.page >= pages && pages!=0" slot="infinite" class="text-center">没有更多数据</div>
+	<div v-if="pages==0" slot="infinite" class="item item-divider text-center">暂无订单</div>
+	
+    </scroll>
+	<div style="display:block;width:100%;text-align:center;position:fixed;bottom:70px;right:20px;">
+		<md-button class="button button-calm button-fab">
+    		<i class="icon ion-plus"></i>
+  		</md-button>
+	</div>
+</div>
+
+</script> <script type="text/x-template" id="bill">
+<div class="page" v-tabbar-menu-index="1">
+	<tabs :tab-items="tabs" :tab-index="tabIndex" :on-tab-click="onTabClick" style="top:0px;"></tabs>
+	
+</div>
+
+</script> <script type="text/x-template" id="my">
+
+<div class="page-content padding-top" v-tabbar-menu-index="2">
+	<p class="text-center">
+		<img style="border-radius: 10%"
+			src="<@shiro.user><@shiro.principal property="headImg" /></@shiro.user>" />
+	</p>
+	<p class="text-center"><@shiro.user><@shiro.principal property="nickName" /></@shiro.user></p>
+
+	<list> <item> 姓名 <span class="item-note"> <@shiro.user><@shiro.principal property="name" /></@shiro.user> </span> </item> <item>
+	手机号 <span class="item-note"> <@shiro.user><@shiro.principal property="cell" /></@shiro.user> </span> </item> <item> 身份证 <span
+		class="item-note"> <@shiro.user><@shiro.principal property="idNumber" /></@shiro.user> </span> </item> </list>
+</div>
+
+
+
+</script> </#assign>
+
+
+
+<#assign body> <script type="text/javascript">
+var Index = {
+        template: '#index',
+        data() {
+          return {
+            menus: [
+              {
+                iconOn: 'icon ion-ios-paper',
+                iconOff: 'icon ion-ios-paper-outline',
+                text: '订单',
+                path: '/'
+              },
+              {
+                  iconOn: 'ion-ios-calculator',
+                  iconOff: 'ion-ios-calculator-outline',
+                  text: '账单',
+                  path: '/bill'
+                },
+              {
+                iconOn: 'ion-ios-person',
+                iconOff: 'ion-ios-person-outline',
+                text: '我的',
+                path: '/my'
+              }
+            ]
+          }
+        },
+        methods: {
+          menuClicked(menuIndex) {
+            console.log(menuIndex)
+          }
+        },
+        beforeDestroy() {
+          $tabbar.$emit('hideTabbar')
+        }
+      }
+      var Order = { 
+		template: '#order'
+		,data:function(){
+			return {
+				tabs: [
+			        "待接单",
+			        "已接单"//,
+			        //"已拒单"
+			      ],
+			      q:{
+			    	  status:0,
+			    	  page:1
+			      },
+			      dataTable:[],
+			      pages:0
+			}
+		},
+		methods:{
+			onTabClick:function(index) {
+				this.dataTable=[];
+				this.q={
+			    	  status:index,
+			    	  page:1
+			      };
+		      	this.queryByStatus();
+		    },
+	        queryByStatus:function(){
+	        	var self=this;
+	        	axios.post(basePath+"/c/q",this.q).then(function(res){
+	        		if (self.q.page === 1)
+	        			self.dataTable=res.data.data;
+                    else
+                    	self.dataTable = self.dataTable.concat(res.data.data);
+					
+					self.pages=res.data.totalPage;
+				}).catch(function(err){
+					console.log(err);
+				});
+	        },
+	        onRefresh:function(done){
+	        	var self=this;
+	        	setTimeout(() => {
+	                self.q.page=1;
+	                self.queryByStatus();
+	                done()
+	              }, 1500)
+	        },
+	        onInfinite:function(done) {
+	            setTimeout(() => {
+	              if (this.q.page < this.pages) {	                
+	            	  this.q.page++;
+	            	  this.queryByStatus();
+	              }
+
+	              done()
+	            }, 1500)
+	          }
+		},
+		mounted:function(){
+			this.queryByStatus();
+		}
+	}
+var Bill = { 
+		template: '#bill',
+		data(){
+			return {
+				tabs: [
+			        "待付款",
+			        "已付款"//,
+			        //"已拒单"
+			      ],
+			      tabIndex:0
+			}
+		},
+		methods:{
+			onTabClick:function(index) {
+				
+		      	this.tabIndex=index;
+		    }
+		}
+		
+	}
+      var My = { template: '#my' }
+      // Routes
+      var routes = [
+        { 
+          path: '/', 
+          component: Index,
+          children: [
+            { path: '/', component: Order },
+            { path: 'bill', component: Bill },
+            { path: 'my', component: My }
+          ]
+        }
+      ]
+      // Start up
+      Vue.use(Vonic.app, {
+        routes: routes
+      })
+</script> </#assign>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<#include "/layout.html" encoding="utf-8">

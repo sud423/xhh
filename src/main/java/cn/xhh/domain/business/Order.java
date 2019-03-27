@@ -33,6 +33,10 @@ public class Order implements Entity<Order> {
 	
 	private User client;
 	
+	private User driver;
+	
+	private String carNumber;
+	
 	public int getId() {
 		return id;
 	}
@@ -160,6 +164,26 @@ public class Order implements Entity<Order> {
 
 	public void setClient(User client) {
 		this.client = client;
+	}
+
+
+	public User getDriver() {
+		return driver;
+	}
+
+
+	public void setDriver(User driver) {
+		this.driver = driver;
+	}
+
+
+	public String getCarNumber() {
+		return carNumber;
+	}
+
+
+	public void setCarNumber(String carNumber) {
+		this.carNumber = carNumber;
 	}
 
 

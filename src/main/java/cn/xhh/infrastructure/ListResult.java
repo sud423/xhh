@@ -7,15 +7,17 @@ import com.github.pagehelper.PageInfo;
 public class ListResult<T> {
 	private List<T> data;
 	private long totalPage;
-	
-	public ListResult() {}
-	
+
+	public ListResult() {
+	}
+
 	public ListResult(PageInfo<T> pageInfo) {
-		data=pageInfo.getList();
-		long total=pageInfo.getTotal();
-		int pageSize=pageInfo.getPageSize();
-		totalPage = (total + pageSize -1) / pageSize;
-		
+		data = pageInfo.getList();
+		long total = pageInfo.getTotal();
+		int pageSize = pageInfo.getPageSize();
+		if (pageSize > 0)
+			totalPage = (total + pageSize - 1) / pageSize;
+
 	}
 
 	public List<T> getData() {
@@ -33,6 +35,5 @@ public class ListResult<T> {
 	public void setTotalPage(long totalPage) {
 		this.totalPage = totalPage;
 	}
-	
-	
+
 }

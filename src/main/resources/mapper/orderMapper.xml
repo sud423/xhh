@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.xhh.domain.business.OrderRepository">
-	<resultMap id="orderMap" type="cn.xhh.domain.business.Order">
+	<resultMap id="orderClientMap" type="cn.xhh.domain.business.Order">
 		<id column="id" property="id" />
 		<result column="goods" property="goods" />
 		<result column="num" property="num" />
@@ -16,13 +16,42 @@
 		<result column="name" property="name" />
 		<result column="cell" property="cell" />
 	</resultMap>
-	<select id="findOrderByDriver" resultMap="orderMap">
+	
+	<resultMap id="orderDriverMap" type="cn.xhh.domain.business.Order">
+		<id column="id" property="id" />
+		<result column="goods" property="goods" />
+		<result column="num" property="num" />
+		<result column="weight" property="weight" />
+		<result column="addr" property="addr" />
+		<result column="remark" property="remark" />
+		<association property="driver"
+			javaType="cn.xhh.domain.identity.User" resultMap="driverMap" />
+	</resultMap>
+
+	<resultMap id="driverMap" type="cn.xhh.domain.identity.User">
+		<result column="name" property="name" />
+		<result column="cell" property="cell" />
+	</resultMap>
+	<select id="findOrderByDriver" resultMap="orderClientMap">
 		select o.id,o.goods,o.num,o.weight,o.addr,o.remark,u.`name`,u.cell
 		from `order` o
-		inner join `user` u on o.user_id=u.id
+		left join `user` u on o.user_id=u.id
 		where o.driver_id=#{driverId} and o.tenant_id=#{tenantId} and o.`status`=#{status}
 		order by o.add_time asc
 	</select>
+	
+	<select id="findOrderByClient" resultMap="orderDriverMap">
+		select o.id,o.goods,o.num,o.weight,o.addr,o.remark,u.`name`,u.cell,c.car_number
+		from `order` o
+		left join `user` u on o.driver_id=u.id 
+		left join car c on c.id=o.car_id 
+		where o.user_id=#{clientId} and o.tenant_id=#{tenantId} and o.`status` in
+	    <foreach item="item" index="index" collection="status" open="(" separator="," close=")">  
+	     #{item}  
+	    </foreach>  
+		order by o.add_time asc
+	</select>
+	
 	<update id="receipt" parameterType="int">
 		update `order` set `status`=20 where id=#{orderId}
 	</update>

@@ -1,5 +1,6 @@
 package cn.xhh.application.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
@@ -15,6 +16,7 @@ import cn.xhh.application.OrderService;
 import cn.xhh.domain.business.Order;
 import cn.xhh.domain.business.OrderRepository;
 import cn.xhh.domainservice.identity.SessionManager;
+import cn.xhh.dto.OrderClientDto;
 import cn.xhh.dto.OrderDriverDto;
 import cn.xhh.infrastructure.ListResult;
 
@@ -58,4 +60,39 @@ public class OrderServiceImpl implements OrderService {
 		return new ListResult<OrderDriverDto>(pageInfo);
 	}
 
+	@Override
+	public ListResult<OrderClientDto> findOrderByClient(int status, int pageNum) {
+		PageHelper.startPage(pageNum, 5, true);
+		ArrayList<Integer> s=new ArrayList<Integer>();
+
+		switch (status) {
+		case 0:
+			s.add(1);
+			s.add(10);
+			s.add(21);
+			break;
+		case 1:
+			s.add(20);
+			s.add(30);
+			break;
+		}
+
+		List<Order> orders = orderRepository.findOrderByClient(SessionManager.getUserId(), SessionManager.getTenantId(),s);
+		PropertyMap<Order, OrderClientDto> orderMap = new PropertyMap<Order, OrderClientDto>() {
+			@Override
+			protected void configure() {
+				map().setName(source.getDriver().getName());
+				map().setCell(source.getDriver().getCell());
+			}
+		};
+		ModelMapper modelMapper = new ModelMapper();
+		modelMapper.addMappings(orderMap);
+
+		List<OrderClientDto> dtos = modelMapper.map(orders, new TypeToken<List<OrderClientDto>>() {
+		}.getType());
+		PageInfo<OrderClientDto> pageInfo = new PageInfo<OrderClientDto>(dtos);
+		return new ListResult<OrderClientDto>(pageInfo);
+	}
+
+	
 }
