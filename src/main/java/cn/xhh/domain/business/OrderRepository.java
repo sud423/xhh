@@ -32,4 +32,10 @@ public interface OrderRepository {
 	 */
 	public List<Order> findOrderByClient(@Param("clientId")int clientId,@Param("tenantId") int tenantId,@Param("status") ArrayList<Integer> status);
 	
+	/**
+	 * 创建订单
+	 * @param order
+	 * @return
+	 */
+	public int add(Order order);
 }

@@ -23,6 +23,7 @@
 		<result column="num" property="num" />
 		<result column="weight" property="weight" />
 		<result column="addr" property="addr" />
+		<result column="car_number" property="carNumber" />
 		<result column="remark" property="remark" />
 		<association property="driver"
 			javaType="cn.xhh.domain.identity.User" resultMap="driverMap" />
@@ -59,4 +60,16 @@
 	<update id="refuseAccept" parameterType="int">
 		update `order` set `status`=60 where id=#{orderId}
 	</update>
+	
+	<insert id="add" parameterType="cn.xhh.domain.business.Order"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into `order`
+		(tenant_id,user_id,type,goods,num,weight,
+		addr,price,remark,`status`,add_time,version)
+		values
+		(#{tenantId},#{userId},1,#{goods},#{num},#{weight},
+		#{addr},0,
+		#{remark},1,#{addTime},1)
+	</insert>
+	
 </mapper>

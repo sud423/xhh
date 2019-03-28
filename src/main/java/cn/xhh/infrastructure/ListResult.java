@@ -19,7 +19,8 @@ public class ListResult<T> {
 			totalPage = (total + pageSize - 1) / pageSize;
 
 	}
-
+	
+	
 	public List<T> getData() {
 		return data;
 	}

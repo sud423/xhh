@@ -14,7 +14,7 @@
 	var login = {
 		template : '#login',
 		methods:{
-			onSigup:function(){
+			onSigup:function(){//20190313007171672081552481562992
 				axios.post(basePath+"/sigup",{openId:'20190313007171672081552481562992'}).then(function(res){
 					window.location.href=res.data.result;
 				}).catch(function(err){

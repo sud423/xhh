@@ -17,6 +17,7 @@
 .pull-to-refresh-layer {
 	height: 50px;
 }
+
 </style>
 </#assign>
 <#assign contentBody> <script type="x-template" id="index">
@@ -38,14 +39,14 @@
                     <label class="weui-form-preview__label">托寄物：</label>
                     <span class="weui-form-preview__value">{{item.goods}}</span>
                 </div>
-                <div class="weui-form-preview__item">
+                <!--<div class="weui-form-preview__item">
                     <label class="weui-form-preview__label">客户：</label>
                     <span class="weui-form-preview__value">{{item.name}}</span>
                 </div>
                 <div class="weui-form-preview__item">
                     <label class="weui-form-preview__label">手机：</label>
                     <span class="weui-form-preview__value">{{item.cell}}</span>
-                </div>
+                </div>-->
                 <div class="weui-form-preview__item">
                     <label class="weui-form-preview__label">备注：</label>
                     <span class="weui-form-preview__value">{{item.remark}}</span>
@@ -53,18 +54,21 @@
                 <div class="weui-form-preview__item">
                     <label class="weui-form-preview__label">总重量(kg):{{item.weight}} | 总件数:{{item.num}}</label>
                 </div>
+                <div v-if="q.status==1" class="weui-form-preview__item">
+					<h3 style="font-weight: 400;font-size: 15px;margin-top: .34em;">驾驶员信息</>
+				</div>
+                <div v-if="q.status==1" class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">{{item.name}} | {{item.carNumber}} | {{item.cell}}</label>
+                </div>
             </div>
-            <div class="weui-form-preview__ft" v-if="q.status==0">
-                <a class="weui-form-preview__btn weui-form-preview__btn_primary" v-on:click="receipt(item.id)" href="javascript:">接单</a>
-				<a class="weui-form-preview__btn weui-form-preview__btn_default" v-on:click="refuse(item.id)" href="javascript:">拒单</a>
-            </div>
+            
         </div>
     </item>
 	<div v-if="q.page >= pages && pages!=0" slot="infinite" class="text-center">没有更多数据</div>
 	<div v-if="pages==0" slot="infinite" class="item item-divider text-center">暂无订单</div>
 	
     </scroll>
-	<div style="display:block;width:100%;text-align:center;position:fixed;bottom:70px;right:20px;">
+	<div style="display:block;text-align:right;position:fixed;bottom:70px;right:20px;" v-on:click="showModal()">
 		<md-button class="button button-calm button-fab">
     		<i class="icon ion-plus"></i>
   		</md-button>
@@ -93,11 +97,91 @@
 
 
 
-</script> </#assign>
+</script> 
+<script type="text/x-template" id="modal">
+<div class="page-content padding padding-top">
+    <von-input type="text" v-model="order.addr" placeholder="揽件地址" label="揽件地址"></von-input>
+	<von-input type="text" v-model="order.goods" placeholder="托寄物"
+		label="托寄物"></von-input>
+	<von-input type="text" v-model="order.num" placeholder="总件数"
+		label="总件数"></von-input>
+	<von-input type="text" v-model="order.weight" placeholder="总重量"
+		label="总重量"></von-input>
+	
+	<div class="item item-divider">备注</div>
+	<textarea v-model="order.remark" rows="3" class="weui-textarea" />
+	<div class="padding">
+        <div class="button button-positive button-block" @click="onCreate()">提交</div>
+    </div>
+  </div>
+</script>
+</#assign>
 
 
 
 <#assign body> <script type="text/javascript">
+
+var Modal = { template: '#modal',
+	data(){
+		return {
+		  order:{
+			addr:'',
+			goods:'',
+			num:'',
+			weight:'',
+			remark:''
+		  }
+		}
+	},
+	methods:{
+		onCreate:function(){
+			$modal.destroy();
+			if(!this.order.addr){
+				 $toast.show('请输入揽件地址')
+				return;
+			}
+			if(!this.order.goods){
+				 $toast.show('请输入托寄物')
+				return;
+			}
+			if(!this.order.num){
+				 $toast.show('请输入件数')
+				return;
+			}
+			var re = /^(\d+)(\.\d+)?$/;
+		      
+			if(!re.test(this.order.num)){
+				 $toast.show('请输入有效的件数')
+				return;
+			}
+			if(!this.order.weight){
+				 $toast.show('请输入总重量')
+				return;
+			}
+			if(!re.test(this.order.weight)){
+				 $toast.show('请输入有效的重量')
+					return;
+				}
+			var self=this;
+			axios.post(basePath+"/c/s",this.order).then(function(res){
+				if(res.data.code==0){
+					$toast.show('提交成功，请耐心等待取件');
+					self.order={
+						addr:'',
+						goods:'',
+						num:'',
+						weight:'',
+						remark:''
+					  };
+				}else{
+					$toast.show(res.data.result)
+				}
+			}).catch(function(err){
+				console.log(err);
+			});
+		}
+	}
+}
 var Index = {
         template: '#index',
         data() {
@@ -147,7 +231,8 @@ var Index = {
 			    	  page:1
 			      },
 			      dataTable:[],
-			      pages:0
+			      pages:0,
+			      modal: undefined
 			}
 		},
 		methods:{
@@ -189,11 +274,29 @@ var Index = {
 
 	              done()
 	            }, 1500)
-	          }
+	          },
+	          showModal:function() {
+	              this.modal.show()
+	            }
 		},
 		mounted:function(){
 			this.queryByStatus();
-		}
+			var self=this;
+			$modal.fromComponent(Modal, {
+		        title: '创建订单',
+		        theme: 'default',
+		        onHide:function(){
+		        	self.queryByStatus();
+		        }
+		      }).then((modal) => {
+		        this.modal = modal
+		      })
+		},
+
+	    destroyed() {
+	      if (this.modal)
+	        $modal.destroy(this.modal)
+	    }
 	}
 var Bill = { 
 		template: '#bill',
