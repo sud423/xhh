@@ -17,7 +17,6 @@
 .pull-to-refresh-layer {
 	height: 50px;
 }
-
 </style>
 </#assign>
 <#assign contentBody> <script type="x-template" id="index">
@@ -78,10 +77,46 @@
 </script> <script type="text/x-template" id="bill">
 <div class="page" v-tabbar-menu-index="1">
 	<tabs :tab-items="tabs" :tab-index="tabIndex" :on-tab-click="onTabClick" style="top:0px;"></tabs>
+	<scroll class="page-content" :on-refresh="onRefresh" :on-infinite="onInfinite">
+	<item v-for="(item, index) in tableData" style="margin-top:10px;" @click.native="showModal()"  class="item-icon-right"> <!--:class="{'item-stable': index % 2 == 0}"-->
+                            账期：{{item.period}}
+		<span class="item-note">{{item.price}}(元)</span>
+            <i class="icon ion-ios-arrow-right" style="color: #DDD;"></i>
+    </item>
+	<div v-if="q.page >= totalPage && totalPage!=0" slot="infinite" class="text-center">没有更多数据</div>
+	<div v-if="totalPage==0" slot="infinite" class="item item-divider text-center">暂无账单</div>
 	
+    </scroll>
 </div>
 
-</script> <script type="text/x-template" id="my">
+
+</script>
+<script type="text/x-template" id="bill_modal">
+<div class="page-content padding padding-top">
+    <div class="weui-form-preview">
+            <div class="weui-form-preview__bd">
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">圆通</label>
+                    <span class="weui-form-preview__value">[2001932]</span>
+                </div>
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">目的地：</label>
+                    <span class="weui-form-preview__value">fdksff</span>
+                </div>
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">总体积(m³):0.98 | 总重量(kg):3 | 总件数:3</label>
+                </div>
+            </div>
+            
+            <div class="weui-form-preview__hd" style="padding: 0px 15px 10px;text-align:right;">
+                <!--<label class="weui-form-preview__label"></label>-->
+                <em class="weui-form-preview__value">运费总计(元)：200</em>
+            </div>
+        </div>
+</div>
+
+</script>
+ <script type="text/x-template" id="my">
 
 <div class="page-content padding-top" v-tabbar-menu-index="2">
 	<p class="text-center">
@@ -97,8 +132,7 @@
 
 
 
-</script> 
-<script type="text/x-template" id="modal">
+</script> <script type="text/x-template" id="modal">
 <div class="page-content padding padding-top">
     <von-input type="text" v-model="order.addr" placeholder="揽件地址" label="揽件地址"></von-input>
 	<von-input type="text" v-model="order.goods" placeholder="托寄物"
@@ -114,8 +148,7 @@
         <div class="button button-positive button-block" @click="onCreate()">提交</div>
     </div>
   </div>
-</script>
-</#assign>
+</script> </#assign>
 
 
 
@@ -181,6 +214,10 @@ var Modal = { template: '#modal',
 			});
 		}
 	}
+}
+
+var BillModal={
+		template:"#bill_modal"
 }
 var Index = {
         template: '#index',
@@ -307,15 +344,78 @@ var Bill = {
 			        "已付款"//,
 			        //"已拒单"
 			      ],
-			      tabIndex:0
+			      tabIndex:0,
+			      q:{
+			    	  status:10,
+			    	  page:1
+			      },
+			      tableData:[],
+			      totalPage:0,
+			      modal: undefined
 			}
 		},
 		methods:{
 			onTabClick:function(index) {
-				
+				this.q={
+			    	  status:(index+1)*10,
+			    	  page:1
+			      };
+				this.getBills();
 		      	this.tabIndex=index;
-		    }
-		}
+		    },
+		    getBills:function(){
+		    	var self=this;
+	        	axios.post(basePath+"/c/b",this.q).then(function(res){
+	        		if (self.q.page === 1)
+	        			self.tableData=res.data.data;
+                    else
+                    	self.tableData = self.dataTable.concat(res.data.data);
+					
+					self.totalPage=res.data.totalPage;
+				}).catch(function(err){
+					console.log(err);
+				});
+		    },
+	        onRefresh:function(done){
+	        	var self=this;
+	        	setTimeout(() => {
+	                self.q.page=1;
+	                self.getBills();
+	                done()
+	              }, 1500)
+	        },
+	        onInfinite:function(done) {
+	            setTimeout(() => {
+	              if (this.q.page < this.totalPage) {	                
+	            	  this.q.page++;
+	            	  this.getBills();
+	              }
+
+	              done()
+	            }, 1500)
+	          },
+	          showModal:function() {
+	              this.modal.show()
+	            }
+		},
+		mounted:function(){
+			this.getBills();
+			var self=this;
+			$modal.fromComponent(BillModal, {
+		        title: '账单支付',
+		        theme: 'default',
+		        onHide:function(){
+		        	self.getBills();
+		        }
+		      }).then((modal) => {
+		        this.modal = modal
+		      })
+		},
+
+	    destroyed() {
+	      if (this.modal)
+	        $modal.destroy(this.modal)
+	    }
 		
 	}
       var My = { template: '#my' }

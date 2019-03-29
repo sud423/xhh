@@ -6,8 +6,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import cn.xhh.application.BillService;
 import cn.xhh.application.OrderService;
 import cn.xhh.domain.business.Order;
+import cn.xhh.dto.BillDto;
 import cn.xhh.dto.OrderClientDto;
 import cn.xhh.infrastructure.ListResult;
 import cn.xhh.infrastructure.OptResult;
@@ -17,6 +19,8 @@ import cn.xhh.infrastructure.OptResult;
 public class ClientController {
 	@Autowired
 	private OrderService orderService;
+	@Autowired
+	private BillService billService;
 	
 	@RequestMapping(value = "/index", method = RequestMethod.GET)
 	public String index() {
@@ -38,5 +42,12 @@ public class ClientController {
 	@RequestMapping(value = "/s", method = RequestMethod.POST)
 	public OptResult createOrder(Order order) {
 		return orderService.save(order);
+	}
+	
+
+	@ResponseBody
+	@RequestMapping(value = "/b", method = RequestMethod.POST)
+	public ListResult<BillDto> queryByStatus(int status,int page){
+		return billService.queryBillByStatus(page, status);
 	}
 }
