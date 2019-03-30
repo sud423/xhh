@@ -41,6 +41,10 @@
 		methods:{
 			onRegister:function(){
 				axios.post(basePath+"/uc/save",this.reg).then(function(res){
+					if(res.data.code==0)
+						window.location.href=res.data.result;
+					else
+						$toast.show(res.data.result);
 					console.log(res);
 				}).catch(function(err){
 					console.log(err);

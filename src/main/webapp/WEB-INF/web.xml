@@ -4,8 +4,8 @@
 	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
 	id="WebApp_xhh" version="4.0">
 
-  <display-name>xhh</display-name>
-  <welcome-file-list>
+	<display-name>xhh</display-name>
+	<welcome-file-list>
 		<welcome-file>/</welcome-file>
 	</welcome-file-list>
 
@@ -18,7 +18,7 @@
 		<param-name>contextConfigLocation</param-name>
 		<param-value>classpath:applicationContext.xml</param-value>
 	</context-param>
-	
+
 	<!-- shiro的filter -->
 	<filter>
 		<filter-name>shiroFilter</filter-name>
@@ -61,4 +61,17 @@
 		<servlet-name>default</servlet-name>
 		<url-pattern>*.js</url-pattern>
 	</servlet-mapping>
+
+	<filter>
+		<filter-name>characterEncoding</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>characterEncoding</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
 </web-app>
