@@ -78,7 +78,7 @@
 <div class="page" v-tabbar-menu-index="1">
 	<tabs :tab-items="tabs" :tab-index="tabIndex" :on-tab-click="onTabClick" style="top:0px;"></tabs>
 	<scroll class="page-content" :on-refresh="onRefresh" :on-infinite="onInfinite">
-	<item v-for="(item, index) in tableData" style="margin-top:10px;" @click.native="showModal()"  class="item-icon-right"> <!--:class="{'item-stable': index % 2 == 0}"-->
+	<item v-for="(item, index) in tableData" style="margin-top:10px;" @click.native="showModal(item)"  class="item-icon-right"> <!--:class="{'item-stable': index % 2 == 0}"-->
                             账期：{{item.period}}
 		<span class="item-note">{{item.price}}(元)</span>
             <i class="icon ion-ios-arrow-right" style="color: #DDD;"></i>
@@ -92,27 +92,36 @@
 
 </script>
 <script type="text/x-template" id="bill_modal">
-<div class="page-content padding padding-top">
-    <div class="weui-form-preview">
-            <div class="weui-form-preview__bd">
-                <div class="weui-form-preview__item">
-                    <label class="weui-form-preview__label">圆通</label>
-                    <span class="weui-form-preview__value">[2001932]</span>
-                </div>
-                <div class="weui-form-preview__item">
-                    <label class="weui-form-preview__label">目的地：</label>
-                    <span class="weui-form-preview__value">fdksff</span>
-                </div>
-                <div class="weui-form-preview__item">
-                    <label class="weui-form-preview__label">总体积(m³):0.98 | 总重量(kg):3 | 总件数:3</label>
-                </div>
+<div class="page-content padding-top">
+    <div class="weui-form-preview" v-for="(item,index) in billDetail.items" style="margin-bottom:5px;">
+        <div class="weui-form-preview__bd">
+             <div class="weui-form-preview__item">
+                  <label class="weui-form-preview__label">{{item.express}}：</label>
+                  <span class="weui-form-preview__value">{{item.expressNo}}</span>
+             </div>
+             <div class="weui-form-preview__item">
+                  <label class="weui-form-preview__label">目的地：</label>
+                  <span class="weui-form-preview__value">{{item.addr}}</span>
+             </div>
+             <div class="weui-form-preview__item">
+                  <label class="weui-form-preview__label">总体积(m³):{{item.volume}} | 总重量(kg):{{item.actualWeight}} | 总件数:{{item.count}}</label>
             </div>
+       </div>
             
-            <div class="weui-form-preview__hd" style="padding: 0px 15px 10px;text-align:right;">
-                <!--<label class="weui-form-preview__label"></label>-->
-                <em class="weui-form-preview__value">运费总计(元)：200</em>
-            </div>
-        </div>
+       <div class="weui-form-preview__hd" style="padding: 0px 15px 10px;text-align:right;">
+            <!--<label class="weui-form-preview__label"></label>-->
+            <em class="weui-form-preview__value">运费总计(元)：{{item.price}}</em>
+       </div>
+   </div>
+   <div class="weui-form-preview" style="bottom:0px; position:fixed;width:100%;" v-if="!isPay">
+            
+       <div class="weui-form-preview__hd" style="text-align:right;">
+            <em class="weui-form-preview__value">合计：<span style="color:red;">¥{{billDetail.price}}</span></em>
+			<md-button class="button button-light" @click.native="pay()">
+    		立即支付
+  			</md-button>
+       </div>
+   </div>
 </div>
 
 </script>
@@ -153,7 +162,8 @@
 
 
 <#assign body> <script type="text/javascript">
-
+var billId=0;
+var isPay=false;
 var Modal = { template: '#modal',
 	data(){
 		return {
@@ -216,9 +226,6 @@ var Modal = { template: '#modal',
 	}
 }
 
-var BillModal={
-		template:"#bill_modal"
-}
 var Index = {
         template: '#index',
         data() {
@@ -352,6 +359,7 @@ var Bill = {
 			      tableData:[],
 			      totalPage:0,
 			      modal: undefined
+			      
 			}
 		},
 		methods:{
@@ -394,22 +402,27 @@ var Bill = {
 	              done()
 	            }, 1500)
 	          },
-	          showModal:function() {
-	              this.modal.show()
-	            }
+	          showModal:function(item) {
+	        	  billId=item.id;
+	        	  isPay=this.q.status==20;
+	        		  var self=this;
+      				$modal.fromComponent(BillModal, {
+	      		        title: '账单支付',
+	      		        theme: 'default',
+	      		        onHide:function(){
+	      		        	self.getBills();
+	      		        }
+	      		      }).then((modal) => {
+	      		        this.modal = modal;
+
+		        		  this.modal.show();
+	      		      })
+	        	  
+	          }
 		},
 		mounted:function(){
 			this.getBills();
-			var self=this;
-			$modal.fromComponent(BillModal, {
-		        title: '账单支付',
-		        theme: 'default',
-		        onHide:function(){
-		        	self.getBills();
-		        }
-		      }).then((modal) => {
-		        this.modal = modal
-		      })
+			
 		},
 
 	    destroyed() {
@@ -418,6 +431,44 @@ var Bill = {
 	    }
 		
 	}
+
+	var BillModal={
+		template:"#bill_modal",
+		data:function(){
+			return {
+				billDetail:{
+					id:0,
+					items:[],
+					price:0
+				},
+				isPay:isPay
+			}
+		},
+		methods:{
+			pay:function(effect){
+				$dialog.alert({
+			          content: '弹出支付码',
+			          okTheme: 'positive',
+			          effect: effect || 'default'
+			        }).then(() => {
+			          console.log('alert hide.')
+			        })
+			},
+	          getItems:function(){
+					var self=this;
+		        	axios.post(basePath+"/c/i",{billId:billId}).then(function(res){
+		        		self.billDetail=res.data;
+					}).catch(function(err){
+						console.log(err);
+					});
+			  }
+		},
+		mounted:function(){
+			this.getItems();
+
+		}
+	}
+	
       var My = { template: '#my' }
       // Routes
       var routes = [

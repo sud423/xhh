@@ -50,4 +50,10 @@ public class ClientController {
 	public ListResult<BillDto> queryByStatus(int status,int page){
 		return billService.queryBillByStatus(page, status);
 	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/i", method = RequestMethod.POST)
+	public BillDto getBillItem(int billId) {
+		return billService.queryBillItem(billId);
+	}
 }
