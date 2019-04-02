@@ -1,5 +1,6 @@
 package cn.xhh.infrastructure.wechat;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,6 +8,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 
 import cn.xhh.infrastructure.Utils;
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
 
 public class WxToken {
 
@@ -86,26 +90,67 @@ public class WxToken {
 		String result = WxClient.get(url, params);
 
 		JSONObject jsonObj = JSONObject.parseObject(result);
-		WxToken token = (WxToken) JSONObject.toJavaObject(jsonObj, WxToken.class);
+		WxToken token = JSONObject.toJavaObject(jsonObj, WxToken.class);
 
 		// 微信回传的数据为Json格式，将Json格式转化成对象
-		if (token == null || token.getOpenId() == null ||  token.getOpenId()=="" || token.getExpiresIn() == 0)
+		if (token == null || token.getOpenId() == null || token.getOpenId() == "" || token.getExpiresIn() == 0)
 			throw new Exception("获取微信认证失败,result：" + result + ",openId：" + token.getOpenId() + ",expiresIn："
 					+ token.getExpiresIn());
 
 		return token;
 
 	}
-	
+
 	/**
-	 *        获取access_token
-	 * access_token是公众号的全局唯一接口调用凭据，公众号调用各接口时都需使用access_token
+	 * 获取access_token access_token是公众号的全局唯一接口调用凭据，公众号调用各接口时都需使用access_token
 	 * access_token的有效期目前为2个小时
+	 * 
 	 * @return
 	 */
 	public static WxToken getAuthToken() {
+
+		// 1. 创建缓存管理器
+		CacheManager cacheManager = CacheManager.create("./src/main/resources/ehcache.xml");
+		// 2. 获取缓存对象
+		Cache cache = cacheManager.getCache("wxAccessTokenCache");
+		// 5. 获取缓存
+		Element element = cache.get("wx_auth_token");
+		String result;
+		if (element == null) {
+			String url = "https://api.weixin.qq.com/cgi-bin/token";
+			String appId = Utils.getValueByKey("wechat.properties", "app_id");
+			String appsecret = Utils.getValueByKey("wechat.properties", "appsecret");
+			Map<String, Object> params = new HashMap<String, Object>();
+			params.put("grant_type", "client_credential");
+			params.put("appId", appId);
+			params.put("secret", appsecret);
+			result = WxClient.get(url, params);
+
+			element = new Element("wx_auth_token", result);
+			// 4. 将元素添加到缓存
+			cache.put(element);
+		}
+		// 获取缓存 值
+		result = element.getObjectValue().toString();
+		JSONObject jsonObj = JSONObject.parseObject(result);
+		WxToken token = JSONObject.toJavaObject(jsonObj, WxToken.class);
+		return token;
+	}
+
+	public static void main(String[] args) {
+		// 1. 创建缓存管理器
+		CacheManager cacheManager = CacheManager.create("./src/main/resources/ehcache.xml");
+		// 2. 获取缓存对象
+		Cache cache = cacheManager.getCache("wxAccessTokenCache");
+		// 3. 创建元素
+		Element element = new Element("key1", "value1");
+		// 4. 将元素添加到缓存
+		cache.put(element);
+		// 5. 获取缓存
+		Element value = cache.get("key1");
+		System.out.println(value);
+		System.out.println(value.getObjectValue());
 		
-		
-		return null;
+		System.out.println(new Date().getTime()/1000);
 	}
 }
