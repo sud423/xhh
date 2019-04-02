@@ -20,7 +20,7 @@
 	<!-- 凭证匹配器 --><!-- 数据库保存的密码是使用MD5算法加密的，所以这里需要配置一个密码匹配对象 -->
 	<bean id="credentialsMatcher"
 		class="cn.xhh.domainservice.identity.RetryLimitCredentialsMatcher">
-		<constructor-arg index="0" ref="cacheManager" />
+		<constructor-arg index="0" ref="shiroCacheManager" />
 		<constructor-arg index="1" value="passwordRetryCache" />
 		<property name="maxRetryCount" value="5" /><!-- 默认是5 -->
 		<property name="hashAlgorithmName" value="md5" />
@@ -46,13 +46,7 @@
 		inner join sys_resource s on s.id=rr.resource_id where r.`name` = ?"></property> 
 		</bean> -->
 
-	<!-- 缓存管理器 -->
-	<bean id="cacheManager"
-		class="org.apache.shiro.cache.ehcache.EhCacheManager">
-		<property name="cacheManagerConfigFile"
-			value="classpath:shiro-ehcache.xml" />
-	</bean>
-
+	
 	<!-- sessionIdCookie的实现,用于重写覆盖容器默认的JSESSIONID -->
 	<bean id="sharesession"
 		class="org.apache.shiro.web.servlet.SimpleCookie">
@@ -101,7 +95,7 @@
 		class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
 		<property name="realm" ref="userRealm" />
 		<!-- 注入缓存管理器 -->
-		<property name="cacheManager" ref="cacheManager" />
+		<property name="cacheManager" ref="shiroCacheManager" />
 		<!-- 注入session管理器 -->
 		<property name="sessionManager" ref="sessionManager" />
 		<!-- 记住我 -->

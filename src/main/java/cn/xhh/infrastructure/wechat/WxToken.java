@@ -66,9 +66,10 @@ public class WxToken {
 	}
 
 	/// <summary>
+	/// 微信网页授权
 	/// 根据appid，secret，code获取微信openid、access token信息
 	/// </summary>
-	/// <param name="code"></param>
+	/// <param name="code">微信确认授权登录返回的code</param>
 	/// <returns></returns>
 	public static WxToken getAuthToken(String code) throws Exception {
 		String appId = Utils.getValueByKey("wechat.properties", "app_id");
@@ -96,7 +97,12 @@ public class WxToken {
 
 	}
 	
-	
+	/**
+	 *        获取access_token
+	 * access_token是公众号的全局唯一接口调用凭据，公众号调用各接口时都需使用access_token
+	 * access_token的有效期目前为2个小时
+	 * @return
+	 */
 	public static WxToken getAuthToken() {
 		
 		
