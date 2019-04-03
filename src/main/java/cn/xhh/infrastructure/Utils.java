@@ -67,9 +67,9 @@ public class Utils {
         String value = null;
         try {
             // 通过输入缓冲流进行读取配置文件
-            InputStream InputStream = new BufferedInputStream(new FileInputStream(new File("src/main/resources/"+filePath)));
+            InputStream inputStream = new BufferedInputStream(new FileInputStream(new File("src/main/resources/"+filePath)));
             // 加载输入流
-            prop.load(InputStream);
+            prop.load(inputStream);
             // 根据关键字获取value值
             value = prop.getProperty(key);
         } catch (Exception e) {

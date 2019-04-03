@@ -9,10 +9,8 @@ import java.util.UUID;
 
 import com.alibaba.fastjson.JSONObject;
 
+import cn.xhh.infrastructure.EhcacheManager;
 import cn.xhh.infrastructure.Utils;
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Element;
 
 public class WxJsConfig {
 
@@ -82,15 +80,11 @@ public class WxJsConfig {
 	 * @return
 	 */
 	private static String getJsTicket() {
-		// 1. 创建缓存管理器
-		CacheManager cacheManager = CacheManager.create("./src/main/resources/ehcache.xml");
-		// 2. 获取缓存对象
-		Cache cache = cacheManager.getCache("wxAccessTokenCache");
-		// 5. 获取缓存
-		Element element = cache.get("wx_js_auth_token");
+
+		Object obj = EhcacheManager.getInstance().get("wxAccessTokenCache", "wx_js_auth_token");
 
 		String result;
-		if (element == null) {
+		if (obj == null) {
 			WxToken token = WxToken.getAuthToken();
 			String url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket";
 
@@ -100,12 +94,11 @@ public class WxJsConfig {
 
 			result = WxClient.get(url, params);
 
-			element = new Element("wx_auth_token", result);
-			// 4. 将元素添加到缓存
-			cache.put(element);
-		}
-		// 获取缓存 值
-		result = element.getObjectValue().toString();
+			EhcacheManager.getInstance().put("wxAccessTokenCache", "wx_auth_token", result);
+
+		} else
+			result = obj.toString();
+		
 		JSONObject jsonObj = JSONObject.parseObject(result);
 
 		return jsonObj.getString("ticket");

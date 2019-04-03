@@ -1,15 +1,13 @@
 package cn.xhh.infrastructure.wechat;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 
+import cn.xhh.infrastructure.EhcacheManager;
 import cn.xhh.infrastructure.Utils;
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 
 public class WxToken {
@@ -89,8 +87,7 @@ public class WxToken {
 		// 获取微信回传的openid、access token
 		String result = WxClient.get(url, params);
 
-		JSONObject jsonObj = JSONObject.parseObject(result);
-		WxToken token = JSONObject.toJavaObject(jsonObj, WxToken.class);
+		WxToken token = JSONObject.parseObject(result, WxToken.class);
 
 		// 微信回传的数据为Json格式，将Json格式转化成对象
 		if (token == null || token.getOpenId() == null || token.getOpenId() == "" || token.getExpiresIn() == 0)
@@ -109,14 +106,17 @@ public class WxToken {
 	 */
 	public static WxToken getAuthToken() {
 
-		// 1. 创建缓存管理器
-		CacheManager cacheManager = CacheManager.create("./src/main/resources/ehcache.xml");
-		// 2. 获取缓存对象
-		Cache cache = cacheManager.getCache("wxAccessTokenCache");
-		// 5. 获取缓存
-		Element element = cache.get("wx_auth_token");
+//		// 1. 创建缓存管理器
+//		CacheManager cacheManager = CacheManager.create("./src/main/resources/ehcache.xml");
+//		// 2. 获取缓存对象
+//		Cache cache = cacheManager.getCache("wxAccessTokenCache");
+//		// 5. 获取缓存
+//		Element element = cache.get("wx_auth_token");
+
+		Object objectValue = EhcacheManager.getInstance().get("wxAccessTokenCache", "wx_auth_token");
+
 		String result;
-		if (element == null) {
+		if (objectValue == null) {
 			String url = "https://api.weixin.qq.com/cgi-bin/token";
 			String appId = Utils.getValueByKey("wechat.properties", "app_id");
 			String appsecret = Utils.getValueByKey("wechat.properties", "appsecret");
@@ -124,33 +124,26 @@ public class WxToken {
 			params.put("grant_type", "client_credential");
 			params.put("appId", appId);
 			params.put("secret", appsecret);
+			
 			result = WxClient.get(url, params);
 
-			element = new Element("wx_auth_token", result);
-			// 4. 将元素添加到缓存
-			cache.put(element);
-		}
-		// 获取缓存 值
-		result = element.getObjectValue().toString();
-		JSONObject jsonObj = JSONObject.parseObject(result);
-		WxToken token = JSONObject.toJavaObject(jsonObj, WxToken.class);
+			EhcacheManager.getInstance().put("wxAccessTokenCache", "wx_auth_token", result);
+
+		} else
+			result = objectValue.toString();
+
+		WxToken token = JSONObject.parseObject(result, WxToken.class);
 		return token;
 	}
 
 	public static void main(String[] args) {
-		// 1. 创建缓存管理器
-		CacheManager cacheManager = CacheManager.create("./src/main/resources/ehcache.xml");
-		// 2. 获取缓存对象
-		Cache cache = cacheManager.getCache("wxAccessTokenCache");
-		// 3. 创建元素
-		Element element = new Element("key1", "value1");
-		// 4. 将元素添加到缓存
-		cache.put(element);
-		// 5. 获取缓存
-		Element value = cache.get("key1");
+		
+		
+		EhcacheManager.getInstance().put("wxAccessTokenCache", "key1", "value1");
+		Object objectValue = EhcacheManager.getInstance().get("wxAccessTokenCache", "key1");
+		Element value = EhcacheManager.getInstance().getCache("wxAccessTokenCache").get("key1");
+		System.out.println(objectValue);
 		System.out.println(value);
 		System.out.println(value.getObjectValue());
-		
-		System.out.println(new Date().getTime()/1000);
 	}
 }

@@ -6,6 +6,7 @@ import java.util.Map;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 
+
 public class WxUser {
 
 	/// <summary>
@@ -184,9 +185,8 @@ public class WxUser {
 		params.put("lang", "zh_CN");
 
 		String result = WxClient.get(url, params);
-		JSONObject jsonObj = JSONObject.parseObject(result);
-
-		WxUser user = JSONObject.toJavaObject(jsonObj, WxUser.class);
+		
+		WxUser user = JSONObject.parseObject(result, WxUser.class);
 
 		return user;
 	}

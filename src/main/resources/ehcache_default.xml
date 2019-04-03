@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ehcache name="springehcache">
+<ehcache>
 
     <diskStore path="java.io.tmpdir"/>
 
@@ -28,15 +28,14 @@
             memoryStoreEvictionPolicy="LRU">
         <persistence strategy="localTempSwap"/>
     </defaultCache>
-
-    <!-- 登录错误记录次数缓存 锁定10分钟 -->
-    <cache name="passwordRetryCache"
+	
+    <!-- 微信授权登录 -->
+    <cache name="wxAccessTokenCache"
            maxEntriesLocalHeap="2000"
            eternal="false"
-           timeToIdleSeconds="600"
+           timeToIdleSeconds="7200"
            timeToLiveSeconds="0"
            overflowToDisk="false"
            statistics="true">
     </cache>
-
 </ehcache>
