@@ -1,6 +1,6 @@
 package cn.xhh.infrastructure;
 
-import java.net.URL;
+import java.io.InputStream;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
@@ -8,17 +8,15 @@ import net.sf.ehcache.Element;
 
 public final class EhcacheManager {
 
-	private static final String path = "src/main/resources/ehcache-default.xml";
-
-	private URL url;
+	private static final String path = "ehcache-default.xml";
 
 	private CacheManager cacheManager;
 
 	private static EhcacheManager manager;
 
 	public EhcacheManager(String path) {
-		url = getClass().getResource(path);
-		cacheManager = CacheManager.create(url);
+		InputStream inputStream = getClass().getClassLoader().getResourceAsStream(path);
+		cacheManager = CacheManager.create(inputStream);
 	}
 
 	/**
