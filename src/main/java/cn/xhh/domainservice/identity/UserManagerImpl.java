@@ -90,7 +90,7 @@ public class UserManagerImpl implements UserManager {
 
 	@Override
 	@Transactional
-	public OptResult saveReg(User user) {
+	public OptResult saveReg(User user,String frontImg,String backImg) {
 		user.setStatus((byte)2);
 		user.setAddTime(new Date());
 

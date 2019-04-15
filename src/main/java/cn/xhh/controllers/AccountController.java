@@ -86,7 +86,7 @@ public class AccountController {
 	
 	@RequestMapping(value = "/uc/save", method = RequestMethod.POST)
 	@ResponseBody
-	public OptResult register(HttpServletRequest request,User user) {
+	public OptResult register(HttpServletRequest request,User user,String frontImg,String backImg) {
 		
 		UserLogin ul=new UserLogin();
 		ul.setTenantId(ul.getTenantId());
@@ -94,7 +94,7 @@ public class AccountController {
 		ul.setOpenId(Utils.generateCode());
 		ul.setProvide((byte)1);
 		user.setUserLogin(ul);
-		OptResult result = userManager.saveReg(user);
+		OptResult result = userManager.saveReg(user,frontImg,backImg);
 		if(result.getCode()==0) {
 			SavedRequest savedReq = WebUtils.getSavedRequest(request);
 

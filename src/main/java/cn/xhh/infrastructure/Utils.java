@@ -3,7 +3,9 @@ package cn.xhh.infrastructure;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 //import java.util.ArrayList;
 import java.util.Date;
@@ -14,6 +16,7 @@ import java.util.Properties;
 //import java.util.Map;
 import java.util.UUID;
 
+import sun.misc.BASE64Decoder;
 
 public class Utils {
 
@@ -36,8 +39,8 @@ public class Utils {
 //			String key = keys.next();
 //			System.out.println(key + "重复" + map.get(key).intValue() + "次");
 //		}
-		
-		String val=getValueByKey("wechat.properties","token");
+
+		String val = getValueByKey("wechat.properties", "token");
 		System.out.print(val);
 	}
 
@@ -62,19 +65,56 @@ public class Utils {
 	 * @return
 	 */
 	public static String getValueByKey(String filePath, String key) {
-		
+
 		Properties prop = new Properties();
-        String value = null;
-        try {
-            // 通过输入缓冲流进行读取配置文件
-            InputStream inputStream = new BufferedInputStream(new FileInputStream(new File("src/main/resources/"+filePath)));
-            // 加载输入流
-            prop.load(inputStream);
-            // 根据关键字获取value值
-            value = prop.getProperty(key);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return value;
+		String value = null;
+		try {
+			// 通过输入缓冲流进行读取配置文件
+			InputStream inputStream = new BufferedInputStream(
+					new FileInputStream(new File("src/main/resources/" + filePath)));
+			// 加载输入流
+			prop.load(inputStream);
+			// 根据关键字获取value值
+			value = prop.getProperty(key);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return value;
+	}
+
+	/**
+	 * @Description: 将base64编码字符串转换为图片
+	 * @Author:
+	 * @CreateTime:
+	 * @param imgStr base64编码字符串
+	 * @param path   图片路径-具体到文件
+	 * @return
+	 * @throws Exception 
+	 */
+	public static void generateImage(String base64Img, String path) throws Exception {
+		if (base64Img == null)
+			return;
+		
+		int istart=base64Img.indexOf("base64,");
+		if(istart>-1)
+			base64Img=base64Img.substring(istart + 7);
+		
+		BASE64Decoder decoder = new BASE64Decoder();
+		try {
+			// 解密
+			byte[] b = decoder.decodeBuffer(base64Img);
+			// 处理数据
+			for (int i = 0; i < b.length; ++i) {
+				if (b[i] < 0) {
+					b[i] += 256;
+				}
+			}
+			OutputStream out = new FileOutputStream(path);
+			out.write(b);
+			out.flush();
+			out.close();
+		} catch (Exception e) {
+			throw e;
+		}
 	}
 }

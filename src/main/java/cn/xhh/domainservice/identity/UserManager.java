@@ -23,5 +23,5 @@ public interface UserManager {
 	 * @param user
 	 * @return
 	 */
-	public OptResult saveReg(User user);
+	public OptResult saveReg(User user,String frontImg,String backImg);
 }
