@@ -65,31 +65,24 @@
 						return;
 					}
 					var $this=this;
-					axios({
-						  method: 'post',
-						  url: basePath+'/search',
-						  headers:{
-							  'Content-Type':  'application/x-www-form-urlencoded;charset=UTF-8'
-						  },
-						  data: Qs.stringify({
-							  province: this.query.dest[0],
-								city: this.query.dest[1],
-								volume:this.query.vol,
-								weight:this.query.weight,
-								tenantId:1
-							  })
-						}).then(function (res) {
-							if(res.data && res.data.code==0){
-								$this.tableData=res.data.result;
-								$this.dis=$this.tableData.length==0;
-							}else{
-								$toast.show(res.data.result);
-							}
-						    
-						  })
-						  .catch(function (error) {
-							  $toast.show("网络信息弱，请检查网络");
-						  });
+					
+					axios.post(basePath+"/search",{
+						  province: this.query.dest[0],
+							city: this.query.dest[1],
+							volume:this.query.vol,
+							weight:this.query.weight,
+							tenantId:1
+						  }).then(function(res){
+							  if(res.data && res.data.code==0){
+									$this.tableData=res.data.result;
+									$this.dis=$this.tableData.length==0;
+								}else{
+									$toast.show(res.data.result);
+								}
+					}).catch(function(err){
+						  $toast.show("网络信息弱，请检查网络");
+					});
+					
 				}
 			}
 

@@ -1,5 +1,8 @@
 ﻿package cn.xhh.controllers;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.shiro.web.util.SavedRequest;
@@ -27,10 +30,22 @@ public class AccountController {
 	/**
 	 * 未登录进入该地址并跳转到微信，请求微信授权登录
 	 * @return
+	 * @throws UnsupportedEncodingException 
 	 */
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
-	public String index(String t) {
-		return "login";
+	public String index(HttpServletRequest request) throws UnsupportedEncodingException {
+		SavedRequest savedReq=WebUtils.getSavedRequest(request);
+		String returnUrl=request.getContextPath()+"/callback";
+		if(savedReq!=null && savedReq.getRequestUrl()!=null) {
+			returnUrl=returnUrl+"?returnUrl="+savedReq.getRequestUrl();
+		}
+		
+		//微信授权登陆
+        String url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" +
+                            Utils.getValueByKey("wechat.properties", "app_id") + "&redirect_uri=" + URLEncoder.encode(returnUrl, "utf-8") +
+                            "&response_type=code&scope=snsapi_userinfo&state=supaotui#wechat_redirect";
+		
+		return "redirect:"+url;
 	}
 
 	/**
