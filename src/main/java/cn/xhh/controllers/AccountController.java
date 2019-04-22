@@ -1,11 +1,17 @@
 ﻿package cn.xhh.controllers;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.session.Session;
+import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.util.SavedRequest;
 import org.apache.shiro.web.util.WebUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +27,9 @@ import cn.xhh.domainservice.identity.SessionManager;
 import cn.xhh.domainservice.identity.UserManager;
 import cn.xhh.infrastructure.OptResult;
 import cn.xhh.infrastructure.Utils;
+import cn.xhh.infrastructure.wechat.SignUtil;
 import cn.xhh.infrastructure.wechat.WxToken;
+import cn.xhh.infrastructure.wechat.WxUser;
 
 @Controller
 public class AccountController {
@@ -47,13 +55,14 @@ public class AccountController {
 		if (savedReq != null && savedReq.getRequestUrl() != null) {
 			returnUrl = returnUrl + "?returnUrl=" + savedReq.getRequestUrl();
 		}
-
+		log.debug(returnUrl);
 		// 微信授权登陆
 		String url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid="
 				+ Utils.getValueByKey("wechat.properties", "app_id") + "&redirect_uri="
 				+ URLEncoder.encode(returnUrl, "utf-8")
 				+ "&response_type=code&scope=snsapi_userinfo&state=supaotui#wechat_redirect";
 
+		log.debug(url);
 		return "redirect:" + url;
 	}
 
@@ -68,11 +77,20 @@ public class AccountController {
 	public String redirectTo(String code, String returnUrl) {
 
 		try {
+			log.debug(returnUrl);
+			log.debug(code);
 			WxToken token = WxToken.getAuthToken(code);
 			User user = userRepository.findByOpenId(token.getOpenId());
-			if (user == null || user.getId() == 0)
-				return "redirect:/reg?returnUrl=" + returnUrl;
-			else {
+			if (user == null || user.getId() == 0) {
+				Subject subject = SecurityUtils.getSubject();
+				Session session = subject.getSession();
+				session.setAttribute("WXUSER", WxUser.getUserByOpenId(token.getOpenId()));
+				String url="redirect:/reg?returnUrl=" + returnUrl;
+				if(returnUrl.indexOf("d")>-1) {
+					url+="&t=20";
+				}
+				return url;
+			} else {
 				OptResult result = userManager.signIn(token.getOpenId());
 
 				if (result.getCode() == 0) {
@@ -84,7 +102,6 @@ public class AccountController {
 			}
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return "redirect:/error";
 		}
@@ -134,11 +151,17 @@ public class AccountController {
 	@RequestMapping(value = "/uc/save", method = RequestMethod.POST)
 	@ResponseBody
 	public OptResult register(HttpServletRequest request, User user, String frontImg, String backImg) {
+		Subject currentUser = SecurityUtils.getSubject();
 
+		Session session = currentUser.getSession();
+		Object obj = session.getAttribute("WXUSER");
+		if (obj == null)
+			return OptResult.Failed("网络异常，请关闭后请新登录");
+		WxUser wxUser = (WxUser) obj;
 		UserLogin ul = new UserLogin();
 		ul.setTenantId(ul.getTenantId());
-		ul.setNickName(Utils.generateCode());
-		ul.setOpenId(Utils.generateCode());
+		ul.setNickName(wxUser.getNickName());
+		ul.setOpenId(wxUser.getOpenId());
 		ul.setProvide((byte) 1);
 		user.setUserLogin(ul);
 		OptResult result = userManager.saveReg(user, frontImg, backImg);
@@ -154,4 +177,47 @@ public class AccountController {
 		}
 		return result;
 	}
+
+	/**
+	 * 微信接入
+	 * 
+	 * @param wc
+	 * @return
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "/connect", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public void connectWeixin(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		// 将请求、响应的编码均设置为UTF-8（防止中文乱码）
+		request.setCharacterEncoding("UTF-8"); // 微信服务器POST消息时用的是UTF-8编码，在接收时也要用同样的编码，否则中文会乱码；
+		response.setCharacterEncoding("UTF-8"); // 在响应消息（回复消息给用户）时，也将编码方式设置为UTF-8，原理同上；
+		boolean isGet = request.getMethod().toLowerCase().equals("get");
+
+		PrintWriter out = response.getWriter();
+
+		try {
+			if (isGet) {
+				String signature = request.getParameter("signature");// 微信加密签名
+				String timestamp = request.getParameter("timestamp");// 时间戳
+				String nonce = request.getParameter("nonce");// 随机数
+				String echostr = request.getParameter("echostr");// 随机字符串
+
+				// 通过检验signature对请求进行校验，若校验成功则原样返回echostr，表示接入成功，否则接入失败
+				if (SignUtil.checkSignature(Utils.getValueByKey("wechat.properties", "token"), signature, timestamp,
+						nonce)) {
+					log.info("Connect the weixin server is successful.");
+					response.getWriter().write(echostr);
+				} else {
+					log.error("Failed to verify the signature!");
+				}
+			} else {
+
+			}
+		} catch (Exception e) {
+			log.error("Connect the weixin server is error.");
+		} finally {
+			out.close();
+		}
+	}
+
 }

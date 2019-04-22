@@ -14,7 +14,7 @@
 	background-size: cover;
 }
 
-.weui-uploader__input-box {
+.weui-uploader, .weui-uploader__input-box {
 	float: left;
 	position: relative;
 	margin-right: 9px;
@@ -22,6 +22,16 @@
 	width: 77px;
 	height: 77px;
 	border: 1px solid #D9D9D9;
+}
+
+.weui-uploader {
+	margin-top: 1px;
+	margin-left: 10px;
+	display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align:center;
+    color:#444;
 }
 
 .weui-uploader__input-box:before, .weui-uploader__input-box:after {
@@ -160,7 +170,7 @@
 .weui-form-preview__ft a {
 	text-decoration: none;
 	font-size: 1.2em;
-	letter-spacing:0.7em;
+	letter-spacing: 0.7em;
 }
 
 .weui-form-preview__item {
@@ -235,12 +245,12 @@ button.weui-form-preview__btn {
 }
 
 .weui-textarea {
-    display: block;
-    border: 0;
-    resize: none;
-    width: 100%;
-    color: inherit;
-    font-size: 1em;
-    line-height: inherit;
-    outline: 0;
+	display: block;
+	border: 0;
+	resize: none;
+	width: 100%;
+	color: inherit;
+	font-size: 1em;
+	line-height: inherit;
+	outline: 0;
 }

@@ -3,12 +3,16 @@ package cn.xhh.infrastructure.wechat;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 
 
+
 public class WxUser {
 
+	private final static Logger log = Logger.getLogger(WxUser.class);
 	/// <summary>
 	/// 用户的唯一标识
 	/// </summary>
@@ -185,7 +189,7 @@ public class WxUser {
 		params.put("lang", "zh_CN");
 
 		String result = WxClient.get(url, params);
-		
+		log.debug(result);
 		WxUser user = JSONObject.parseObject(result, WxUser.class);
 
 		return user;

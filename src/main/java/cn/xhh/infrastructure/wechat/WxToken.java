@@ -3,6 +3,8 @@ package cn.xhh.infrastructure.wechat;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 
@@ -11,7 +13,7 @@ import cn.xhh.infrastructure.Utils;
 import net.sf.ehcache.Element;
 
 public class WxToken {
-
+	private final static Logger log = Logger.getLogger(WxToken.class);
 	@JSONField(name = "access_token")
 	private String accessToken;
 
@@ -86,7 +88,7 @@ public class WxToken {
 		params.put("grant_type", "authorization_code");
 		// 获取微信回传的openid、access token
 		String result = WxClient.get(url, params);
-
+		log.debug(result);
 		WxToken token = JSONObject.parseObject(result, WxToken.class);
 
 		// 微信回传的数据为Json格式，将Json格式转化成对象
@@ -131,7 +133,9 @@ public class WxToken {
 
 		} else
 			result = objectValue.toString();
-
+		
+		log.debug(result);
+		
 		WxToken token = JSONObject.parseObject(result, WxToken.class);
 		return token;
 	}
