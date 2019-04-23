@@ -61,4 +61,10 @@
 		values
 		(#{tenantId},#{userId},#{provide},#{openId},#{nickName},#{headImg},#{addTime})
 	</insert>
+	
+	<insert id="update" parameterType="cn.xhh.domain.identity.User"
+		useGeneratedKeys="true" keyProperty="id">
+		update `user` set `name`=#{name},cell=#{cell},`status`=#{status},id_number=#{idNumber},type=#{type},version=version+1
+		where id=${id}
+	</insert>
 </mapper>

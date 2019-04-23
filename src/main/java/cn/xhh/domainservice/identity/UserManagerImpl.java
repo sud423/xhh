@@ -19,6 +19,7 @@ import cn.xhh.domain.identity.User;
 import cn.xhh.domain.identity.UserLogin;
 import cn.xhh.domain.identity.UserRepository;
 import cn.xhh.infrastructure.OptResult;
+import cn.xhh.infrastructure.Utils;
 
 @Service
 public class UserManagerImpl implements UserManager {
@@ -88,12 +89,29 @@ public class UserManagerImpl implements UserManager {
 		SecurityUtils.getSubject().logout();
 	}
 
+	public OptResult checkUser(String openId,String returnUrl) {
+		User user=userRepository.findByOpenId(openId);
+		if(user==null || user.getId()==0)
+			return OptResult.Failed("用户不存在");
+		//为驾驶员
+		if(returnUrl.toLowerCase().indexOf("d")>-1 && user.getType()==10) {
+			user.setType((byte)30);
+			userRepository.update(user);
+		}
+		if(returnUrl.toLowerCase().indexOf("c")>-1 && user.getType()==20) {
+			user.setType((byte)30);
+			userRepository.update(user);			
+		}
+		
+		return OptResult.Successed();
+	}
+	
 	@Override
 	@Transactional
-	public OptResult saveReg(User user,String frontImg,String backImg) {
+	public OptResult saveReg(User user) {
 		user.setStatus((byte)2);
 		user.setAddTime(new Date());
-
+		user.setTenantId(Integer.parseInt(Utils.getValueByKey("wechat.properties", "tenant_id")));
 		int result=userRepository.reg(user);
 		if(result==0)
 			return OptResult.Failed("注册失败，请稍候重试");

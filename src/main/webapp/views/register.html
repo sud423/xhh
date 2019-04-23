@@ -1,4 +1,8 @@
 <#assign title> 鑫恒辉物流-注册 </#assign>
+<#assign head><script type="text/javascript"
+	src="${request.getContextPath()}/assets/js/exif.js"></script>
+	<script type="text/javascript"
+	src="${request.getContextPath()}/assets/js/MegaPixImage.js"></script></#assign>
 <#assign contentBody> <script type="text/x-template"
 	id="register">
       
@@ -12,12 +16,12 @@
 
 
 	<div class="weui-uploader">
-		<img v-bind:src="reg.frontImg" v-if="reg.frontImg" alt="可点击照片重新上传" />
+		<img v-bind:src="reg.frontImg" v-if="reg.frontImg" alt="可点击照片重新上传" style="width:77px;height:77px;" />
 		<span v-else>选择身份证正面照</span>
 		<input id="frontImg" class="weui-uploader__input"" @change="convertToBase64" type="file" accept="image/*" multiple="">
 	</div>
 	<div class="weui-uploader">
-		<img v-bind:src="reg.backImg"  v-if="reg.backImg" alt="可点击照片重新上传" />
+		<img v-bind:src="reg.backImg"  v-if="reg.backImg" alt="可点击照片重新上传" style="width:77px;height:77px;" />
 		<span v-else>选择身份证背面照</span>
 		<input id="backImg" class="weui-uploader__input" @change="convertToBase64" type="file" accept="image/*" multiple="">
 	</div>
@@ -30,9 +34,8 @@
 </script> </#assign>
 
 <#assign body> <script type="text/javascript"
-	src="${request.getContextPath()}/assets/js/IDValidator.js"></script><script type="text/javascript"
-	src="${request.getContextPath()}/assets/js/exif.js"></script><script
-	type="text/javascript">
+	src="${request.getContextPath()}/assets/js/IDValidator.js"></script>
+	<script	type="text/javascript">
 	var register = {
 		template : '#register',
 		data : function() {
@@ -95,7 +98,7 @@
 			var self=this;
 			var id=e.target.id;
 			createBase64(e.target,function(data){
-				if(id="frontImg"){
+				if(id=="frontImg"){
 					self.reg.frontImg=data;
 				}else{
 					self.reg.backImg=data;

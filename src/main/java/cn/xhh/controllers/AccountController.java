@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.xhh.domain.identity.User;
 import cn.xhh.domain.identity.UserLogin;
-import cn.xhh.domain.identity.UserRepository;
 import cn.xhh.domainservice.identity.SessionManager;
 import cn.xhh.domainservice.identity.UserManager;
 import cn.xhh.infrastructure.OptResult;
@@ -37,8 +36,6 @@ public class AccountController {
 	@Autowired
 	private UserManager userManager;
 
-	@Autowired
-	private UserRepository userRepository;
 
 	private Logger log = Logger.getLogger(AccountController.class);
 
@@ -80,17 +77,16 @@ public class AccountController {
 			log.debug(returnUrl);
 			log.debug(code);
 			WxToken token = WxToken.getAuthToken(code);
-			User user = userRepository.findByOpenId(token.getOpenId());
-			if (user == null || user.getId() == 0) {
-				Subject subject = SecurityUtils.getSubject();
-				Session session = subject.getSession();
-				session.setAttribute("WXUSER", WxUser.getUserByOpenId(token.getOpenId()));
-				String url="redirect:/reg?returnUrl=" + returnUrl;
-				if(returnUrl.indexOf("d")>-1) {
-					url+="&t=20";
-				}
-				return url;
+			
+			String url = "redirect:/reg?returnUrl=" + returnUrl;
+			boolean isDriver=returnUrl.indexOf("d") > -1;
+			if (isDriver) {
+				url += "&t=20";
 			} else {
+				url += "&t=10";
+			}
+			if(userManager.checkUser(token.getOpenId(),returnUrl).getCode()==0) {
+				
 				OptResult result = userManager.signIn(token.getOpenId());
 
 				if (result.getCode() == 0) {
@@ -99,6 +95,13 @@ public class AccountController {
 
 				}
 				return "redirect:/error";
+			}
+			else
+			{
+				Subject subject = SecurityUtils.getSubject();
+				Session session = subject.getSession();
+				session.setAttribute("WXUSER", WxUser.getUserByOpenId(token.getOpenId()));
+				return url;
 			}
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -150,7 +153,7 @@ public class AccountController {
 
 	@RequestMapping(value = "/uc/save", method = RequestMethod.POST)
 	@ResponseBody
-	public OptResult register(HttpServletRequest request, User user, String frontImg, String backImg) {
+	public OptResult register(HttpServletRequest request, User user) {
 		Subject currentUser = SecurityUtils.getSubject();
 
 		Session session = currentUser.getSession();
@@ -159,12 +162,12 @@ public class AccountController {
 			return OptResult.Failed("网络异常，请关闭后请新登录");
 		WxUser wxUser = (WxUser) obj;
 		UserLogin ul = new UserLogin();
-		ul.setTenantId(ul.getTenantId());
+		
 		ul.setNickName(wxUser.getNickName());
 		ul.setOpenId(wxUser.getOpenId());
 		ul.setProvide((byte) 1);
 		user.setUserLogin(ul);
-		OptResult result = userManager.saveReg(user, frontImg, backImg);
+		OptResult result = userManager.saveReg(user);
 		if (result.getCode() == 0) {
 			SavedRequest savedReq = WebUtils.getSavedRequest(request);
 

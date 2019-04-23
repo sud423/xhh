@@ -23,5 +23,13 @@ public interface UserManager {
 	 * @param user
 	 * @return
 	 */
-	public OptResult saveReg(User user,String frontImg,String backImg);
+	public OptResult saveReg(User user);
+	
+	/**
+	 * 检查用户身份类型，如果不存在就更新了30
+	 * @param openId
+	 * @param returnUrl
+	 * @return
+	 */
+	public OptResult checkUser(String openId,String returnUrl);
 }

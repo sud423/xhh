@@ -31,4 +31,11 @@ public interface UserRepository {
 	 * @return
 	 */
 	public int saveLogin(UserLogin login);
+	
+	/**
+	 * 更新用户
+	 * @param user 更新的用户信息
+	 * @return
+	 */
+	public int update(User user);
 }

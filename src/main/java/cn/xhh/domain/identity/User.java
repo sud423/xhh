@@ -43,12 +43,7 @@ public class User implements Entity<User> {
 	private byte type;
 
 	/**
-	 * 状态
-	 *  1：正常/审核通过 
-	 *  2：待审核 
-	 *  10：冻结 不能登录使用系统 
-	 *  20：离职/停职 有些操作不能操作，可以查看数据 
-	 *  30：审核不通过
+	 * 状态 1：正常/审核通过 2：待审核 10：冻结 不能登录使用系统 20：离职/停职 有些操作不能操作，可以查看数据 30：审核不通过
 	 */
 	private byte status;
 
@@ -68,6 +63,12 @@ public class User implements Entity<User> {
 	private int version;
 
 	private List<String> attach;
+	
+	// 身份证正面照
+	private String frontImg;
+
+	// 身份证背面照
+	private String backImg;
 
 	private UserLogin userLogin;
 
@@ -160,6 +161,22 @@ public class User implements Entity<User> {
 
 	public void setAttach(List<String> attach) {
 		this.attach = attach;
+	}
+
+	public String getFrontImg() {
+		return frontImg;
+	}
+
+	public void setFrontImg(String frontImg) {
+		this.frontImg = frontImg;
+	}
+
+	public String getBackImg() {
+		return backImg;
+	}
+
+	public void setBackImg(String backImg) {
+		this.backImg = backImg;
 	}
 
 	public UserLogin getUserLogin() {
