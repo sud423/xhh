@@ -23,6 +23,7 @@ public class DashboardController {
 	 */
 	@RequestMapping(value = { "/","/dashboard"}, method = RequestMethod.GET)
 	public String index() {
+
 		return "index";
 	}
 	

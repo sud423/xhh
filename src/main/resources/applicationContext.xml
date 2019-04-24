@@ -23,10 +23,8 @@
 		</property>
 	</bean>
 
-	
-
 	<!-- 导入shiro相关的配置 -->
-	<import resource="classpath:spring-mybatis.xml"/>
+	<import resource="classpath:spring-mybatis.xml" />
 	<import resource="classpath:spring-ehcache.xml" />
 	<import resource="classpath:spring-shiro.xml" />
 </beans>

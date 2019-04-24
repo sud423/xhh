@@ -12,6 +12,7 @@ import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +20,6 @@ import cn.xhh.domain.identity.User;
 import cn.xhh.domain.identity.UserLogin;
 import cn.xhh.domain.identity.UserRepository;
 import cn.xhh.infrastructure.OptResult;
-import cn.xhh.infrastructure.Utils;
 
 @Service
 public class UserManagerImpl implements UserManager {
@@ -27,6 +27,9 @@ public class UserManagerImpl implements UserManager {
 
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Value("${tenant_id}")
+	private int tenantId;
 	
 	/**
 	 * 登录
@@ -111,7 +114,7 @@ public class UserManagerImpl implements UserManager {
 	public OptResult saveReg(User user) {
 		user.setStatus((byte)2);
 		user.setAddTime(new Date());
-		user.setTenantId(Integer.parseInt(Utils.getValueByKey("wechat.properties", "tenant_id")));
+		user.setTenantId(tenantId);
 		int result=userRepository.reg(user);
 		if(result==0)
 			return OptResult.Failed("注册失败，请稍候重试");

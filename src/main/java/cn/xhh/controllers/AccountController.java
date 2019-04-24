@@ -15,6 +15,7 @@ import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.util.SavedRequest;
 import org.apache.shiro.web.util.WebUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,7 +26,6 @@ import cn.xhh.domain.identity.UserLogin;
 import cn.xhh.domainservice.identity.SessionManager;
 import cn.xhh.domainservice.identity.UserManager;
 import cn.xhh.infrastructure.OptResult;
-import cn.xhh.infrastructure.Utils;
 import cn.xhh.infrastructure.wechat.SignUtil;
 import cn.xhh.infrastructure.wechat.WxToken;
 import cn.xhh.infrastructure.wechat.WxUser;
@@ -35,8 +35,22 @@ public class AccountController {
 
 	@Autowired
 	private UserManager userManager;
+	
+	@Autowired
+	private WxToken wxToken;
+	
+	@Autowired
+	private WxUser wxUser;
 
+	@Value("${app_id}")
+	private String appId;
 
+//	@Value("$appsecret")
+//	private String appsecret;
+
+	@Value("$token")
+	private String appToken;
+	
 	private Logger log = Logger.getLogger(AccountController.class);
 
 	/**
@@ -47,6 +61,7 @@ public class AccountController {
 	 */
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
 	public String index(HttpServletRequest request) throws UnsupportedEncodingException {
+		
 		SavedRequest savedReq = WebUtils.getSavedRequest(request);
 		String returnUrl = request.getContextPath() + "/callback";
 		if (savedReq != null && savedReq.getRequestUrl() != null) {
@@ -55,7 +70,7 @@ public class AccountController {
 		log.debug(returnUrl);
 		// 微信授权登陆
 		String url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid="
-				+ Utils.getValueByKey("wechat.properties", "app_id") + "&redirect_uri="
+				+ appId + "&redirect_uri="
 				+ URLEncoder.encode(returnUrl, "utf-8")
 				+ "&response_type=code&scope=snsapi_userinfo&state=supaotui#wechat_redirect";
 
@@ -76,7 +91,7 @@ public class AccountController {
 		try {
 			log.debug(returnUrl);
 			log.debug(code);
-			WxToken token = WxToken.getAuthToken(code);
+			WxToken token = wxToken.getAuthToken(code);
 			
 			String url = "redirect:/reg?returnUrl=" + returnUrl;
 			boolean isDriver=returnUrl.indexOf("d") > -1;
@@ -100,7 +115,7 @@ public class AccountController {
 			{
 				Subject subject = SecurityUtils.getSubject();
 				Session session = subject.getSession();
-				session.setAttribute("WXUSER", WxUser.getUserByOpenId(token.getOpenId()));
+				session.setAttribute("WXUSER", wxUser.getUserByOpenId(token.getOpenId()));
 				return url;
 			}
 		} catch (Exception e) {
@@ -206,7 +221,7 @@ public class AccountController {
 				String echostr = request.getParameter("echostr");// 随机字符串
 
 				// 通过检验signature对请求进行校验，若校验成功则原样返回echostr，表示接入成功，否则接入失败
-				if (SignUtil.checkSignature(Utils.getValueByKey("wechat.properties", "token"), signature, timestamp,
+				if (SignUtil.checkSignature(appToken, signature, timestamp,
 						nonce)) {
 					log.info("Connect the weixin server is successful.");
 					response.getWriter().write(echostr);

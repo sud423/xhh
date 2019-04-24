@@ -4,14 +4,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 
 import cn.xhh.infrastructure.EhcacheManager;
-import cn.xhh.infrastructure.Utils;
 import net.sf.ehcache.Element;
 
+@Component
 public class WxToken {
 	private final static Logger log = Logger.getLogger(WxToken.class);
 	@JSONField(name = "access_token")
@@ -28,6 +30,21 @@ public class WxToken {
 
 	@JSONField(name = "scope")
 	private String scope;
+	
+	@Value("${app_id}")
+	private String appId;
+
+	@Value("$appsecret")
+	private String appsecret;
+
+	
+	public String getAppId() {
+		return appId;
+	}
+
+	public void setAppId(String appId) {
+		this.appId = appId;
+	}
 
 	public String getAccessToken() {
 		return accessToken;
@@ -75,10 +92,8 @@ public class WxToken {
 	/// </summary>
 	/// <param name="code">微信确认授权登录返回的code</param>
 	/// <returns></returns>
-	public static WxToken getAuthToken(String code) throws Exception {
-		String appId = Utils.getValueByKey("wechat.properties", "app_id");
-		String appsecret = Utils.getValueByKey("wechat.properties", "appsecret");
-
+	public WxToken getAuthToken(String code) throws Exception {
+		
 		String url = "https://api.weixin.qq.com/sns/oauth2/access_token";
 
 		Map<String, Object> params = new HashMap<String, Object>();
@@ -106,7 +121,7 @@ public class WxToken {
 	 * 
 	 * @return
 	 */
-	public static WxToken getAuthToken() {
+	public WxToken getAuthToken() {
 
 //		// 1. 创建缓存管理器
 //		CacheManager cacheManager = CacheManager.create("./src/main/resources/ehcache.xml");
@@ -120,8 +135,6 @@ public class WxToken {
 		String result;
 		if (objectValue == null) {
 			String url = "https://api.weixin.qq.com/cgi-bin/token";
-			String appId = Utils.getValueByKey("wechat.properties", "app_id");
-			String appsecret = Utils.getValueByKey("wechat.properties", "appsecret");
 			Map<String, Object> params = new HashMap<String, Object>();
 			params.put("grant_type", "client_credential");
 			params.put("appId", appId);
@@ -141,7 +154,6 @@ public class WxToken {
 	}
 
 	public static void main(String[] args) {
-		
 		
 		EhcacheManager.getInstance().put("wxAccessTokenCache", "key1", "value1");
 		Object objectValue = EhcacheManager.getInstance().get("wxAccessTokenCache", "key1");

@@ -7,15 +7,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 import com.alibaba.fastjson.JSONObject;
 
 import cn.xhh.infrastructure.EhcacheManager;
-import cn.xhh.infrastructure.Utils;
 
+@Component
 public class WxJsConfig {
 
+	@Autowired
+	private WxToken wxToken;
+	
 	private boolean debug;
 
+	@Value("${app_id}")
 	private String appId;
 
 	private long timestamp;
@@ -79,13 +87,13 @@ public class WxJsConfig {
 	 * 
 	 * @return
 	 */
-	private static String getJsTicket() {
+	private String getJsTicket() {
 
 		Object obj = EhcacheManager.getInstance().get("wxAccessTokenCache", "wx_js_auth_token");
 
 		String result;
 		if (obj == null) {
-			WxToken token = WxToken.getAuthToken();
+			WxToken token = wxToken.getAuthToken();
 			String url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket";
 
 			Map<String, Object> params = new HashMap<String, Object>();
@@ -104,7 +112,7 @@ public class WxJsConfig {
 		return jsonObj.getString("ticket");
 	}
 
-	private static String getJsSignature(String url, long timestamp, String nonce) {
+	private String getJsSignature(String url, long timestamp, String nonce) {
 
 		StringBuilder jsSignature = new StringBuilder();
 
@@ -123,7 +131,7 @@ public class WxJsConfig {
 	 * @param url
 	 * @return
 	 */
-	public static WxJsConfig create(String url) {
+	public WxJsConfig create(String url) {
 		String nonce = UUID.randomUUID().toString();
 		long timestamp = new Date().getTime() / 1000;
 
@@ -140,7 +148,7 @@ public class WxJsConfig {
 		apis.add("getLocalImgData");
 
 		WxJsConfig config = new WxJsConfig();
-		config.setAppId(Utils.getValueByKey("wechat.properties", "app_id"));
+		config.setAppId(appId);
 		config.setNonceStr(nonce);
 		config.setSignature(getJsSignature(url, timestamp, nonce));
 		config.setTimestamp(timestamp);

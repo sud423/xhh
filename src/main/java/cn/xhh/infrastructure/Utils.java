@@ -1,15 +1,10 @@
 package cn.xhh.infrastructure;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 //import java.util.ArrayList;
 import java.util.Date;
-import java.util.Properties;
 //import java.util.HashMap;
 //import java.util.Iterator;
 //import java.util.List;
@@ -40,8 +35,6 @@ public class Utils {
 //			System.out.println(key + "重复" + map.get(key).intValue() + "次");
 //		}
 
-		String val = getValueByKey("wechat.properties", "token");
-		System.out.print(val);
 	}
 
 	public static String generateCode() {
@@ -64,23 +57,23 @@ public class Utils {
 	 * @param key
 	 * @return
 	 */
-	public static String getValueByKey(String filePath, String key) {
-
-		Properties prop = new Properties();
-		String value = null;
-		try {
-			// 通过输入缓冲流进行读取配置文件
-			InputStream inputStream = new BufferedInputStream(
-					new FileInputStream(new File("src/main/resources/" + filePath)));
-			// 加载输入流
-			prop.load(inputStream);
-			// 根据关键字获取value值
-			value = prop.getProperty(key);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return value;
-	}
+//	public static String getValueByKey(String filePath, String key) {
+//
+//		Properties prop = new Properties();
+//		String value = null;
+//		try {
+//			// 通过输入缓冲流进行读取配置文件
+//			InputStream inputStream = new BufferedInputStream(
+//					new FileInputStream(new File("src/main/resources/" + filePath)));
+//			// 加载输入流
+//			prop.load(inputStream);
+//			// 根据关键字获取value值
+//			value = prop.getProperty(key);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return value;
+//	}
 
 	/**
 	 * @Description: 将base64编码字符串转换为图片

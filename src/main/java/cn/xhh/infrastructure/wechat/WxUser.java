@@ -4,15 +4,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 
 
-
+@Component
 public class WxUser {
 
 	private final static Logger log = Logger.getLogger(WxUser.class);
+	
+	@Autowired
+	private WxToken wxToken;
+	
 	/// <summary>
 	/// 用户的唯一标识
 	/// </summary>
@@ -154,8 +160,8 @@ public class WxUser {
 	 * @return
 	 * @throws Exception
 	 */
-	public static WxUser getUserByCode(String code) throws Exception {
-		WxToken token = WxToken.getAuthToken(code);
+	public WxUser getUserByCode(String code) throws Exception {
+		WxToken token = wxToken.getAuthToken(code);
 		String url = "https://api.weixin.qq.com/sns/userinfo";
 
 		return getUser(url, token);
@@ -167,8 +173,8 @@ public class WxUser {
 	 * @param openId
 	 * @return
 	 */
-	public static WxUser getUserByOpenId(String openId) {
-		WxToken token = WxToken.getAuthToken();
+	public WxUser getUserByOpenId(String openId) {
+		WxToken token = wxToken.getAuthToken();
 		token.setOpenId(openId);
 		String url = "https://api.weixin.qq.com/cgi-bin/user/info";
 
