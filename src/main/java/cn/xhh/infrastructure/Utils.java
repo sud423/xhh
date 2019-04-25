@@ -1,5 +1,6 @@
 package cn.xhh.infrastructure;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
@@ -84,28 +85,44 @@ public class Utils {
 	 * @return
 	 * @throws Exception 
 	 */
-	public static void generateImage(String base64Img, String path) throws Exception {
+	public static OptResult generateImage(String base64Img, String path) throws Exception {
 		if (base64Img == null)
-			return;
+			return OptResult.Failed("上传的图片不存在");
 		
 		int istart=base64Img.indexOf("base64,");
 		if(istart>-1)
 			base64Img=base64Img.substring(istart + 7);
-		
-		
-        String suffix = "";
-        if("data:image/jpeg;".equalsIgnoreCase(base64Img)){//data:image/jpeg;base64,base64编码的jpeg图片数据
-            suffix = ".jpg";
-        } else if("data:image/x-icon;".equalsIgnoreCase(base64Img)){//data:image/x-icon;base64,base64编码的icon图片数据
-            suffix = ".ico";
-        } else if("data:image/gif;".equalsIgnoreCase(base64Img)){//data:image/gif;base64,base64编码的gif图片数据
-            suffix = ".gif";
-        } else if("data:image/png;".equalsIgnoreCase(base64Img)){//data:image/png;base64,base64编码的png图片数据
-            suffix = ".png";
+        
+		String dataPrix = "";
+		String [] d = base64Img.split("base64,");
+        if(d != null && d.length == 2){
+            dataPrix = d[0];
         }else{
-            throw new Exception("上传图片格式不合法");
+        	return OptResult.Failed("上传失败，图片格式不合法");
         }
 		
+        String suffix = "";
+        if("data:image/jpeg;".equalsIgnoreCase(dataPrix)){//data:image/jpeg;base64,base64编码的jpeg图片数据
+            suffix = ".jpg";
+        } else if("data:image/x-icon;".equalsIgnoreCase(dataPrix)){//data:image/x-icon;base64,base64编码的icon图片数据
+            suffix = ".ico";
+        } else if("data:image/gif;".equalsIgnoreCase(dataPrix)){//data:image/gif;base64,base64编码的gif图片数据
+            suffix = ".gif";
+        } else if("data:image/png;".equalsIgnoreCase(dataPrix)){//data:image/png;base64,base64编码的png图片数据
+            suffix = ".png";
+        }else{
+        	return OptResult.Failed("上传失败，图片格式不合法");
+        }
+        //临时文件名称
+        String tempFileName = generateCode() + suffix;	
+        StringBuilder tempPath = new StringBuilder();
+		tempPath.append("/image/");
+		SimpleDateFormat folderNameFormat = new SimpleDateFormat("yyyyMM");
+		tempPath.append(folderNameFormat.format(new Date()));
+        File temp = new File(path+tempPath.toString());
+		if (!temp.exists())
+			temp.mkdirs();
+		String fileName=path+tempPath+"/"+tempFileName;
 		BASE64Decoder decoder = new BASE64Decoder();
 		try {
 			// 解密
@@ -116,12 +133,19 @@ public class Utils {
 					b[i] += 256;
 				}
 			}
-			OutputStream out = new FileOutputStream(path);
+			OutputStream out = new FileOutputStream(fileName);
 			out.write(b);
 			out.flush();
 			out.close();
+			
+			return OptResult.Successed("/Upload"+tempPath+"/"+tempFileName);
+			
 		} catch (Exception e) {
-			throw e;
+        	return OptResult.Failed("上传失败");
 		}
 	}
+	
+	
+	
+	
 }

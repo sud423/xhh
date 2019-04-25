@@ -29,7 +29,7 @@
 	</context:component-scan>
 	<!-- 加载配置属性文件 -->
 	<context:property-placeholder
-		ignore-unresolvable="true" location="classpath:wechat.properties" />
+		ignore-unresolvable="true" location="classpath:xhh.properties" />
 
 	<!-- 支持Controller的AOP代理 -->
 	<aop:aspectj-autoproxy />
