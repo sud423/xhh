@@ -1,6 +1,5 @@
 package cn.xhh.domainservice.identity;
 
-import cn.xhh.domain.identity.User;
 import cn.xhh.infrastructure.OptResult;
 
 
@@ -18,12 +17,6 @@ public interface UserManager {
 	 */
 	public void signOut();
 	
-	/**
-	 * 保存注册信息
-	 * @param user
-	 * @return
-	 */
-	public OptResult saveReg(User user);
 	
 	/**
 	 * 检查用户身份类型，如果不存在就更新了30

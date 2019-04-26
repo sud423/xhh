@@ -13,5 +13,5 @@ public interface PriceService {
 	 * @param tenantId 所属租户
 	 * @return
 	 */
-	public OptResult priceCount(String province, String city, String volume, String weight, String tenantId);
+	public OptResult priceCount(String province, String city, String volume, String weight, int tenantId);
 }

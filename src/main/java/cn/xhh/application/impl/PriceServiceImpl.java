@@ -17,18 +17,16 @@ public class PriceServiceImpl implements PriceService {
 	private PriceRepository priceRepository;
 
 	@Override
-	public OptResult priceCount(String province, String city, String volume, String weight, String tenantId) {
+	public OptResult priceCount(String province, String city, String volume, String weight, int tenantId) {
 		float vol = 0;
 		float w = 0;
-		int t=0;
 		try {
 			vol = Float.valueOf(volume);
 			w = Float.valueOf(weight);
-			t=Integer.valueOf(tenantId);
 		} catch (Exception e) {
 			return OptResult.Failed("请输入有效的体积或重量");
 		}
-		List<PriceSearchResult> results = priceRepository.priceCount(province, city, vol, w, t);
+		List<PriceSearchResult> results = priceRepository.priceCount(province, city, vol, w, tenantId);
 
 		return OptResult.Successed(results);
 	}

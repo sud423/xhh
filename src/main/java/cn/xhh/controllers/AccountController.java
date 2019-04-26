@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import cn.xhh.application.UserService;
 import cn.xhh.domain.identity.User;
 import cn.xhh.domain.identity.UserLogin;
 import cn.xhh.domainservice.identity.SessionManager;
@@ -35,6 +36,8 @@ public class AccountController {
 
 	@Autowired
 	private UserManager userManager;
+	@Autowired
+	private UserService userService;
 	
 	@Autowired
 	private WxToken wxToken;
@@ -182,8 +185,9 @@ public class AccountController {
 		ul.setOpenId(wxUser.getOpenId());
 		ul.setProvide((byte) 1);
 		user.setUserLogin(ul);
-		OptResult result = userManager.saveReg(user);
+		OptResult result = userService.saveReg(user);
 		if (result.getCode() == 0) {
+			result=userManager.signIn(wxUser.getOpenId());
 			SavedRequest savedReq = WebUtils.getSavedRequest(request);
 
 			if (savedReq == null || savedReq.getRequestUrl() == null) {

@@ -71,7 +71,6 @@
 							city: this.query.dest[1],
 							volume:this.query.vol,
 							weight:this.query.weight,
-							tenantId:1
 						  }).then(function(res){
 							  if(res.data && res.data.code==0){
 									$this.tableData=res.data.result;

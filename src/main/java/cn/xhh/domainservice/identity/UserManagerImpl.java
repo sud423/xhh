@@ -1,6 +1,5 @@
 package cn.xhh.domainservice.identity;
 
-import java.util.Date;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.DisabledAccountException;
@@ -12,12 +11,9 @@ import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import cn.xhh.domain.identity.User;
-import cn.xhh.domain.identity.UserLogin;
 import cn.xhh.domain.identity.UserRepository;
 import cn.xhh.infrastructure.OptResult;
 
@@ -28,8 +24,6 @@ public class UserManagerImpl implements UserManager {
 	@Autowired
 	private UserRepository userRepository;
 	
-	@Value("${tenant_id}")
-	private int tenantId;
 	
 	/**
 	 * 登录
@@ -109,29 +103,6 @@ public class UserManagerImpl implements UserManager {
 		return OptResult.Successed();
 	}
 	
-	@Override
-	@Transactional
-	public OptResult saveReg(User user) {
-		user.setStatus((byte)2);
-		user.setAddTime(new Date());
-		user.setTenantId(tenantId);
-		int result=userRepository.reg(user);
-		if(result==0)
-			return OptResult.Failed("注册失败，请稍候重试");
-		
-		UserLogin login=user.getUserLogin();
-		
-		login.setUserId(user.getId());
-		login.setTenantId(user.getTenantId());
-		login.setAddTime(new Date());
-		
-		result=userRepository.saveLogin(login);
-		if(result==0)
-			return OptResult.Failed("注册失败，请稍候重试");
-		
-		
-		return signIn(login.getOpenId());
-	}
 	
 	
 }

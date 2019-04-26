@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.xhh.domain.business.AttachRepository">
+	<insert id="add" parameterType="cn.xhh.domain.business.Attach"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into attach (tenant_id,file_name,path,ext,sort,source_id,source_name,add_time,upload_id)
+		values (#{tenantId},#{fileName},#{path},#{ext},#{sort},#{sourceId},#{sourceName},#{addTime},#{uploadId})
+	</insert>
+	<update id="update" parameterType="cn.xhh.domain.business.Attach">
+		update attach set file_name=#{fileName},path=#{path},ext=#{ext},last_update_time=now() 
+		where id=#{id}
+	</update>
+</mapper>
