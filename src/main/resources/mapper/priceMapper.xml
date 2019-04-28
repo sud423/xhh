@@ -12,13 +12,25 @@
 		if(${volume}*100*100*100/coefficient>${weight},${volume}*100*100*100/coefficient,${weight})
 		*standard_price,lowest_price) price
 		from price_config
-		inner join dict on `value`=express and `key`='express' ,(select @i:=0) as
+		inner join dict on
+		`value`=express and `key`='express' ,(select @i:=0) as
 		it
-		where tenant_id=#{tenantId} and province=#{province}
+		where
+		tenant_id=#{tenantId} and province=#{province}
 		<if test="city != null and city != ''">
 			<bind name="keyinfo" value="'%' + city + '%'" />
 			and city like #{keyinfo}
 		</if>
 		order by price asc
+	</select>
+
+	<select id="queryAddr"
+		resultType="cn.xhh.domain.business.PriceConfig">
+		select max(id) id,province,group_concat(city) city
+		from price_config
+		where tenant_id=${tenantId}
+		group by province
+		order by province
+
 	</select>
 </mapper>

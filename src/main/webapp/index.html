@@ -28,9 +28,7 @@
 			data : function() {
 				return {
 					fields : [ "省", "市" ],
-					cities : [ [ '北京市', '北京市' ],
-						[ '上海市', '上海市' ]
-					],
+					cities : [ ],
 					query : {
 						dest : [],
 						vol : '',
@@ -82,7 +80,16 @@
 						  $toast.show("网络信息弱，请检查网络");
 					});
 					
+				},
+				queryAdd:function(){
+					var self=this;
+					axios.get(basePath+"/q",function(data){
+						self.cities=data;
+					});
 				}
+			},
+			mounted:function(){
+				this.queryAdd();
 			}
 
 		};

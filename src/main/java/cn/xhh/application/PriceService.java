@@ -13,5 +13,11 @@ public interface PriceService {
 	 * @param tenantId 所属租户
 	 * @return
 	 */
-	public OptResult priceCount(String province, String city, String volume, String weight, int tenantId);
+	public OptResult priceCount(String province, String city, String volume, String weight);
+	
+	/**
+	 * 查询已配置的运费地址
+	 * @return
+	 */
+	public String[][] queryAddr();
 }

@@ -3,7 +3,6 @@ package cn.xhh.controllers;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -40,7 +39,14 @@ public class DashboardController {
 	
 	@ResponseBody
 	@RequestMapping(value = "/search", method = RequestMethod.POST)
-	public OptResult priceCount(String province, String city, String volume, String weight, @Value("${tenant_id}")int tenantId) {
-		return priceService.priceCount(province, city, volume, weight, tenantId);
+	public OptResult priceCount(String province, String city, String volume, String weight) {
+		return priceService.priceCount(province, city, volume, weight);
+	}
+	
+
+	@ResponseBody
+	@RequestMapping(value = "/q", method = RequestMethod.GET)
+	public String[][] queryAdd() {
+		return priceService.queryAddr();
 	}
 }
