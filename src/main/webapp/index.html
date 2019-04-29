@@ -28,7 +28,7 @@
 			data : function() {
 				return {
 					fields : [ "省", "市" ],
-					cities : [ ],
+					cities : [],
 					query : {
 						dest : [],
 						vol : '',
@@ -77,18 +77,20 @@
 									$toast.show(res.data.result);
 								}
 					}).catch(function(err){
-						  $toast.show("网络信息弱，请检查网络");
+						  $toast.show("网络信号弱，请刷新重试");
 					});
 					
 				},
 				queryAdd:function(){
 					var self=this;
-					axios.get(basePath+"/q",function(data){
-						self.cities=data;
+					axios.get(basePath+"/q").then(function(response){
+						self.cities=response.data;
+					}).catch(function(){
+						  $toast.show("网络信号弱，请刷新重试");
 					});
 				}
 			},
-			mounted:function(){
+			created:function(){
 				this.queryAdd();
 			}
 
