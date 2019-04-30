@@ -34,7 +34,7 @@ public class WxToken {
 	@Value("${app_id}")
 	private String appId;
 
-	@Value("$appsecret")
+	@Value("${appsecret}")
 	private String appsecret;
 
 	
@@ -101,6 +101,7 @@ public class WxToken {
 		params.put("secret", appsecret);
 		params.put("code", code);
 		params.put("grant_type", "authorization_code");
+		log.debug(params);
 		// 获取微信回传的openid、access token
 		String result = WxClient.get(url, params);
 		log.debug(result);

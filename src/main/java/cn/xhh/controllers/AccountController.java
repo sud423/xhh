@@ -51,9 +51,11 @@ public class AccountController {
 //	@Value("$appsecret")
 //	private String appsecret;
 
-	@Value("$token")
+	@Value("${token}")
 	private String appToken;
-	
+
+	@Value("${domain}")
+	private String domain;
 	private Logger log = Logger.getLogger(AccountController.class);
 
 	/**
@@ -62,11 +64,11 @@ public class AccountController {
 	 * @return
 	 * @throws UnsupportedEncodingException
 	 */
-	@RequestMapping(value = "/login", method = RequestMethod.GET)
+	@RequestMapping(value = "/login")
 	public String index(HttpServletRequest request) throws UnsupportedEncodingException {
 		
 		SavedRequest savedReq = WebUtils.getSavedRequest(request);
-		String returnUrl = request.getContextPath() + "/callback";
+		String returnUrl = domain + "/callback";
 		if (savedReq != null && savedReq.getRequestUrl() != null) {
 			returnUrl = returnUrl + "?returnUrl=" + savedReq.getRequestUrl();
 		}
@@ -78,7 +80,7 @@ public class AccountController {
 				+ "&response_type=code&scope=snsapi_userinfo&state=supaotui#wechat_redirect";
 
 		log.debug(url);
-		return "redirect:" + url;
+		return "redirect:"+url;
 	}
 
 	/**
@@ -88,7 +90,7 @@ public class AccountController {
 	 * @param returnUrl
 	 * @return
 	 */
-	@RequestMapping(value = "/callback", method = RequestMethod.POST)
+	@RequestMapping(value = "/callback")
 	public String redirectTo(String code, String returnUrl) {
 
 		try {
