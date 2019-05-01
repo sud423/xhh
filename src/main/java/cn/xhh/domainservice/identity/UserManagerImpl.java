@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import cn.xhh.domain.identity.User;
+import cn.xhh.domain.identity.UserLogin;
 import cn.xhh.domain.identity.UserRepository;
 import cn.xhh.infrastructure.OptResult;
 
@@ -86,20 +87,25 @@ public class UserManagerImpl implements UserManager {
 		SecurityUtils.getSubject().logout();
 	}
 
-	public OptResult checkUser(String openId,String returnUrl) {
+	public OptResult checkUser(String openId,boolean isDriver,String nickName,String headImg) {
 		User user=userRepository.findByOpenId(openId);
 		if(user==null || user.getId()==0)
 			return OptResult.Failed("用户不存在");
 		//为驾驶员
-		if(returnUrl.toLowerCase().indexOf("d")>-1 && user.getType()==10) {
+		if(isDriver && user.getType()==10) {
 			user.setType((byte)30);
 			userRepository.update(user);
 		}
-		if(returnUrl.toLowerCase().indexOf("c")>-1 && user.getType()==20) {
+		if(!isDriver && user.getType()==20) {
 			user.setType((byte)30);
 			userRepository.update(user);			
 		}
 		
+		UserLogin ul=user.getUserLogin();
+		ul.setHeadImg(headImg);
+		ul.setNickName(nickName);
+		
+		userRepository.updateLogin(ul);
 		return OptResult.Successed();
 	}
 	

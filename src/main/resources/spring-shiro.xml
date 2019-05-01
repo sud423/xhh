@@ -146,8 +146,9 @@
 				/logout = logout
 				/login = anon
 				/logon = anon
-				/ 	   = anon
-				/hello  = anon
+				/dashboard 	   = anon
+				/info  = authc
+				/reg  = authc
 				/d/index =authc
 				/c/index =authc
 				<!-- 配置记住我或认证通过可以访问的地址 -->

@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import cn.xhh.application.AttachService;
 import cn.xhh.domain.business.Attach;
 import cn.xhh.domain.business.AttachRepository;
-import cn.xhh.domainservice.identity.SessionManager;
 import cn.xhh.infrastructure.OptResult;
 import cn.xhh.infrastructure.Utils;
 import sun.misc.BASE64Decoder;
@@ -22,7 +21,7 @@ import sun.misc.BASE64Decoder;
 @Service
 public class AttachServiceImpl implements AttachService {
 
-	@Value("realPath")
+	@Value("${realPath}")
 	private String realPath;
 
 	private String fileName;
@@ -41,10 +40,13 @@ public class AttachServiceImpl implements AttachService {
 	private AttachRepository attachRepository;
 
 	@Override
-	public OptResult upload(String base64Img,int sort, int sourceId, String sourceName) {
+	public OptResult upload(String base64Img, int sort, int sourceId, String sourceName, int userId, int tenantId) {
 		if (base64Img == null)
-			return OptResult.Failed("上传的图片不存在");
-
+			return OptResult.Successed("上传的图片不存在");
+		//
+		if(base64Img.indexOf("base64,")<0)
+			return OptResult.Successed("上传的图片格式不正确");
+		
 		OptResult result = spBase64(base64Img);
 		if (result.getCode() != 0)
 			return result;
@@ -52,27 +54,42 @@ public class AttachServiceImpl implements AttachService {
 		result = suffix();
 		if (result.getCode() != 0)
 			return result;
+		Attach attach = attachRepository.get(sourceId, sourceName, sort);
 
-		newSavePath();
+		if (attach == null) {
+			attach = new Attach();
+			newSavePath();
+		}			
+		else {
+			/*删除/替换原文件*/
+			rpSavePath(attach.getExt(), attach.getPath(), attach.getFileName());
+		}
 		try {
 			uploader();
 		} catch (Exception e) {
 			return OptResult.Failed("上传失败");
 		}
-		Attach attach = new Attach();
 		attach.setSourceId(sourceId);
 		attach.setSourceName(sourceName);
 		attach.setSort(sort);
-				
+
 		attach.setExt(suffix);
 		attach.setPath(url);
 		attach.setFileName(fileName);
 
-		attach.setTenantId(SessionManager.getTenantId());
-		attach.setUploadId(SessionManager.getUserId());
+		attach.setTenantId(tenantId);
+		attach.setUploadId(userId);
 		attach.setAddTime(new Date());
+		attach.setLastUpdateTime(new Date());
 
-		if (attachRepository.add(attach) > 0)
+		int r = 0;
+
+		if (attach.getId() > 0) {
+			r = attachRepository.update(attach);
+		} else {
+			r = attachRepository.add(attach);
+		}
+		if (r > 0)
 			return OptResult.Successed();
 
 		return OptResult.Failed("上传失败");
@@ -127,12 +144,28 @@ public class AttachServiceImpl implements AttachService {
 		tempPath.append("/image/");
 		SimpleDateFormat folderNameFormat = new SimpleDateFormat("yyyyMM");
 		tempPath.append(folderNameFormat.format(new Date()));
-		File temp = new File(realPath + tempPath.toString());
-		if (!temp.exists())
-			temp.mkdirs();
-		filePath = realPath + tempPath + "/" + filePath;
+		File file = new File(realPath + tempPath.toString());
+		if (!file.exists())
+			file.mkdirs();
+		filePath = realPath + tempPath.toString() + "/" + fileName;
 
-		url = "/Upload" + tempPath + "/" + filePath;
+		url = "/Upload" + tempPath.toString() + "/" + fileName;
+	}
+	
+	/**
+	 * 对比扩展名是否一致，如果不一致就替换掉
+	 * @param ext
+	 */
+	private void rpSavePath(String ext,String filePa,String fileNa) {
+		if(suffix.toLowerCase()==ext.toLowerCase())
+			return;
+		url=filePa.replace(ext, suffix);
+		fileName=fileNa.replace(ext, suffix);
+		String tempPath=url.replace("/Upload","").replace(fileName, "");
+		filePath = realPath + tempPath + "/" + fileName;
+		File file=new File(realPath + tempPath + "/" + fileNa);
+        if(file.exists()&&file.isFile())
+            file.delete();
 	}
 
 	private void uploader() throws IOException {

@@ -1,4 +1,4 @@
-<#assign title> 鑫恒辉物流-注册 </#assign>
+<#assign title> 鑫恒辉物流-信息编辑 </#assign>
 <#assign head><script type="text/javascript"
 	src="${request.getContextPath()}/assets/js/exif.js"></script>
 	<script type="text/javascript"
@@ -7,27 +7,27 @@
 	id="register">
       
 <div class="page-content padding-top">
-	<von-input type="text" v-model="reg.name" placeholder="姓名" label="姓名"></von-input>
-	<von-input type="text" v-model="reg.idNumber" placeholder="身份证号"
+	<von-input type="text" v-model="user.name" placeholder="姓名" label="姓名"></von-input>
+	<von-input type="text" v-model="user.idNumber" placeholder="身份证号"
 		label="身份证号"></von-input>
-	<von-input type="text" v-model="reg.cell" placeholder="手机号"
+	<von-input type="text" v-model="user.cell" placeholder="手机号"
 		label="手机号"></von-input>
 	<div class="item item-divider">证件上传(<span style="color:red;">仅供寄件实名制使用</span>)</div>
 
 
 	<div class="weui-uploader">
-		<img v-bind:src="reg.frontImg" v-if="reg.frontImg" alt="可点击照片重新上传" style="width:240px;height:150px;" />
+		<img v-bind:src="user.frontImg" v-if="user.frontImg" alt="可点击照片重新上传" style="width:242px;height:150px;" />
 		<span v-else>选择身份证正面照</span>
 		<input id="frontImg" class="weui-uploader__input"" @change="convertToBase64" type="file" accept="image/*" multiple="">
 	</div>
 	<div class="weui-uploader">
-		<img v-bind:src="reg.backImg"  v-if="reg.backImg" alt="可点击照片重新上传" style="width:240px;height:150px;" />
+		<img v-bind:src="user.backImg"  v-if="user.backImg" alt="可点击照片重新上传" style="width:242px;height:150px;" />
 		<span v-else>选择身份证背面照</span>
 		<input id="backImg" class="weui-uploader__input" @change="convertToBase64" type="file" accept="image/*" multiple="">
 	</div>
 
 	<div class="padding">
-            <div class="button button-positive button-block" @click="onRegister()">注册</div>
+            <div class="button button-positive button-block" @click="onRegister()">保存</div>
           </div>
 </div>
 
@@ -40,13 +40,14 @@
 		template : '#register',
 		data : function() {
 			return {
-				reg : {
+				user : {
+					id:0,
 					name : '',
 					idNumber : '',
 					cell : '',
-					type:getQueryString("t"),
 					backImg:'',
-					frontImg:''
+					frontImg:'',
+					type:0
 				}
 			}
 		},
@@ -54,10 +55,15 @@
 			onRegister:function(){
 				if(!this.isEmpty())
 					return;
-				
-				axios.post(basePath+"/uc/save",this.reg).then(function(res){
-					if(res.data.code==0)
-						window.location.href=res.data.result;
+				var self=this;
+				axios.post(basePath+"/pi/save",this.user).then(function(res){
+					if(res.data.code==0){
+						
+						if(self.user.type==20)
+							window.location.href=basePath+"/d/index#/my";
+						else
+							window.location.href=basePath+"/c/index#/my";
+					}
 					else
 						$toast.show(res.data.result);
 					console.log(res);
@@ -66,36 +72,36 @@
 				});
 			},
 			isEmpty:function(){
-				if(!this.reg.name){
+				if(!this.user.name){
 					 $toast.show('请输入您的姓名')
 					return false;
 				}
-				if(!this.reg.idNumber){
+				if(!this.user.idNumber){
 					 $toast.show('请输入您的身份证号')
 					return false;
 				}
-				if(!IDValidator.isValid(this.reg.idNumber)){
+				if(!IDValidator.isValid(this.user.idNumber)){
 					$toast.show('身份证号格式不正确')
 					return false;
 				}
 				
-				if(!this.reg.cell){
+				if(!this.user.cell){
 					$toast.show('手机号不能为空')
 					return false;
 				}
 
 				var vl = /^0?1[3|4|5|7|8|6|9][0-9]\d{8}$/;
-				if(this.reg.cell && !vl.test(this.reg.cell)){	               
+				if(this.user.cell && !vl.test(this.user.cell)){	               
 					$toast.show('手机号格式不正确')
 					return false;
 				}
 				
-				if(!this.reg.frontImg){
+				if(!this.user.frontImg){
 					$toast.show('请上传身份证正面照');
 					return false;
 				}
 
-				if(!this.reg.backImg){
+				if(!this.user.backImg){
 					$toast.show('请上传身份证背面照');
 					return false;
 				}
@@ -107,12 +113,21 @@
 			var id=e.target.id;
 			createBase64(e.target,function(data){
 				if(id=="frontImg"){
-					self.reg.frontImg=data;
+					self.user.frontImg=data;
 				}else{
-					self.reg.backImg=data;
+					self.user.backImg=data;
 				}
 			})
+			},
+			getS:function(){
+				var self=this;
+				axios.get(basePath+"/personalinfo").then(function(data){
+					self.user=Object.assign(self.user,data.data);
+				})
 			}
+		},
+		mounted:function(){
+			this.getS();
 		}
 	}
 

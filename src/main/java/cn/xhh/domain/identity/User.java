@@ -164,6 +164,9 @@ public class User implements Entity<User> {
 	}
 
 	public String getFrontImg() {
+		if(attach!=null && attach.size()>0) {
+			frontImg=attach.get(0);
+		}
 		return frontImg;
 	}
 
@@ -172,6 +175,9 @@ public class User implements Entity<User> {
 	}
 
 	public String getBackImg() {
+		if(attach!=null && attach.size()>1) {
+			backImg=attach.get(1);
+		}
 		return backImg;
 	}
 

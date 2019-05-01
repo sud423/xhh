@@ -9,8 +9,8 @@
 		<result column="cell" property="cell" />
 		<result column="id_number" property="idNumber" />
 		<result column="status" property="status" />
-		<result column="type" property="type" />
 		<result column="audit_reason" property="auditReason" />
+		<result column="type" property="type" />
 		<result column="add_time" property="addTime" />
 		<association property="userLogin"
 			javaType="cn.xhh.domain.identity.UserLogin" resultMap="userLoginMap" />
@@ -27,13 +27,15 @@
 		<result column="open_id" property="openId" />
 		<result column="nick_name" property="nickName" />
 		<result column="head_img" property="headImg" />
+		<result column="add_time" property="addTime" />
 	</resultMap>
 
 	<select id="findByOpenId" parameterType="String"
 		resultMap="userMap">
 		select
-		u.id,u.tenant_id,`name`,cell,id_number,u.type,u.`status`,u.add_time,ul.provide,
-		ul.open_id,ul.nick_name,ul.head_img,path
+		u.id,u.tenant_id,`name`,cell,id_number,u.type,
+		u.`status`,audit_reason,u.add_time,ul.provide,
+		ul.open_id,ul.nick_name,ul.head_img,ul.add_time,path
 		from `user` u
 		inner join user_login ul on
 		u.id=ul.user_id
@@ -61,6 +63,11 @@
 		values
 		(#{tenantId},#{userId},#{provide},#{openId},#{nickName},#{headImg},#{addTime})
 	</insert>
+	
+	<update id="updateLogin"
+		parameterType="cn.xhh.domain.identity.UserLogin">
+		update user_login set nick_name=#{nickName},head_img=#{headImg} where open_id=#{openId}
+		</update>
 	
 	<insert id="update" parameterType="cn.xhh.domain.identity.User"
 		useGeneratedKeys="true" keyProperty="id">

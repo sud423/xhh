@@ -128,15 +128,18 @@
  <script type="text/x-template" id="my">
 
 <div class="page-content padding-top" v-tabbar-menu-index="2">
-	<p class="text-center">
+	<div class="text-center">
 		<img style="border-radius: 10%"
-			src="<@shiro.user><@shiro.principal property="headImg" /></@shiro.user>" />
-	</p>
-	<p class="text-center"><@shiro.user><@shiro.principal property="nickName" /></@shiro.user></p>
-
-	<list> <item> 姓名 <span class="item-note"> <@shiro.user><@shiro.principal property="name" /></@shiro.user> </span> </item> <item>
-	手机号 <span class="item-note"> <@shiro.user><@shiro.principal property="cell" /></@shiro.user> </span> </item> <item> 身份证 <span
-		class="item-note"> <@shiro.user><@shiro.principal property="idNumber" /></@shiro.user> </span> </item> </list>
+			:src="user.headImg" />
+	
+	
+	<p> {{user.nickName}} </p>
+	<p v-if="user.status==2 || user.status==30" style="background: lightgrey;border-radius: 30px;padding: 8px 15px;min-width:118px;display:inline-block;">{{user.status==2?"待认证":user.status==30?"审核不通过:"+user.auditReason:""}}</p>
+	<p><i style="font-size:20px;" class="icon ion-ios-compose-outline"></i><a :href="basePath+'/info'">信息编辑</a></p>
+	</div>
+	<list> <item> 姓名 <span class="item-note"> {{user.name}} </span> </item> <item>
+	手机号 <span class="item-note"> {{user.cell}} </span> </item> <item> 身份证 <span
+		class="item-note">  {{user.idNumber}}  </span> </item> </list>
 </div>
 
 
@@ -469,7 +472,25 @@ var Bill = {
 		}
 	}
 	
-      var My = { template: '#my' }
+      var My = { template: '#my' ,
+		data:function(){
+			return {user:{
+				status:0,
+				auditReason:''
+			}};
+		},
+		methods:{
+			getS:function(){
+				var self=this;
+				axios.get(basePath+"/personalinfo").then(function(data){
+					self.user=data.data;
+					
+				})
+			}
+		},
+		mounted:function(){
+			this.getS();
+		}}
       // Routes
       var routes = [
         { 

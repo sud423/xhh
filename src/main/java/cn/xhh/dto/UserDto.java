@@ -18,6 +18,8 @@ public class UserDto implements Serializable {
 
 	private byte status;
 
+	private String auditReason;
+
 	private String idNumber;
 
 	private String openId;
@@ -28,8 +30,12 @@ public class UserDto implements Serializable {
 
 	private byte type;
 
-	private String addTime;
+//	private String addTime;
 
+	private String frontImg;
+	
+	private String backImg;
+	
 	public int getId() {
 		return id;
 	}
@@ -68,6 +74,14 @@ public class UserDto implements Serializable {
 
 	public void setStatus(byte status) {
 		this.status = status;
+	}
+
+	public String getAuditReason() {
+		return auditReason;
+	}
+
+	public void setAuditReason(String auditReason) {
+		this.auditReason = auditReason;
 	}
 
 	public String getIdNumber() {
@@ -110,12 +124,28 @@ public class UserDto implements Serializable {
 		this.type = type;
 	}
 
-	public String getAddTime() {		
-		return addTime;
+//	public String getAddTime() {
+//		return addTime;
+//	}
+//
+//	public void setAddTime(String addTime) {
+//		this.addTime = addTime;
+//	}
+
+	public String getFrontImg() {
+		return frontImg;
 	}
 
-	public void setAddTime(String addTime) {
-		this.addTime = addTime;
+	public void setFrontImg(String frontImg) {
+		this.frontImg = frontImg;
+	}
+
+	public String getBackImg() {
+		return backImg;
+	}
+
+	public void setBackImg(String backImg) {
+		this.backImg = backImg;
 	}
 
 }

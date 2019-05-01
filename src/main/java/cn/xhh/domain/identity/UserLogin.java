@@ -1,10 +1,13 @@
 package cn.xhh.domain.identity;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import cn.xhh.domain.Entity;
 
 public class UserLogin implements Entity<UserLogin> {
+	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
 	private int tenantId;
 
 	private int userId;
@@ -16,11 +19,11 @@ public class UserLogin implements Entity<UserLogin> {
 	private String nickName;
 
 	private String headImg;
-	
+
 	private Date addTime;
 
 	private int version;
-	
+
 	public int getTenantId() {
 		return tenantId;
 	}
@@ -69,8 +72,11 @@ public class UserLogin implements Entity<UserLogin> {
 		this.headImg = headImg;
 	}
 
-	public Date getAddTime() {
-		return addTime;
+	public String getAddTime() {
+		if (addTime != null)
+			return dateFormat.format(addTime);
+		else
+			return "";
 	}
 
 	public void setAddTime(Date addTime) {
@@ -88,7 +94,6 @@ public class UserLogin implements Entity<UserLogin> {
 	@Override
 	public boolean sameIdentityAs(UserLogin other) {
 
-		return other != null && this.getUserId() == other.getUserId() && 
-				this.getOpenId() == other.getOpenId();
+		return other != null && this.getUserId() == other.getUserId() && this.getOpenId() == other.getOpenId();
 	}
 }

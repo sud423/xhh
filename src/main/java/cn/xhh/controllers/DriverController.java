@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.xhh.application.OrderService;
 import cn.xhh.domain.business.OrderRepository;
+
 import cn.xhh.dto.OrderDriverDto;
 import cn.xhh.infrastructure.ListResult;
 import cn.xhh.infrastructure.OptResult;
@@ -22,6 +23,7 @@ public class DriverController {
 
 	@Autowired
 	private OrderRepository orderRepository;
+	
 
 	@RequestMapping(value = "/index", method = RequestMethod.GET)
 	public String index() {
@@ -71,4 +73,6 @@ public class DriverController {
 		else
 			return OptResult.Failed("拒单失败，请稍候重试");
 	}
+	
+	
 }

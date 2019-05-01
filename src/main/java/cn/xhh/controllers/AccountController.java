@@ -1,13 +1,9 @@
 ﻿package cn.xhh.controllers;
 
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.log4j.Logger;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
@@ -26,8 +22,8 @@ import cn.xhh.domain.identity.User;
 import cn.xhh.domain.identity.UserLogin;
 import cn.xhh.domainservice.identity.SessionManager;
 import cn.xhh.domainservice.identity.UserManager;
+import cn.xhh.dto.UserDto;
 import cn.xhh.infrastructure.OptResult;
-import cn.xhh.infrastructure.wechat.SignUtil;
 import cn.xhh.infrastructure.wechat.WxToken;
 import cn.xhh.infrastructure.wechat.WxUser;
 
@@ -41,7 +37,7 @@ public class AccountController {
 	
 	@Autowired
 	private WxToken wxToken;
-	
+
 	@Autowired
 	private WxUser wxUser;
 
@@ -66,7 +62,7 @@ public class AccountController {
 	 */
 	@RequestMapping(value = "/login")
 	public String index(HttpServletRequest request) throws UnsupportedEncodingException {
-		
+
 		SavedRequest savedReq = WebUtils.getSavedRequest(request);
 		String returnUrl = domain + "/callback";
 		if (savedReq != null && savedReq.getRequestUrl() != null) {
@@ -74,13 +70,13 @@ public class AccountController {
 		}
 		log.debug(returnUrl);
 		// 微信授权登陆
-		String url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid="
-				+ appId + "&redirect_uri="
+		String url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + appId + "&redirect_uri="
 				+ URLEncoder.encode(returnUrl, "utf-8")
 				+ "&response_type=code&scope=snsapi_userinfo&state=supaotui#wechat_redirect";
 
 		log.debug(url);
-		return "redirect:"+url;
+		return "redirect:" + url;
+//		return "login";
 	}
 
 	/**
@@ -91,36 +87,40 @@ public class AccountController {
 	 * @return
 	 */
 	@RequestMapping(value = "/callback")
-	public String redirectTo(String code, String returnUrl) {
+	public String redirectTo(HttpServletRequest request, String code, String returnUrl) {
 
 		try {
 			log.debug(returnUrl);
 			log.debug(code);
 			WxToken token = wxToken.getAuthToken(code);
-			
+			WxUser wxuser = wxUser.getUserByOpenId(token.getOpenId());
 			String url = "redirect:/reg?returnUrl=" + returnUrl;
-			boolean isDriver=returnUrl.indexOf("d") > -1;
+			boolean isDriver = returnUrl.indexOf("d") > -1;
 			if (isDriver) {
 				url += "&t=20";
 			} else {
 				url += "&t=10";
 			}
-			if(userManager.checkUser(token.getOpenId(),returnUrl).getCode()==0) {
-				
-				OptResult result = userManager.signIn(token.getOpenId());
+			if (userManager.checkUser(token.getOpenId(), isDriver, wxuser.getNickName(), wxuser.getHeadImgUrl())
+					.getCode() == 0) {
 
+				OptResult result = userManager.signIn(token.getOpenId());
+				log.debug(returnUrl);
 				if (result.getCode() == 0) {
 					if (returnUrl == null || returnUrl == "")
+						if (isDriver)
+							return "redirect:" + request.getContextPath() + "/d/index";
+						else
+							return "redirect:" + request.getContextPath() + "/c/index";
+					else {
 						return "redirect:" + returnUrl;
-
+					}
 				}
 				return "redirect:/error";
-			}
-			else
-			{
+			} else {
 				Subject subject = SecurityUtils.getSubject();
 				Session session = subject.getSession();
-				session.setAttribute("WXUSER", wxUser.getUserByOpenId(token.getOpenId()));
+				session.setAttribute("WXUSER", wxuser);
 				return url;
 			}
 		} catch (Exception e) {
@@ -179,17 +179,18 @@ public class AccountController {
 		Session session = currentUser.getSession();
 		Object obj = session.getAttribute("WXUSER");
 		if (obj == null)
-			return OptResult.Failed("网络异常，请关闭后请新登录");
+			return OptResult.Failed("网络异常，请关闭微信后重新操作");
 		WxUser wxUser = (WxUser) obj;
 		UserLogin ul = new UserLogin();
-		
+
 		ul.setNickName(wxUser.getNickName());
 		ul.setOpenId(wxUser.getOpenId());
 		ul.setProvide((byte) 1);
+		ul.setHeadImg(wxUser.getHeadImgUrl());
 		user.setUserLogin(ul);
 		OptResult result = userService.saveReg(user);
 		if (result.getCode() == 0) {
-			result=userManager.signIn(wxUser.getOpenId());
+			result = userManager.signIn(wxUser.getOpenId());
 			SavedRequest savedReq = WebUtils.getSavedRequest(request);
 
 			if (savedReq == null || savedReq.getRequestUrl() == null) {
@@ -201,47 +202,25 @@ public class AccountController {
 		}
 		return result;
 	}
-
-	/**
-	 * 微信接入
-	 * 
-	 * @param wc
-	 * @return
-	 * @throws IOException
-	 */
-	@RequestMapping(value = "/connect", method = { RequestMethod.GET, RequestMethod.POST })
+	
 	@ResponseBody
-	public void connectWeixin(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		// 将请求、响应的编码均设置为UTF-8（防止中文乱码）
-		request.setCharacterEncoding("UTF-8"); // 微信服务器POST消息时用的是UTF-8编码，在接收时也要用同样的编码，否则中文会乱码；
-		response.setCharacterEncoding("UTF-8"); // 在响应消息（回复消息给用户）时，也将编码方式设置为UTF-8，原理同上；
-		boolean isGet = request.getMethod().toLowerCase().equals("get");
-
-		PrintWriter out = response.getWriter();
-
-		try {
-			if (isGet) {
-				String signature = request.getParameter("signature");// 微信加密签名
-				String timestamp = request.getParameter("timestamp");// 时间戳
-				String nonce = request.getParameter("nonce");// 随机数
-				String echostr = request.getParameter("echostr");// 随机字符串
-
-				// 通过检验signature对请求进行校验，若校验成功则原样返回echostr，表示接入成功，否则接入失败
-				if (SignUtil.checkSignature(appToken, signature, timestamp,
-						nonce)) {
-					log.info("Connect the weixin server is successful.");
-					response.getWriter().write(echostr);
-				} else {
-					log.error("Failed to verify the signature!");
-				}
-			} else {
-
-			}
-		} catch (Exception e) {
-			log.error("Connect the weixin server is error.");
-		} finally {
-			out.close();
-		}
+	@RequestMapping(value = "/personalinfo", method = RequestMethod.GET)
+	public UserDto get() {
+		UserDto user=userService.get();
+		return user;
 	}
-
+	
+	@RequestMapping(value = "/info", method = RequestMethod.GET)
+	public String info() {
+		return "info";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/pi/save",method=RequestMethod.POST)
+	public OptResult infoSave(User user) {
+		OptResult result= userService.updateInfo(user);
+		
+		return result;
+	}
+	
 }

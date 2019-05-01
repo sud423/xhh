@@ -11,5 +11,5 @@ public interface AttachService {
 	 * @param sourceName 关联表名
 	 * @return
 	 */
-	public OptResult upload(String base64Img,int sort,int sourceId,String sourceName);
+	public OptResult upload(String base64Img,int sort,int sourceId,String sourceName,int userId,int tenantId);
 }

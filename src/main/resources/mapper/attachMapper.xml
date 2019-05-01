@@ -3,11 +3,14 @@
 <mapper namespace="cn.xhh.domain.business.AttachRepository">
 	<insert id="add" parameterType="cn.xhh.domain.business.Attach"
 		useGeneratedKeys="true" keyProperty="id">
-		insert into attach (tenant_id,file_name,path,ext,sort,source_id,source_name,add_time,upload_id)
-		values (#{tenantId},#{fileName},#{path},#{ext},#{sort},#{sourceId},#{sourceName},#{addTime},#{uploadId})
+		insert into attach (tenant_id,file_name,path,ext,sort,source_id,source_name,add_time,upload_id,last_update_time)
+		values (#{tenantId},#{fileName},#{path},#{ext},#{sort},#{sourceId},#{sourceName},#{addTime},#{uploadId},#{lastUpdateTime})
 	</insert>
 	<update id="update" parameterType="cn.xhh.domain.business.Attach">
 		update attach set file_name=#{fileName},path=#{path},ext=#{ext},last_update_time=now() 
 		where id=#{id}
 	</update>
+	<select id="get" resultType="cn.xhh.domain.business.Attach">
+		select * from attach where source_id=#{sourceId} and source_name=#{sourceName} and sort=#{sort}
+	</select>
 </mapper>

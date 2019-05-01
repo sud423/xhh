@@ -22,7 +22,10 @@ public interface UserManager {
 	 * 检查用户身份类型，如果不存在就更新了30
 	 * @param openId
 	 * @param returnUrl
+	 * @param nickName
+	 * @param headImg
 	 * @return
 	 */
-	public OptResult checkUser(String openId,String returnUrl);
+	public OptResult checkUser(String openId,boolean isDriver,String nickName,String headImg);
+
 }
