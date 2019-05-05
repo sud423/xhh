@@ -95,7 +95,7 @@ public class AccountController {
 			WxToken token = wxToken.getAuthToken(code);
 			WxUser wxuser = wxUser.getUserByOpenId(token.getOpenId());
 			String url = "redirect:/reg?returnUrl=" + returnUrl;
-			boolean isDriver = returnUrl.indexOf("d") > -1;
+			boolean isDriver = appId.indexOf("wxb2da43818db39fa2") > -1;
 			if (isDriver) {
 				url += "&t=20";
 			} else {
