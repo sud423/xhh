@@ -8,7 +8,7 @@ import cn.xhh.infrastructure.ListResult;
 import cn.xhh.infrastructure.OptResult;
 
 public interface OrderService {
-	public ListResult<OrderDriverDto> findOrderByDriver(int status,int pageNum);
+	ListResult<OrderDriverDto> findOrderByDriver(int status, int pageNum);
 	
 	/**
 	 * 
@@ -16,12 +16,12 @@ public interface OrderService {
 	 * @param pageNum
 	 * @return
 	 */
-	public ListResult<OrderClientDto> findOrderByClient(int status,int pageNum);
+    ListResult<OrderClientDto> findOrderByClient(int status, int pageNum);
 	
 	/**
 	 * 保存订单
 	 * @param order
 	 * @return
 	 */
-	public OptResult save(Order order);
+    OptResult save(Order order);
 }

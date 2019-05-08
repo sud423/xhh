@@ -1,4 +1,4 @@
-﻿package cn.xhh.controllers;
+package cn.xhh.controllers;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;

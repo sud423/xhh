@@ -9,40 +9,40 @@ public interface UserRepository {
 	 * @param openId
 	 * @return
 	 */
-	public User findByOpenId(@Param("openId")String openId);
+    User findByOpenId(@Param("openId") String openId);
 	
 	/**
 	 * 更新用户登录时间
-	 * @param userId
+	 * @param openId
 	 * @return
 	 */
-	public int updateLastLoginTime(@Param("openId")String openId);
+    int updateLastLoginTime(@Param("openId") String openId);
 	
 	/**
 	 * 注册新用户
 	 * @param user
 	 * @return
 	 */
-	public int reg(User user);
+    int reg(User user);
 	
 	/**
 	 * 保存第三方登录信息
 	 * @param login
 	 * @return
 	 */
-	public int saveLogin(UserLogin login);
+    int saveLogin(UserLogin login);
 	
 	/**
 	 * 更新第三方信息
 	 * @param login
 	 * @return
 	 */
-	public int updateLogin(UserLogin login);
+    int updateLogin(UserLogin login);
 	
 	/**
 	 * 更新用户
 	 * @param user 更新的用户信息
 	 * @return
 	 */
-	public int update(User user);
+    int update(User user);
 }

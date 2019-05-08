@@ -64,7 +64,7 @@ public class WxClient {
 	 * @return
 	 */
 	public static final String get(final String url, final Map<String, Object> params) {
-		StringBuilder sb = new StringBuilder("");
+		StringBuilder sb = new StringBuilder();
 
 		if (null != params && !params.isEmpty()) {
 			int i = 0;

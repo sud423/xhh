@@ -1,7 +1,5 @@
 package cn.xhh.domain.business;
 
-import java.util.List;
-
 import org.apache.ibatis.annotations.Param;
 
 public interface AttachRepository {
@@ -11,14 +9,14 @@ public interface AttachRepository {
 	 * @param attach 上传文件信息
 	 * @return
 	 */
-	public int add(Attach attach);
+	int add(Attach attach);
 	
 	/**
 	 * 更新上传文件信息
 	 * @param attach 上传文件信息
 	 * @return
 	 */
-	public int update(Attach attach);
+	int update(Attach attach);
 	
 	/**
 	 * 根据来源编号查询附件
@@ -27,5 +25,5 @@ public interface AttachRepository {
 	 * @param sort
 	 * @return
 	 */
-	public Attach get(@Param("sourceId")int sourceId,@Param("sourceName")String sourceName,@Param("sort")int sort);
+	Attach get(@Param("sourceId") int sourceId, @Param("sourceName") String sourceName, @Param("sort") int sort);
 }

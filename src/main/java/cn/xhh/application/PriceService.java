@@ -1,4 +1,4 @@
-﻿package cn.xhh.application;
+package cn.xhh.application;
 
 import cn.xhh.infrastructure.OptResult;
 
@@ -10,14 +10,13 @@ public interface PriceService {
 	 * @param city     目的所属市
 	 * @param volume   体积
 	 * @param weight   实际重量
-	 * @param tenantId 所属租户
 	 * @return
 	 */
-	public OptResult priceCount(String province, String city, String volume, String weight);
+	OptResult priceCount(String province, String city, String volume, String weight);
 	
 	/**
 	 * 查询已配置的运费地址
 	 * @return
 	 */
-	public String[][] queryAddr();
+	String[][] queryAddr();
 }

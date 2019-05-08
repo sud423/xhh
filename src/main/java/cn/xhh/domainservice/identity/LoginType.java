@@ -7,7 +7,7 @@ public enum LoginType {
 	private String code;//登录方式
 	
 	
-	private LoginType(String code) {
+	LoginType(String code) {
 		this.code = code;
 	}
 

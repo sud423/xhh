@@ -78,14 +78,6 @@ public class UserManagerImpl implements UserManager {
 		}
 
 	}
-	
-	/**
-	 * 登出
-	 */
-	public void signOut() {
-		// shiro登出清理凭证信息
-		SecurityUtils.getSubject().logout();
-	}
 
 	public OptResult checkUser(String openId,boolean isDriver,String nickName,String headImg) {
 		User user=userRepository.findByOpenId(openId);

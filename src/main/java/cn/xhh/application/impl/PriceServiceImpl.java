@@ -1,4 +1,4 @@
-﻿package cn.xhh.application.impl;
+package cn.xhh.application.impl;
 
 import java.util.HashMap;
 import java.util.List;

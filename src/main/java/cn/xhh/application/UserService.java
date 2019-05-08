@@ -9,19 +9,19 @@ public interface UserService {
 	 * 获取用户信息
 	 * @return
 	 */
-	public UserDto get();
+    UserDto get();
 	
 	/**
 	 * 保存注册信息
 	 * @param user
 	 * @return
 	 */
-	public OptResult saveReg(User user);
+    OptResult saveReg(User user);
 	
 	/**
 	 * 更新用户信息
 	 * @param user
 	 * @return
 	 */
-	public OptResult updateInfo(User user);
+    OptResult updateInfo(User user);
 }
