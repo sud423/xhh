@@ -63,20 +63,20 @@ public class AccountController {
 	@RequestMapping(value = "/login")
 	public String index(HttpServletRequest request) throws UnsupportedEncodingException {
 
-		SavedRequest savedReq = WebUtils.getSavedRequest(request);
-		String returnUrl = domain + "/callback";
-		if (savedReq != null && savedReq.getRequestUrl() != null) {
-			returnUrl = returnUrl + "?returnUrl=" + savedReq.getRequestUrl();
-		}
-		log.debug(returnUrl);
-		// 微信授权登陆
-		String url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + appId + "&redirect_uri="
-				+ URLEncoder.encode(returnUrl, "utf-8")
-				+ "&response_type=code&scope=snsapi_userinfo&state=supaotui#wechat_redirect";
-
-		log.debug(url);
-		return "redirect:" + url;
-//		return "login";
+//		SavedRequest savedReq = WebUtils.getSavedRequest(request);
+//		String returnUrl = domain + "/callback";
+//		if (savedReq != null && savedReq.getRequestUrl() != null) {
+//			returnUrl = returnUrl + "?returnUrl=" + savedReq.getRequestUrl();
+//		}
+//		log.debug(returnUrl);
+//		// 微信授权登陆
+//		String url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + appId + "&redirect_uri="
+//				+ URLEncoder.encode(returnUrl, "utf-8")
+//				+ "&response_type=code&scope=snsapi_userinfo&state=supaotui#wechat_redirect";
+//
+//		log.debug(url);
+//		return "redirect:" + url;
+		return "login";
 	}
 
 	/**

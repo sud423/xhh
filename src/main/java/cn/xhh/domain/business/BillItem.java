@@ -23,6 +23,8 @@ public class BillItem {
 
 	private float volume;
 
+	private int dis;
+
 	public int getId() {
 		return id;
 	}
@@ -93,6 +95,14 @@ public class BillItem {
 
 	public void setRemark(String remark) {
 		this.remark = remark;
+	}
+
+	public int getDis() {
+		return dis;
+	}
+
+	public void setDis(int dis) {
+		this.dis = dis;
 	}
 
 	public float getVolume() {

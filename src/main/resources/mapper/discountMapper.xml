@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.xhh.domain.business.BillRepository">
+    <select id="findByExpress" resultType="cn.xhh.domain.business.Discount">
+        select *
+        from discount
+        where express =#{express} and start_period &lt;= #{ts} and (end_period &gt; #{ts} or end_period=0) and tenant_id=#{tenantId}
+        order by sort
+        LIMIT 1
+    </select>
+</mapper>

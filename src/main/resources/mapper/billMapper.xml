@@ -8,18 +8,22 @@
 	</select>
 	<select id="getItemByBillId"
 		resultType="cn.xhh.domain.business.BillItem">
-		select i.id,d.text
-		express,express_no,price,cost,actual_weight,count,remark,t.volume,CONCAT_WS('',province,city,area,address)
-		addr
+
+		select i.id,
+		i.express,
+		express_no,
+		i.price,
+		cost,
+		actual_weight,
+		count,
+		i.remark,
+		t.volume,
+		CONCAT_WS( '', province, city, area, address ) addr,
+		ifnull((select discount from discount d where d.express=i.express and d.start_period &lt;=DATEDIFF(now(),b.push_time) and (d.end_period &gt; datediff(now(),b.push_time) or d.end_period=0) order by sort asc limit 1),100) dis
 		from bill_item i
-		inner join dict d on i.express=d.`value` and
-		d.`key`='express'
-		inner join (
-		select sum(len*width*height*count) as
-		volume,bill_item_id
-		from bill_item_package
-		group by bill_item_id) as t
-		on t.bill_item_id=i.id
+		inner join bill b on i.bill_id=b.id
+		INNER JOIN ( SELECT sum( len * width * height * count ) AS volume, bill_item_id FROM bill_item_package GROUP BY bill_item_id ) AS t ON t.bill_item_id = i.id
+
 		where bill_id=#{billId}
 	</select>
 </mapper>

@@ -55,7 +55,7 @@ public class BillService implements cn.xhh.application.BillService {
 		
 		PageInfo<BillDto> pageInfo = modelMapper.map(billInfos, new TypeToken<PageInfo<BillDto>>() {
 		}.getType());
-		return new ListResult<BillDto>(pageInfo);
+		return new ListResult<>(pageInfo);
 	}
 
 	@Override

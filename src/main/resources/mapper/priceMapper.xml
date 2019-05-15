@@ -4,16 +4,13 @@
 	<select id="priceCount"
 		resultType="cn.xhh.domain.business.PriceSearchResult">
 
-		select (@i:=@i+1) as seqNo,text
-		express,if(${volume}*100*100*100/coefficient>${weight},${volume}*100*100*100/coefficient,${weight})
-		weight,
+		select (@i:=@i+1) as seqNo,	express,if(${volume}*100*100*100/coefficient>${weight},
+		${volume}*100*100*100/coefficient,${weight}) weight,
 		if(if(${volume}*100*100*100/coefficient>${weight},${volume}*100*100*100/coefficient,${weight})
 		*standard_price>lowest_price,
 		if(${volume}*100*100*100/coefficient>${weight},${volume}*100*100*100/coefficient,${weight})
 		*standard_price,lowest_price) price
-		from price_config
-		inner join dict on
-		`value`=express and `key`='express' ,(select @i:=0) as
+		from price_config,(select @i:=0) as
 		it
 		where
 		tenant_id=#{tenantId} and province=#{province}
