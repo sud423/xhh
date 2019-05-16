@@ -109,7 +109,8 @@
        </div>
             
        <div class="weui-form-preview__hd" style="padding: 0px 15px 10px;text-align:right;">
-            <!--<label class="weui-form-preview__label"></label>-->
+           <!--            <em class="weui-form-preview__value">折扣抵减(元)：{{item.rebate}}</em>-->
+<!--            <label class="weui-form-preview__label">运费总计(元)：{{item.price}}</label>-->
             <em class="weui-form-preview__value">运费总计(元)：{{item.price}}</em>
        </div>
    </div>
@@ -117,6 +118,8 @@
             
        <div class="weui-form-preview__hd" style="text-align:right;">
             <em class="weui-form-preview__value">合计：<span style="color:red;">¥{{billDetail.price}}</span></em>
+           <br>
+           <em class="weui-form-preview__value">折扣抵减：<span style="color:red;">¥{{billDetail.rebate}}</span></em>
 			<md-button class="button button-light" @click.native="pay()">
     		立即支付
   			</md-button>

@@ -13,6 +13,9 @@ public class BillDto {
 	
 	private List<BillItem> items;
 
+	private float rebate;
+
+
 	public int getId() {
 		return id;
 	}
@@ -44,6 +47,12 @@ public class BillDto {
 	public void setItems(List<BillItem> items) {
 		this.items = items;
 	}
-	
-	
+
+	public float getRebate() {
+		return rebate;
+	}
+
+	public void setRebate(float rebate) {
+		this.rebate = rebate;
+	}
 }
