@@ -67,7 +67,7 @@
 	<div v-if="pages==0" slot="infinite" class="item item-divider text-center">暂无订单</div>
 	
     </scroll>
-	<div style="display:block;text-align:right;position:fixed;bottom:70px;right:20px;" v-on:click="showModal()">
+	<div style="display:block;text-align:right;position:fixed;bottom:70px;right:20px;" @click="showModal()">
 		<md-button class="button button-calm button-fab">
     		<i class="icon ion-plus"></i>
   		</md-button>
@@ -114,17 +114,37 @@
             <em class="weui-form-preview__value">运费总计(元)：{{item.price}}</em>
        </div>
    </div>
-   <div class="weui-form-preview" style="bottom:0px; position:fixed;width:100%;" v-if="!isPay">
+   <div class="weui-form-preview" style="bottom:60px; position:fixed;width:100%;display: flex; align-items: center;" v-if="!isPay">
             
-       <div class="weui-form-preview__hd" style="text-align:right;">
-            <em class="weui-form-preview__value">合计：<span style="color:red;">¥{{billDetail.price}}</span></em>
-           <br>
-           <em class="weui-form-preview__value">折扣抵减：<span style="color:red;">¥{{billDetail.rebate}}</span></em>
-			<md-button class="button button-light" @click.native="pay()">
-    		立即支付
-  			</md-button>
+       <div class="weui-form-preview__bd" style="flex: 1;font-weight: bold;text-align: right;">
+           <div class="weui-form-preview__item" >
+               <label class="weui-form-preview__label">合计</label>
+               <span class="weui-form-preview__value" style="color:#000;">¥{{billDetail.price | number}}</span>
+           </div>
+           <div class="weui-form-preview__item" v-if="billDetail.rebate>0">
+               <label class="weui-form-preview__label">折扣抵减</label>
+               <span class="weui-form-preview__value" style="color:red;">-¥{{billDetail.rebate | number}}</span>
+           </div>
        </div>
    </div>
+
+    <div class="weui-form-preview" style="bottom:0px; position:fixed;width:100%;display: flex; align-items: center;" v-if="!isPay">
+
+        <div class="weui-form-preview__bd" style="flex: 1;text-align: right;">
+            <div class="weui-form-preview__item">
+                <label>实付</label>
+                <span style="color:red;">¥{{(billDetail.price-billDetail.rebate) | number}}</span>
+            </div>
+        </div>
+        <div class="weui-form-preview__ft" style="text-align: right">
+
+            <md-button class="button button-assertive button-block" style="min-height: 30px;line-height: 26px;border-radius:20px;" @click.native="pay()">
+                立即支付
+            </md-button>
+
+        </div>
+    </div>
+</div>
 </div>
 
 </script>
@@ -450,6 +470,12 @@ var Bill = {
 				isPay:isPay
 			}
 		},
+        filters: {
+            number: function (data) {
+                return Number(data).toFixed(2)
+                // return data.toFixed(2);
+            }
+        },
 		methods:{
 			pay:function(effect){
 				$dialog.alert({
