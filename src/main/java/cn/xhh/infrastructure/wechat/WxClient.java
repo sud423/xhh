@@ -18,6 +18,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -35,13 +36,8 @@ public class WxClient {
 
 		SSLContext sslContext;
 		try {
-			sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
-				// 信任所有
-				@Override
-				public boolean isTrusted(X509Certificate[] xcs, String string) {
-					return true;
-				}
-			}).build();
+			// 信任所有
+			sslContext = new SSLContextBuilder().loadTrustMaterial(null, (TrustStrategy) (xcs, string) -> true).build();
 
 			SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslContext);
 
@@ -79,34 +75,8 @@ public class WxClient {
 			}
 		}
 
-		CloseableHttpClient httpClient = createSSLClientDefault();
-
-		CloseableHttpResponse response = null;
 		HttpGet get = new HttpGet(url + sb.toString());
-		String result = "";
-
-		try {
-			response = httpClient.execute(get);
-
-			if (response.getStatusLine().getStatusCode() == 200) {
-				HttpEntity entity = response.getEntity();
-				if (null != entity) {
-					result = EntityUtils.toString(entity, "UTF-8");
-				}
-			}
-		} catch (IOException ex) {
-			logger.debug(ex.getMessage(), ex);
-		} finally {
-			if (null != response) {
-				try {
-					EntityUtils.consume(response.getEntity());
-				} catch (IOException ex) {
-					logger.debug(ex.getMessage(), ex);
-				}
-			}
-		}
-
-		return result;
+		return execute(get);
 	}
 
 	/**
@@ -116,10 +86,9 @@ public class WxClient {
 	 * @return
 	 */
 	public static final String post(final String url, final Map<String, Object> params) {
-		CloseableHttpClient httpClient = createSSLClientDefault();
+
 		HttpPost post = new HttpPost(url);
 
-		CloseableHttpResponse response = null;
 
 		if (null != params && !params.isEmpty()) {
 			List<NameValuePair> nvpList = new ArrayList<NameValuePair>();
@@ -130,10 +99,17 @@ public class WxClient {
 			post.setEntity(new UrlEncodedFormEntity(nvpList, Charset.forName("UTF-8")));
 		}
 
+		return  execute(post);
+	}
+
+
+	private  static  final String execute(HttpUriRequest request){
+		CloseableHttpClient httpClient = createSSLClientDefault();
+		CloseableHttpResponse response = null;
 		String result = "";
 
 		try {
-			response = httpClient.execute(post);
+			response = httpClient.execute(request);
 
 			if (response.getStatusLine().getStatusCode() == 200) {
 				HttpEntity entity = response.getEntity();
@@ -155,4 +131,5 @@ public class WxClient {
 
 		return result;
 	}
+
 }
