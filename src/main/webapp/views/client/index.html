@@ -190,351 +190,413 @@
 <#assign body> <script type="text/javascript">
 var billId=0;
 var isPay=false;
-var Modal = { template: '#modal',
-	data(){
-		return {
-		  order:{
-			addr:'',
-			goods:'',
-			num:'',
-			weight:'',
-			remark:''
-		  }
-		}
-	},
-	methods:{
-		onCreate:function(){
-			$modal.destroy();
-			if(!this.order.addr){
-				 $toast.show('请输入揽件地址')
-				return;
-			}
-			if(!this.order.goods){
-				 $toast.show('请输入托寄物')
-				return;
-			}
-			if(!this.order.num){
-				 $toast.show('请输入件数')
-				return;
-			}
-			var re = /^(\d+)(\.\d+)?$/;
-		      
-			if(!re.test(this.order.num)){
-				 $toast.show('请输入有效的件数')
-				return;
-			}
-			if(!this.order.weight){
-				 $toast.show('请输入总重量')
-				return;
-			}
-			if(!re.test(this.order.weight)){
-				 $toast.show('请输入有效的重量')
-					return;
-				}
-			var self=this;
-			axios.post(basePath+"/c/s",this.order).then(function(res){
-				if(res.data.code==0){
-					$toast.show('提交成功，请耐心等待取件');
-					self.order={
-						addr:'',
-						goods:'',
-						num:'',
-						weight:'',
-						remark:''
-					  };
-				}else{
-					$toast.show(res.data.result)
-				}
-			}).catch(function(err){
-				console.log(err);
-			});
-		}
-	}
+var Modal = {
+    template: '#modal',
+    data() {
+        return {
+            order: {
+                addr: '',
+                goods: '',
+                num: '',
+                weight: '',
+                remark: ''
+            }
+        }
+    },
+    methods: {
+        onCreate: function () {
+            $modal.destroy();
+            if (!this.order.addr) {
+                $toast.show('请输入揽件地址')
+                return;
+            }
+            if (!this.order.goods) {
+                $toast.show('请输入托寄物')
+                return;
+            }
+            if (!this.order.num) {
+                $toast.show('请输入件数')
+                return;
+            }
+            var re = /^(\d+)(\.\d+)?$/;
+
+            if (!re.test(this.order.num)) {
+                $toast.show('请输入有效的件数')
+                return;
+            }
+            if (!this.order.weight) {
+                $toast.show('请输入总重量')
+                return;
+            }
+            if (!re.test(this.order.weight)) {
+                $toast.show('请输入有效的重量')
+                return;
+            }
+            var self = this;
+            axios.post(basePath + "/c/s", this.order).then(function (res) {
+                if (res.data.code == 0) {
+                    $toast.show('提交成功，请耐心等待取件');
+                    self.order = {
+                        addr: '',
+                        goods: '',
+                        num: '',
+                        weight: '',
+                        remark: ''
+                    };
+                } else {
+                    $toast.show(res.data.result)
+                }
+            }).catch(function (err) {
+                console.log(err);
+            });
+        }
+    }
 }
 
 var Index = {
-        template: '#index',
-        data() {
-          return {
+    template: '#index',
+    data() {
+        return {
             menus: [
-              {
-                iconOn: 'icon ion-ios-paper',
-                iconOff: 'icon ion-ios-paper-outline',
-                text: '订单',
-                path: '/'
-              },
-              {
-                  iconOn: 'ion-ios-calculator',
-                  iconOff: 'ion-ios-calculator-outline',
-                  text: '账单',
-                  path: '/bill'
+                {
+                    iconOn: 'icon ion-ios-paper',
+                    iconOff: 'icon ion-ios-paper-outline',
+                    text: '订单',
+                    path: '/'
                 },
-              {
-                iconOn: 'ion-ios-person',
-                iconOff: 'ion-ios-person-outline',
-                text: '我的',
-                path: '/my'
-              }
+                {
+                    iconOn: 'ion-ios-calculator',
+                    iconOff: 'ion-ios-calculator-outline',
+                    text: '账单',
+                    path: '/bill'
+                },
+                {
+                    iconOn: 'ion-ios-person',
+                    iconOff: 'ion-ios-person-outline',
+                    text: '我的',
+                    path: '/my'
+                }
             ]
+        }
+    },
+    methods: {
+        menuClicked(menuIndex) {
+            console.log(menuIndex)
+        }
+    },
+    beforeDestroy() {
+        $tabbar.$emit('hideTabbar')
+    }
+};
+
+      var Order = {
+          template: '#order'
+          , data: function () {
+              return {
+                  tabs: [
+                      "待接单",
+                      "已接单"//,
+                      //"已拒单"
+                  ],
+                  q: {
+                      status: 0,
+                      page: 1
+                  },
+                  dataTable: [],
+                  pages: 0,
+                  modal: undefined
+              }
+          },
+          methods: {
+              onTabClick: function (index) {
+                  this.dataTable = [];
+                  this.q = {
+                      status: index,
+                      page: 1
+                  };
+                  this.queryByStatus();
+              },
+              queryByStatus: function () {
+                  var self = this;
+                  axios.post(basePath + "/c/q", this.q).then(function (res) {
+                      if (self.q.page === 1)
+                          self.dataTable = res.data.data;
+                      else
+                          self.dataTable = self.dataTable.concat(res.data.data);
+
+                      self.pages = res.data.totalPage;
+                  }).catch(function (err) {
+                      console.log(err);
+                  });
+              },
+              onRefresh: function (done) {
+                  var self = this;
+                  setTimeout(() = > {
+                      self.q.page = 1;
+                  self.queryByStatus();
+                  done()
+              },
+                  1500
+              )
+              },
+              onInfinite: function (done) {
+                  setTimeout(() = > {
+                      if(this.q.page < this.pages
+              )
+                  {
+                      this.q.page++;
+                      this.queryByStatus();
+                  }
+
+                  done()
+              },
+                  1500
+              )
+              },
+              showModal: function () {
+                  this.modal.show()
+              }
+          },
+          mounted: function () {
+              this.queryByStatus();
+              var self = this;
+              $modal.fromComponent(Modal, {
+                  title: '创建订单',
+                  theme: 'default',
+                  onHide: function () {
+                      self.queryByStatus();
+                  }
+              }).then((modal) = > {
+                  this.modal = modal
+              }
+          )
+          },
+
+          destroyed() {
+              if (this.modal)
+                  $modal.destroy(this.modal)
           }
+      };
+    var Bill = {
+        template: '#bill',
+        data() {
+            return {
+                tabs: [
+                    "待付款",
+                    "已付款"//,
+                    //"已拒单"
+                ],
+                tabIndex: 0,
+                q: {
+                    status: 10,
+                    page: 1
+                },
+                tableData: [],
+                totalPage: 0,
+                modal: undefined
+
+            }
         },
         methods: {
-          menuClicked(menuIndex) {
-            console.log(menuIndex)
-          }
+            onTabClick: function (index) {
+                this.q = {
+                    status: (index + 1) * 10,
+                    page: 1
+                };
+                this.getBills();
+                this.tabIndex = index;
+            },
+            getBills: function () {
+                var self = this;
+                axios.post(basePath + "/c/b", this.q).then(function (res) {
+                    if (self.q.page === 1)
+                        self.tableData = res.data.data;
+                    else
+                        self.tableData = self.dataTable.concat(res.data.data);
+
+                    self.totalPage = res.data.totalPage;
+                }).catch(function (err) {
+                    console.log(err);
+                });
+            },
+            onRefresh: function (done) {
+                var self = this;
+                setTimeout(() = > {
+                    self.q.page = 1;
+                self.getBills();
+                done()
+            },
+                1500
+            )
+            },
+            onInfinite: function (done) {
+                setTimeout(() = > {
+                    if(this.q.page < this.totalPage
+            )
+                {
+                    this.q.page++;
+                    this.getBills();
+                }
+
+                done()
+            },
+                1500
+            )
+            },
+            showModal: function (item) {
+                billId = item.id;
+                isPay = this.q.status == 20;
+                var self = this;
+                $modal.fromComponent(BillModal, {
+                    title: '账单支付',
+                    theme: 'default',
+                    onHide: function () {
+                        self.getBills();
+                    }
+                }).then((modal) = > {
+                    this.modal = modal;
+
+                this.modal.show();
+            })
+
+            }
         },
-        beforeDestroy() {
-          $tabbar.$emit('hideTabbar')
+        mounted: function () {
+            this.getBills();
+
+        },
+
+        destroyed() {
+            if (this.modal)
+                $modal.destroy(this.modal)
         }
-      }
-      var Order = { 
-		template: '#order'
-		,data:function(){
-			return {
-				tabs: [
-			        "待接单",
-			        "已接单"//,
-			        //"已拒单"
-			      ],
-			      q:{
-			    	  status:0,
-			    	  page:1
-			      },
-			      dataTable:[],
-			      pages:0,
-			      modal: undefined
-			}
-		},
-		methods:{
-			onTabClick:function(index) {
-				this.dataTable=[];
-				this.q={
-			    	  status:index,
-			    	  page:1
-			      };
-		      	this.queryByStatus();
-		    },
-	        queryByStatus:function(){
-	        	var self=this;
-	        	axios.post(basePath+"/c/q",this.q).then(function(res){
-	        		if (self.q.page === 1)
-	        			self.dataTable=res.data.data;
-                    else
-                    	self.dataTable = self.dataTable.concat(res.data.data);
-					
-					self.pages=res.data.totalPage;
-				}).catch(function(err){
-					console.log(err);
-				});
-	        },
-	        onRefresh:function(done){
-	        	var self=this;
-	        	setTimeout(() => {
-	                self.q.page=1;
-	                self.queryByStatus();
-	                done()
-	              }, 1500)
-	        },
-	        onInfinite:function(done) {
-	            setTimeout(() => {
-	              if (this.q.page < this.pages) {	                
-	            	  this.q.page++;
-	            	  this.queryByStatus();
-	              }
+    }
 
-	              done()
-	            }, 1500)
-	          },
-	          showModal:function() {
-	              this.modal.show()
-	            }
-		},
-		mounted:function(){
-			this.queryByStatus();
-			var self=this;
-			$modal.fromComponent(Modal, {
-		        title: '创建订单',
-		        theme: 'default',
-		        onHide:function(){
-		        	self.queryByStatus();
-		        }
-		      }).then((modal) => {
-		        this.modal = modal
-		      })
-		},
-
-	    destroyed() {
-	      if (this.modal)
-	        $modal.destroy(this.modal)
-	    }
-	}
-var Bill = { 
-		template: '#bill',
-		data(){
-			return {
-				tabs: [
-			        "待付款",
-			        "已付款"//,
-			        //"已拒单"
-			      ],
-			      tabIndex:0,
-			      q:{
-			    	  status:10,
-			    	  page:1
-			      },
-			      tableData:[],
-			      totalPage:0,
-			      modal: undefined
-			      
-			}
-		},
-		methods:{
-			onTabClick:function(index) {
-				this.q={
-			    	  status:(index+1)*10,
-			    	  page:1
-			      };
-				this.getBills();
-		      	this.tabIndex=index;
-		    },
-		    getBills:function(){
-		    	var self=this;
-	        	axios.post(basePath+"/c/b",this.q).then(function(res){
-	        		if (self.q.page === 1)
-	        			self.tableData=res.data.data;
-                    else
-                    	self.tableData = self.dataTable.concat(res.data.data);
-					
-					self.totalPage=res.data.totalPage;
-				}).catch(function(err){
-					console.log(err);
-				});
-		    },
-	        onRefresh:function(done){
-	        	var self=this;
-	        	setTimeout(() => {
-	                self.q.page=1;
-	                self.getBills();
-	                done()
-	              }, 1500)
-	        },
-	        onInfinite:function(done) {
-	            setTimeout(() => {
-	              if (this.q.page < this.totalPage) {	                
-	            	  this.q.page++;
-	            	  this.getBills();
-	              }
-
-	              done()
-	            }, 1500)
-	          },
-	          showModal:function(item) {
-	        	  billId=item.id;
-	        	  isPay=this.q.status==20;
-	        		  var self=this;
-      				$modal.fromComponent(BillModal, {
-	      		        title: '账单支付',
-	      		        theme: 'default',
-	      		        onHide:function(){
-	      		        	self.getBills();
-	      		        }
-	      		      }).then((modal) => {
-	      		        this.modal = modal;
-
-		        		  this.modal.show();
-	      		      })
-	        	  
-	          }
-		},
-		mounted:function(){
-			this.getBills();
-			
-		},
-
-	    destroyed() {
-	      if (this.modal)
-	        $modal.destroy(this.modal)
-	    }
-		
-	}
-
-	var BillModal={
-		template:"#bill_modal",
-		data:function(){
-			return {
-				billDetail:{
-					id:0,
-					items:[],
-					price:0
-				},
-				isPay:isPay
-			}
-		},
+	var BillModal= {
+        template: "#bill_modal",
+        data: function () {
+            return {
+                billDetail: {
+                    id: 0,
+                    items: [],
+                    price: 0
+                },
+                wxpay:{
+                    appId:'',
+                    timeStamp:'',
+                    nonceStr:'',
+                    package:'',
+                    signType:'',
+                    paySign:''
+                },
+                isPay: isPay
+            }
+        },
         filters: {
             number: function (data) {
                 return Number(data).toFixed(2)
                 // return data.toFixed(2);
             }
         },
-		methods:{
-			pay:function(effect){
-				$dialog.alert({
-			          content: '弹出支付码',
-			          okTheme: 'positive',
-			          effect: effect || 'default'
-			        }).then(() => {
-			          console.log('alert hide.')
-			        })
-			},
-	          getItems:function(){
-					var self=this;
-		        	axios.post(basePath+"/c/i",{billId:billId}).then(function(res){
-		        		self.billDetail=res.data;
-					}).catch(function(err){
-						console.log(err);
-					});
-			  }
-		},
-		mounted:function(){
-			this.getItems();
+        methods: {
+            pay: function (effect) {
+                // $dialog.alert({
+                //       content: '弹出支付码',
+                //       okTheme: 'positive',
+                //       effect: effect || 'default'
+                //     }).then(() => {
+                //       console.log('alert hide.')
+                //     })
+                var self=this;
+                axios.post(basePath + "/c/o", {billId: billId}).then(function (value) {
+                    self.wxpay=value;
+                    if (typeof WeixinJSBridge == "undefined") {
+                        if (document.addEventListener) {
+                            document.addEventListener('WeixinJSBridgeReady',
+                                onBridgeReady, false);
+                        } else if (document.attachEvent) {
+                            document.attachEvent('WeixinJSBridgeReady',
+                                onBridgeReady);
+                            document.attachEvent('onWeixinJSBridgeReady',
+                                onBridgeReady);
+                        }
+                    } else {
+                        onBridgeReady();
+                    }
+                }).catch(function (reason) {
+                    console.log(reason);
+                })
 
-		}
-	}
+            },
+            onBridgeReady:function(){
+                WeixinJSBridge.invoke('getBrandWCPayRequest',this.wxpay,function (res) {
+                    if(res.err_msg == "get_brand_wcpay_request:ok" ) {
+                        console.log('支付成功');
+                        //支付成功后跳转的页面
+                    }else if(res.err_msg == "get_brand_wcpay_request:cancel"){
+                        console.log('支付取消');
+                        $toast.show('已取消支付');
+                    }else if(res.err_msg == "get_brand_wcpay_request:fail"){
+                        console.log('支付失败');
+                        $toast.show('网络异常，请重试');
+                    }
+                    //使用以上方式判断前端返回,微信团队郑重提示：res.err_msg将在用户支付成功后返回ok,但并不保证它绝对可靠。
+
+                });
+            },
+            getItems: function () {
+                var self = this;
+                axios.post(basePath + "/c/i", {billId: billId}).then(function (res) {
+                    self.billDetail = res.data;
+                }).catch(function (err) {
+                    console.log(err);
+                });
+            }
+        },
+        mounted: function () {
+            this.getItems();
+
+        }
+    };
 	
-      var My = { template: '#my' ,
-		data:function(){
-			return {user:{
-				status:0,
-				auditReason:''
-			}};
-		},
-		methods:{
-			getS:function(){
-				var self=this;
-				axios.get(basePath+"/personalinfo").then(function(data){
-					self.user=data.data;
-					
-				})
-			}
-		},
-		mounted:function(){
-			this.getS();
-		}}
+      var My = {
+          template: '#my',
+          data: function () {
+              return {
+                  user: {
+                      status: 0,
+                      auditReason: ''
+                  }
+              };
+          },
+          methods: {
+              getS: function () {
+                  var self = this;
+                  axios.get(basePath + "/personalinfo").then(function (data) {
+                      self.user = data.data;
+
+                  })
+              }
+          },
+          mounted: function () {
+              this.getS();
+          }
+      };
       // Routes
       var routes = [
-        { 
-          path: '/', 
-          component: Index,
-          children: [
-            { path: '/', component: Order },
-            { path: 'bill', component: Bill },
-            { path: 'my', component: My }
-          ]
-        }
-      ]
+          {
+              path: '/',
+              component: Index,
+              children: [
+                  {path: '/', component: Order},
+                  {path: 'bill', component: Bill},
+                  {path: 'my', component: My}
+              ]
+          }
+      ];
       // Start up
       Vue.use(Vonic.app, {
-        routes: routes
+          routes: routes
       })
 </script> </#assign>
 
