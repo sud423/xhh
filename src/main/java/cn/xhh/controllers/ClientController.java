@@ -1,5 +1,8 @@
 package cn.xhh.controllers;
 
+import cn.xhh.domain.business.Bill;
+import cn.xhh.infrastructure.Utils;
+import cn.xhh.infrastructure.wxpay.WxPayOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +17,9 @@ import cn.xhh.dto.OrderClientDto;
 import cn.xhh.infrastructure.ListResult;
 import cn.xhh.infrastructure.OptResult;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
+
 @Controller
 @RequestMapping(value = "/c", method = RequestMethod.GET)
 public class ClientController {
@@ -21,6 +27,8 @@ public class ClientController {
 	private OrderService orderService;
 	@Autowired
 	private BillService billService;
+	@Autowired
+	private WxPayOrder wxPayOrder;
 	
 	@RequestMapping(value = "/index", method = RequestMethod.GET)
 	public String index() {
@@ -55,5 +63,21 @@ public class ClientController {
 	@RequestMapping(value = "/i", method = RequestMethod.POST)
 	public BillDto getBillItem(int billId) {
 		return billService.queryBillItem(billId);
+	}
+
+
+	/**
+	 *
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/o", method = RequestMethod.POST)
+	public Map<String,String> createPayOrder(HttpServletRequest request, int id){
+
+		Bill bill=billService.getBill(id);
+
+		Map<String,String> map=wxPayOrder.create(request, bill.getBillNumber(),String.format("%.2f",bill.getRealPrice()));
+
+		return map;
 	}
 }

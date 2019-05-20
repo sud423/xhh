@@ -1,19 +1,24 @@
 package cn.xhh.controllers;
 
+import cn.xhh.application.BillService;
 import cn.xhh.infrastructure.wxpay.WXPayUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
-import java.math.BigDecimal;
 import java.util.Map;
 
 @Controller
-@RequestMapping(value="/pay")
+@RequestMapping(value="/wxpay")
 public class WxPayController {
-    @RequestMapping("callback")
+
+    @Autowired
+    private BillService billService;
+
+    @RequestMapping(value={"/callback","/notify"})
     public String callBack(HttpServletRequest request, HttpServletResponse response){
         //System.out.println("微信支付成功,微信发送的callback信息,请注意修改订单信息");
         InputStream is = null;
@@ -26,10 +31,10 @@ public class WxPayController {
                 if(notifyMap.get("result_code").equals("SUCCESS")){
                     String ordersSn = notifyMap.get("out_trade_no");//商户订单号
                     String amountpaid = notifyMap.get("total_fee");//实际支付的订单金额:单位 分
-                    BigDecimal amountPay = (new BigDecimal(amountpaid).divide(new BigDecimal("100"))).setScale(2);//将分转换成元-实际支付金额:元
+//                    BigDecimal amountPay = (new BigDecimal(amountpaid).divide(new BigDecimal("100"))).setScale(2);//将分转换成元-实际支付金额:元
                     //String openid = notifyMap.get("openid");  //如果有需要可以获取
                     //String trade_type = notifyMap.get("trade_type");
-
+                    billService.updateCallback(ordersSn,amountpaid);
                     /*以下是自己的业务处理------仅做参考
                      * 更新order对应字段/已支付金额/状态码
                      */
@@ -65,5 +70,14 @@ public class WxPayController {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @RequestMapping("/notify")
+    public String wxpaySuccess(HttpServletRequest request, HttpServletResponse response){
+
+        String result=null;
+
+
+        return result;
     }
 }

@@ -1,6 +1,7 @@
 package cn.xhh.application.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import cn.xhh.application.BillService;
@@ -62,17 +63,14 @@ public class BillServiceImpl implements BillService {
 	@Override
 	public BillDto queryBillItem(int billId) {
 		
-		List<BillItem> items=billRepository.getItemByBillId(billId);
+		List<BillItem> items=countDiscount(billId);
+		if(items==null || items.size()<=0)
+			return  null;
+
 		BillDto dto=new BillDto();
 		dto.setId(billId);
 		float totalPrice=(float)items.stream().mapToDouble(BillItem::getPrice).sum();
 		dto.setPrice(totalPrice);
-
-		for(int i=0;i<items.size();i++){
-			float rebate=items.get(i).getPrice()*(1-items.get(i).getDis()/100);
-
-			items.get(i).setDis(rebate);
-		}
 
 		dto.setItems(items);
 		float totalRate=(float)items.stream().mapToDouble(BillItem::getDis).sum();
@@ -80,5 +78,66 @@ public class BillServiceImpl implements BillService {
 		return dto;
 	}
 
-	
+	@Override
+	public Bill getBill(int billId) {
+
+		List<BillItem> items=billRepository.getItemByBillId(billId);
+		if(items==null || items.size()<=0)
+			return null;
+
+		Bill bill=billRepository.getBillById(billId);
+		//计算总价格
+		float totalPrice=bill.getPrice();
+		//计算总折扣后的费用
+		float totalRate=(float)items.stream().mapToDouble(BillItem::getDis).sum();
+		//去掉折扣实际支付费用
+		float fee=(float)(Math.round((totalPrice-totalRate)*100))/100;
+
+		//折扣后价格
+		bill.setDiscountPrice(fee);
+		bill.setRealPrice(fee);
+		bill.setPayChannel((byte) 10);
+		bill.setPayTime(new Date());
+
+		billRepository.update(bill);
+
+//		String s=String.format("%.2f",fee*100);
+		return bill;
+	}
+
+	@Override
+	public int updateCallback(String outTradeNo, String fee) {
+
+		Bill bill=billRepository.getBillByNumber(outTradeNo);
+		bill.setArrivalTime(new Date());
+
+		float amount=(float)(Math.round((Float.parseFloat(fee))*100))/100;
+
+		bill.setAmount(amount);
+		bill.setStatus((byte)20);
+
+		int result=billRepository.update(bill);
+
+		return result;
+	}
+
+	private List<BillItem> countDiscount(int billId){
+
+		List<BillItem> items=billRepository.getItemByBillId(billId);
+
+		if(items==null || items.size()==0)
+		return items;
+
+		for(int i=0;i<items.size();i++){
+
+			float discount=(float)(Math.round(items.get(i).getDis()*100))/100;
+			float rebate=items.get(i).getPrice()*(1-discount);
+
+			items.get(i).setDis(rebate);
+		}
+
+		return items;
+	}
+
+
 }

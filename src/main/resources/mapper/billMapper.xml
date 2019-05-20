@@ -26,4 +26,20 @@
 
 		where bill_id=#{billId}
 	</select>
+
+	<select id="getBillById" resultType="cn.xhh.domain.business.Bill">
+		select *
+		from bill where id=#{billId}
+	</select>
+
+	<select id="getBillByNumber" resultType="cn.xhh.domain.business.Bill">
+		select *
+		from bill where bill_number=#{billNumber}
+	</select>
+
+	<update id="update" parameterType="cn.xhh.domain.business.Bill">
+		update bill set bill_number=#{billNumber},discount_price=#{discountPrice},real_price=#{realPrice},pay_channel=#{payChannel},
+		pay_time=#{payTime},arrival_time=#{arrivalTime},`status`=#{status},version=version+1
+		where id=${id}
+	</update>
 </mapper>

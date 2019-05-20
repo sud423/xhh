@@ -24,10 +24,20 @@ private int id;
 	
 	/**折后价格*/
 	private float discountPrice;
+
+	/**
+	 * 支付金额
+	 */
+	private float realPrice;
 	
 	/**实际到账金额*/
 	private float amount;
-	
+
+	/**
+	 * 支付渠道  10：微信 20：支付宝
+	 */
+	private byte payChannel;
+
 	/**支付时间*/
 	private Date payTime;
 	
@@ -120,6 +130,13 @@ private int id;
 		return discountPrice;
 	}
 
+	public float getRealPrice() {
+		return realPrice;
+	}
+
+	public void setRealPrice(float realPrice) {
+		this.realPrice = realPrice;
+	}
 
 	public void setDiscountPrice(float discountPrice) {
 		this.discountPrice = discountPrice;
@@ -135,6 +152,13 @@ private int id;
 		this.amount = amount;
 	}
 
+	public byte getPayChannel() {
+		return payChannel;
+	}
+
+	public void setPayChannel(byte payChannel) {
+		this.payChannel = payChannel;
+	}
 
 	public Date getPayTime() {
 		return payTime;
