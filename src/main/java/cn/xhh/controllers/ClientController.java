@@ -76,7 +76,7 @@ public class ClientController {
 
 		Bill bill=billService.getBill(id);
 
-		Map<String,String> map=wxPayOrder.create(request, bill.getBillNumber(),bill.getPeriod(),String.format("%.2f",bill.getRealPrice()));
+		Map<String,String> map=wxPayOrder.create(request, bill.getBillNumber(),bill.getPeriod(),String.valueOf((int)bill.getRealPrice()*100));
 
 		return map;
 	}

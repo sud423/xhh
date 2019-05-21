@@ -8,10 +8,12 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.log4j.Logger;
 
 @Component
 public final class WxPayOrder {
 
+    private final static Logger log = Logger.getLogger(WxPayOrder.class);
     @Value("${app_id}")
     private String appId;
 
@@ -42,19 +44,23 @@ public final class WxPayOrder {
             paraMap.put("trade_type", "JSAPI");
             String xml = WXPayUtil.mapToXml(paraMap);//将所有参数(map)转xml格式
 
+            log.debug(xml);
+
             // 统一下单 https://api.mch.weixin.qq.com/pay/unifiedorder
             String unifiedorder_url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
 
             String xmlStr = HttpRequest.sendPost(unifiedorder_url, xml);//发送post请求"统一下单接口"返回预支付id:prepay_id
 
-            System.out.println(xmlStr);
+            log.debug(xmlStr);
 
             //以下内容是返回前端页面的json数据
             String prepay_id = "";//预支付id
-            if (xmlStr.indexOf("SUCCESS") != -1) {
+            if (xmlStr.toLowerCase().indexOf("SUCCESS") != -1) {
                 Map<String, String> map = WXPayUtil.xmlToMap(xmlStr);
-                prepay_id = (String) map.get("prepay_id");
+                prepay_id = map.get("prepay_id");
             }
+
+            log.debug(prepay_id);
 
             System.out.println(prepay_id);
             Map<String, String> payMap = new HashMap<String, String>();

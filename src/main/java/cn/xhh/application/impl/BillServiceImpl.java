@@ -1,5 +1,6 @@
 package cn.xhh.application.impl;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -81,7 +82,7 @@ public class BillServiceImpl implements BillService {
 	@Override
 	public Bill getBill(int billId) {
 
-		List<BillItem> items=billRepository.getItemByBillId(billId);
+		List<BillItem> items=countDiscount(billId);
 		if(items==null || items.size()<=0)
 			return null;
 
@@ -91,7 +92,8 @@ public class BillServiceImpl implements BillService {
 		//计算总折扣后的费用
 		float totalRate=(float)items.stream().mapToDouble(BillItem::getDis).sum();
 		//去掉折扣实际支付费用
-		float fee=(float)(Math.round((totalPrice-totalRate)*100))/100;
+		BigDecimal b  =   new BigDecimal(totalPrice-totalRate);
+		float fee=b.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();
 
 		//折扣后价格
 		bill.setDiscountPrice(fee);
@@ -111,7 +113,8 @@ public class BillServiceImpl implements BillService {
 		Bill bill=billRepository.getBillByNumber(outTradeNo);
 		bill.setArrivalTime(new Date());
 
-		float amount=(float)(Math.round((Float.parseFloat(fee))*100))/100;
+		BigDecimal b  =   new BigDecimal(Float.parseFloat(fee)/100);
+		float amount=b.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();
 
 		bill.setAmount(amount);
 		bill.setStatus((byte)20);
@@ -129,8 +132,9 @@ public class BillServiceImpl implements BillService {
 		return items;
 
 		for(int i=0;i<items.size();i++){
+			BigDecimal b  =   new BigDecimal(items.get(i).getDis()/100);
+			float   discount   =  b.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();
 
-			float discount=(float)(Math.round(items.get(i).getDis()*100))/100;
 			float rebate=items.get(i).getPrice()*(1-discount);
 
 			items.get(i).setDis(rebate);

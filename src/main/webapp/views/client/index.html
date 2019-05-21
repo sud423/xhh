@@ -192,7 +192,7 @@ var billId=0;
 var isPay=false;
 var Modal = {
     template: '#modal',
-    data() {
+    data:function() {
         return {
             order: {
                 addr: '',
@@ -255,7 +255,7 @@ var Modal = {
 
 var Index = {
     template: '#index',
-    data() {
+    data:function() {
         return {
             menus: [
                 {
@@ -280,11 +280,11 @@ var Index = {
         }
     },
     methods: {
-        menuClicked(menuIndex) {
+        menuClicked: function (menuIndex) {
             console.log(menuIndex)
         }
     },
-    beforeDestroy() {
+    beforeDestroy: function () {
         $tabbar.$emit('hideTabbar')
     }
 };
@@ -331,27 +331,21 @@ var Index = {
               },
               onRefresh: function (done) {
                   var self = this;
-                  setTimeout(() = > {
+                  setTimeout(function () {
                       self.q.page = 1;
-                  self.queryByStatus();
-                  done()
-              },
-                  1500
-              )
+                      self.queryByStatus();
+                      done()
+                  }, 1500)
               },
               onInfinite: function (done) {
-                  setTimeout(() = > {
-                      if(this.q.page < this.pages
-              )
-                  {
-                      this.q.page++;
-                      this.queryByStatus();
-                  }
+                  setTimeout(function () {
+                      if (this.q.page < this.pages) {
+                          this.q.page++;
+                          this.queryByStatus();
+                      }
 
-                  done()
-              },
-                  1500
-              )
+                      done()
+                  }, 1500)
               },
               showModal: function () {
                   this.modal.show()
@@ -366,20 +360,19 @@ var Index = {
                   onHide: function () {
                       self.queryByStatus();
                   }
-              }).then((modal) = > {
+              }).then(function (modal) {
                   this.modal = modal
-              }
-          )
+              })
           },
 
-          destroyed() {
+          destroyed:function() {
               if (this.modal)
                   $modal.destroy(this.modal)
           }
       };
     var Bill = {
         template: '#bill',
-        data() {
+        data:function() {
             return {
                 tabs: [
                     "待付款",
@@ -421,27 +414,20 @@ var Index = {
             },
             onRefresh: function (done) {
                 var self = this;
-                setTimeout(() = > {
+                setTimeout(function () {
                     self.q.page = 1;
-                self.getBills();
-                done()
-            },
-                1500
-            )
+                    self.getBills();
+                    done()
+                }, 1500)
             },
             onInfinite: function (done) {
-                setTimeout(() = > {
-                    if(this.q.page < this.totalPage
-            )
-                {
-                    this.q.page++;
-                    this.getBills();
-                }
-
-                done()
-            },
-                1500
-            )
+                setTimeout(function () {
+                    if (this.q.page < this.totalPage) {
+                        this.q.page++;
+                        this.getBills();
+                    }
+                    done()
+                }, 1500)
             },
             showModal: function (item) {
                 billId = item.id;
@@ -453,12 +439,11 @@ var Index = {
                     onHide: function () {
                         self.getBills();
                     }
-                }).then((modal) = > {
+                }).then(function (modal) {
                     this.modal = modal;
 
-                this.modal.show();
-            })
-
+                    this.modal.show();
+                })
             }
         },
         mounted: function () {
@@ -466,7 +451,7 @@ var Index = {
 
         },
 
-        destroyed() {
+        destroyed: function () {
             if (this.modal)
                 $modal.destroy(this.modal)
         }
@@ -508,20 +493,20 @@ var Index = {
                 //       console.log('alert hide.')
                 //     })
                 var self=this;
-                axios.post(basePath + "/c/o", {billId: billId}).then(function (value) {
-                    self.wxpay=value;
+                axios.post(basePath + "/c/o", {id: billId}).then(function (value) {
+                    self.wxpay=value.data;
                     if (typeof WeixinJSBridge == "undefined") {
                         if (document.addEventListener) {
                             document.addEventListener('WeixinJSBridgeReady',
-                                onBridgeReady, false);
+                                self.onBridgeReady, false);
                         } else if (document.attachEvent) {
                             document.attachEvent('WeixinJSBridgeReady',
-                                onBridgeReady);
+                                self.onBridgeReady);
                             document.attachEvent('onWeixinJSBridgeReady',
-                                onBridgeReady);
+                                self.onBridgeReady);
                         }
                     } else {
-                        onBridgeReady();
+                        self.onBridgeReady();
                     }
                 }).catch(function (reason) {
                     console.log(reason);
@@ -529,6 +514,7 @@ var Index = {
 
             },
             onBridgeReady:function(){
+                console.log(this.wxpay);
                 WeixinJSBridge.invoke('getBrandWCPayRequest',this.wxpay,function (res) {
                     if(res.err_msg == "get_brand_wcpay_request:ok" ) {
                         console.log('支付成功');
