@@ -31,8 +31,6 @@ public final class WxPayOrder {
             paraMap.put("appid", appId);
             paraMap.put("mch_id", mchId);
             paraMap.put("nonce_str", WXPayUtil.generateNonceStr());
-            String sign = WXPayUtil.generateSignature(paraMap, paternerKey);
-            paraMap.put("sign", sign);
             paraMap.put("body", String.format("鑫恒辉-%s期账单",period));
             paraMap.put("openid", SessionManager.getUser().getOpenId());
 
@@ -42,12 +40,15 @@ public final class WxPayOrder {
 
             paraMap.put("notify_url", "http://c.supaotui.com/wxpay/notify");// 此路径是微信服务器调用支付结果通知路径随意写
             paraMap.put("trade_type", "JSAPI");
+            String sign = WXPayUtil.generateSignature(paraMap, paternerKey);
+            paraMap.put("sign", sign);
             String xml = WXPayUtil.mapToXml(paraMap);//将所有参数(map)转xml格式
 
             log.debug(xml);
 
             // 统一下单 https://api.mch.weixin.qq.com/pay/unifiedorder
             String unifiedorder_url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
+
 
             String xmlStr = HttpRequest.sendPost(unifiedorder_url, xml);//发送post请求"统一下单接口"返回预支付id:prepay_id
 
