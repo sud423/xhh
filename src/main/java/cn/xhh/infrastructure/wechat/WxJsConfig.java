@@ -96,7 +96,7 @@ public class WxJsConfig {
 			WxToken token = wxToken.getAuthToken();
 			String url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket";
 
-			Map<String, Object> params = new HashMap<String, Object>();
+			Map<String, String> params = new HashMap<>();
 			params.put("access_token", token.getAccessToken());
 			params.put("type", "jsapi");
 

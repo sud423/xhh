@@ -96,7 +96,7 @@ public class WxToken {
 		
 		String url = "https://api.weixin.qq.com/sns/oauth2/access_token";
 
-		Map<String, Object> params = new HashMap<String, Object>();
+		Map<String, String> params = new HashMap<>();
 		params.put("appId", appId);
 		params.put("secret", appsecret);
 		params.put("code", code);
@@ -136,7 +136,7 @@ public class WxToken {
 		String result;
 		if (objectValue == null) {
 			String url = "https://api.weixin.qq.com/cgi-bin/token";
-			Map<String, Object> params = new HashMap<String, Object>();
+			Map<String, String> params = new HashMap<>();
 			params.put("grant_type", "client_credential");
 			params.put("appId", appId);
 			params.put("secret", appsecret);

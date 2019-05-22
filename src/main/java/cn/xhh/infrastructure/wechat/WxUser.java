@@ -189,7 +189,7 @@ public class WxUser {
 	 * @return
 	 */
 	private static WxUser getUser(String url, WxToken token) {
-		Map<String, Object> params = new HashMap<String, Object>();
+		Map<String, String> params = new HashMap<>();
 		params.put("access_token", token.getAccessToken());
 		params.put("openid", token.getOpenId());
 		params.put("lang", "zh_CN");

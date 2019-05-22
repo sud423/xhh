@@ -59,7 +59,7 @@ public class WxClient {
 	 * @param params 请求参数
 	 * @return
 	 */
-	public static final String get(final String url, final Map<String, Object> params) {
+	public static final String get(final String url, final Map<String, String> params) {
 		StringBuilder sb = new StringBuilder();
 
 		if (null != params && !params.isEmpty()) {
@@ -85,15 +85,15 @@ public class WxClient {
 	 * @param params 请求参数
 	 * @return
 	 */
-	public static final String post(final String url, final Map<String, Object> params) {
+	public static final String post(final String url, final Map<String, String> params) {
 
 		HttpPost post = new HttpPost(url);
 
 
 		if (null != params && !params.isEmpty()) {
 			List<NameValuePair> nvpList = new ArrayList<NameValuePair>();
-			for (Map.Entry<String, Object> entry : params.entrySet()) {
-				NameValuePair nvp = new BasicNameValuePair(entry.getKey(), entry.getValue().toString());
+			for (Map.Entry<String, String> entry : params.entrySet()) {
+				NameValuePair nvp = new BasicNameValuePair(entry.getKey(), entry.getValue());
 				nvpList.add(nvp);
 			}
 			post.setEntity(new UrlEncodedFormEntity(nvpList, Charset.forName("UTF-8")));

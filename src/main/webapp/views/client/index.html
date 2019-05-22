@@ -176,9 +176,10 @@
 		label="总件数"></von-input>
 	<von-input type="text" v-model="order.weight" placeholder="总重量"
 		label="总重量"></von-input>
-	
-	<div class="item item-divider">备注</div>
-	<textarea v-model="order.remark" rows="3" class="weui-textarea" />
+    <von-input type="text" v-model="order.remark" placeholder="备注"
+               label="备注"></von-input>
+<!--	<div class="item item-divider" style="padding-bottom: 0px; min-height: 36px;">备注</div>-->
+<!--	<textarea v-model="order.remark" rows="3" class="weui-textarea" />-->
 	<div class="padding">
         <div class="button button-positive button-block" @click="onCreate()">提交</div>
     </div>
@@ -188,108 +189,108 @@
 
 
 <#assign body> <script type="text/javascript">
-var billId=0;
-var isPay=false;
-var Modal = {
-    template: '#modal',
-    data:function() {
-        return {
-            order: {
-                addr: '',
-                goods: '',
-                num: '',
-                weight: '',
-                remark: ''
-            }
-        }
-    },
-    methods: {
-        onCreate: function () {
-            $modal.destroy();
-            if (!this.order.addr) {
-                $toast.show('请输入揽件地址')
-                return;
-            }
-            if (!this.order.goods) {
-                $toast.show('请输入托寄物')
-                return;
-            }
-            if (!this.order.num) {
-                $toast.show('请输入件数')
-                return;
-            }
-            var re = /^(\d+)(\.\d+)?$/;
-
-            if (!re.test(this.order.num)) {
-                $toast.show('请输入有效的件数')
-                return;
-            }
-            if (!this.order.weight) {
-                $toast.show('请输入总重量')
-                return;
-            }
-            if (!re.test(this.order.weight)) {
-                $toast.show('请输入有效的重量')
-                return;
-            }
-            var self = this;
-            axios.post(basePath + "/c/s", this.order).then(function (res) {
-                if (res.data.code == 0) {
-                    $toast.show('提交成功，请耐心等待取件');
-                    self.order = {
-                        addr: '',
-                        goods: '',
-                        num: '',
-                        weight: '',
-                        remark: ''
-                    };
-                } else {
-                    $toast.show(res.data.result)
+    var billId=0;
+    var isPay=false;
+    var Modal = {
+        template: '#modal',
+        data: function () {
+            return {
+                order: {
+                    addr: '',
+                    goods: '',
+                    num: '',
+                    weight: '',
+                    remark: ''
                 }
-            }).catch(function (err) {
-                console.log(err);
-            });
+            }
+        },
+        methods: {
+            onCreate: function () {
+                $modal.destroy();
+                if (!this.order.addr) {
+                    $toast.show('请输入揽件地址')
+                    return;
+                }
+                if (!this.order.goods) {
+                    $toast.show('请输入托寄物')
+                    return;
+                }
+                if (!this.order.num) {
+                    $toast.show('请输入件数')
+                    return;
+                }
+                var re = /^(\d+)(\.\d+)?$/;
+
+                if (!re.test(this.order.num)) {
+                    $toast.show('请输入有效的件数')
+                    return;
+                }
+                if (!this.order.weight) {
+                    $toast.show('请输入总重量')
+                    return;
+                }
+                if (!re.test(this.order.weight)) {
+                    $toast.show('请输入有效的重量')
+                    return;
+                }
+                var self = this;
+                axios.post(basePath + "/c/s", this.order).then(function (res) {
+                    if (res.data.code == 0) {
+                        $toast.show('提交成功，请耐心等待取件');
+                        self.order = {
+                            addr: '',
+                            goods: '',
+                            num: '',
+                            weight: '',
+                            remark: ''
+                        };
+                    } else {
+                        $toast.show(res.data.result)
+                    }
+                }).catch(function (err) {
+                    console.log(err);
+                });
+            }
         }
     }
-}
 
-var Index = {
-    template: '#index',
-    data:function() {
-        return {
-            menus: [
-                {
-                    iconOn: 'icon ion-ios-paper',
-                    iconOff: 'icon ion-ios-paper-outline',
-                    text: '订单',
-                    path: '/'
-                },
-                {
-                    iconOn: 'ion-ios-calculator',
-                    iconOff: 'ion-ios-calculator-outline',
-                    text: '账单',
-                    path: '/bill'
-                },
-                {
-                    iconOn: 'ion-ios-person',
-                    iconOff: 'ion-ios-person-outline',
-                    text: '我的',
-                    path: '/my'
-                }
-            ]
+    var Index = {
+        template: '#index',
+        data:function() {
+            return {
+                menus: [
+                    {
+                        iconOn: 'icon ion-ios-paper',
+                        iconOff: 'icon ion-ios-paper-outline',
+                        text: '订单',
+                        path: '/'
+                    },
+                    {
+                        iconOn: 'ion-ios-calculator',
+                        iconOff: 'ion-ios-calculator-outline',
+                        text: '账单',
+                        path: '/bill'
+                    },
+                    {
+                        iconOn: 'ion-ios-person',
+                        iconOff: 'ion-ios-person-outline',
+                        text: '我的',
+                        path: '/my'
+                    }
+                ]
+            }
+        },
+        methods: {
+            menuClicked: function (menuIndex) {
+                console.log(menuIndex)
+            }
+        },
+        beforeDestroy: function () {
+            $tabbar.$emit('hideTabbar')
         }
-    },
-    methods: {
-        menuClicked: function (menuIndex) {
-            console.log(menuIndex)
-        }
-    },
-    beforeDestroy: function () {
-        $tabbar.$emit('hideTabbar')
-    }
-};
+    };
 
-      var Order = {
+    var Order = {
           template: '#order'
           , data: function () {
               return {
@@ -348,7 +349,8 @@ var Index = {
                   }, 1500)
               },
               showModal: function () {
-                  this.modal.show()
+                  if (this.modal)
+                      this.modal.show();
               }
           },
           mounted: function () {
@@ -361,7 +363,7 @@ var Index = {
                       self.queryByStatus();
                   }
               }).then(function (modal) {
-                  this.modal = modal
+                  self.modal = modal
               })
           },
 
@@ -369,7 +371,7 @@ var Index = {
               if (this.modal)
                   $modal.destroy(this.modal)
           }
-      };
+    };
     var Bill = {
         template: '#bill',
         data:function() {
@@ -440,9 +442,9 @@ var Index = {
                         self.getBills();
                     }
                 }).then(function (modal) {
-                    this.modal = modal;
+                    self.modal = modal;
 
-                    this.modal.show();
+                    self.modal.show();
                 })
             }
         },
@@ -494,7 +496,12 @@ var Index = {
                 //     })
                 var self=this;
                 axios.post(basePath + "/c/o", {id: billId}).then(function (value) {
-                    self.wxpay=value.data;
+                    var res=value.data;
+                    if(res.code>0){
+                        $toast.show(res.result);
+                        return;
+                    }
+                    self.wxpay=res.result;
                     if (typeof WeixinJSBridge == "undefined") {
                         if (document.addEventListener) {
                             document.addEventListener('WeixinJSBridgeReady',
@@ -517,6 +524,7 @@ var Index = {
                 console.log(this.wxpay);
                 WeixinJSBridge.invoke('getBrandWCPayRequest',this.wxpay,function (res) {
                     if(res.err_msg == "get_brand_wcpay_request:ok" ) {
+                        $toast.show('支付成功');
                         console.log('支付成功');
                         //支付成功后跳转的页面
                     }else if(res.err_msg == "get_brand_wcpay_request:cancel"){

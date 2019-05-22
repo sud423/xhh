@@ -72,12 +72,12 @@ public class ClientController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/o", method = RequestMethod.POST)
-	public Map<String,String> createPayOrder(HttpServletRequest request, int id){
+	public OptResult createPayOrder(HttpServletRequest request, int id){
 
 		Bill bill=billService.getBill(id);
 
-		Map<String,String> map=wxPayOrder.create(request, bill.getBillNumber(),bill.getPeriod(),String.valueOf((int)(bill.getRealPrice()*100)));
+		OptResult result=wxPayOrder.create(request, bill.getBillNumber(),bill.getPeriod(),String.valueOf((int)(bill.getRealPrice()*100)));
 
-		return map;
+		return result;
 	}
 }
