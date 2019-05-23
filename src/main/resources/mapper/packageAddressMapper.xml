@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper  namespace="cn.xhh.domain.business.PackageAddressRepository">
+
+    <insert id="add" parameterType="cn.xhh.domain.business.PackageAddress">
+        insert into package_address (province,city,area,detail,is_default,contact,sex,cell,user_id) values (#{province},#{city},#{area},#{detail},#{isDefault},#{contact},#{sex},#{cell},#{userId})
+    </insert>
+
+    <update id="update" parameterType="cn.xhh.domain.business.PackageAddress">
+        <if test="isDefault">
+            <include refid="update_default_sql"></include>
+        </if>
+
+        update package_address set province=#{province},city=#{city},area=#{area},detail=#{detail},is_default=1,contact=#{contact},sex=#{sex},cell=#{cell} where id=${id}
+    </update>
+
+    <update id="updateDefault" parameterType="int">
+        <include refid="update_default_sql"></include>
+    </update>
+
+    <sql id="update_default_sql">
+        update package_address set is_default=0 where user_id=${userId} and is_default=1
+    </sql>
+
+    <delete id="delete" parameterType="int">
+        delete from package_address where id=${id}
+    </delete>
+
+    <select id="get" parameterType="int" resultType="cn.xhh.domain.business.PackageAddress">
+        select * from package_address where id=${id}
+    </select>
+
+    <select id="findByUserId" parameterType="int" resultType="cn.xhh.domain.business.PackageAddress">
+        select * from package_address where user_id=${userId}
+    </select>
+
+    <select id="find" parameterType="int" resultType="cn.xhh.domain.business.PackageAddress">
+        select * from package_address where user_id=${userId} and is_default=1
+    </select>
+</mapper>

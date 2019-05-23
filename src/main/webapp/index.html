@@ -16,7 +16,7 @@
 		<div class="item item-divider" v-if="tableData.length>0">查询结果</div>
 		<div class="item item-divider" v-if="dis">暂无该目的地的报价</div>
 		<list> <item v-for="item in tableData"> {{item.express}}
-		<span class="item-note"> {{item.price}}元 </span> </item> </list>
+		<span class="item-note"> {{item.price | number}}元 </span> </item> </list>
 	</div>
 </div>
     </script> </#assign>
@@ -36,6 +36,12 @@
 					},
 					tableData:[],
 					dis:false
+				}
+			},
+			filters: {
+				number: function (data) {
+					return Number(data).toFixed(2)
+					// return data.toFixed(2);
 				}
 			},
 			methods : {

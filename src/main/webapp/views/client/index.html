@@ -19,176 +19,190 @@
 }
 </style>
 </#assign>
-<#assign contentBody> <script type="x-template" id="index">
+<#assign contentBody>
+<script type="x-template" id="index">
       <div class="page" v-tabbar="{'menus': menus, menuColor: '#B5B5B5', activeMenuColor: '#44CC00', onMenuClick: menuClicked}">
         <router-view></router-view>
       </div>
-    </script> <script type="text/x-template" id="order">
-<div class="page" v-tabbar-menu-index="0">
-	<tabs :tab-items="tabs" :tab-index="q.status" :on-tab-click="onTabClick" style="top:0px;"></tabs>
-	<scroll class="page-content" :on-refresh="onRefresh" :on-infinite="onInfinite">
-	<item v-for="(item, index) in dataTable" style="padding:0px;margin-top:10px;"> <!--:class="{'item-stable': index % 2 == 0}"-->
-        <div class="weui-form-preview">
-            <div class="weui-form-preview__hd">
-                <!--<label class="weui-form-preview__label"></label>-->
-                <em class="weui-form-preview__value">揽件地址：{{item.addr}}</em>
-            </div>
+</script>
+
+<script type="text/x-template" id="order">
+    <div class="page" v-tabbar-menu-index="0">
+        <tabs :tab-items="tabs" :tab-index="q.status" :on-tab-click="onTabClick" style="top:0px;"></tabs>
+        <scroll class="page-content" :on-refresh="onRefresh" :on-infinite="onInfinite">
+            <item v-for="(item, index) in dataTable" style="padding:0px;margin-top:10px;"> <!--:class="{'item-stable': index % 2 == 0}"-->
+                <div class="weui-form-preview">
+                    <div class="weui-form-preview__hd">
+                        <!--<label class="weui-form-preview__label"></label>-->
+                        <em class="weui-form-preview__value">揽件地址：{{item.addr}}</em>
+                    </div>
+                    <div class="weui-form-preview__bd">
+                        <div class="weui-form-preview__item">
+                            <label class="weui-form-preview__label">托寄物：</label>
+                            <span class="weui-form-preview__value">{{item.goods}}</span>
+                        </div>
+                        <!--<div class="weui-form-preview__item">
+                            <label class="weui-form-preview__label">客户：</label>
+                            <span class="weui-form-preview__value">{{item.name}}</span>
+                        </div>
+                        <div class="weui-form-preview__item">
+                            <label class="weui-form-preview__label">手机：</label>
+                            <span class="weui-form-preview__value">{{item.cell}}</span>
+                        </div>-->
+                        <div class="weui-form-preview__item">
+                            <label class="weui-form-preview__label">备注：</label>
+                            <span class="weui-form-preview__value">{{item.remark}}</span>
+                        </div>
+                        <div class="weui-form-preview__item">
+                            <label class="weui-form-preview__label">总重量(kg):{{item.weight}} | 总件数:{{item.num}}</label>
+                        </div>
+                        <div v-if="q.status==1" class="weui-form-preview__item">
+                            <h3 style="font-weight: 400;font-size: 15px;margin-top: .34em;">驾驶员信息</>
+                        </div>
+                        <div v-if="q.status==1" class="weui-form-preview__item">
+                            <label class="weui-form-preview__label">{{item.name}} | {{item.carNumber}} | {{item.cell}}</label>
+                        </div>
+                    </div>
+
+                </div>
+            </item>
+            <div v-if="q.page >= pages && pages!=0" slot="infinite" class="text-center">没有更多数据</div>
+            <div v-if="pages==0" slot="infinite" class="item item-divider text-center">暂无订单</div>
+
+        </scroll>
+        <div style="display:block;text-align:right;position:fixed;bottom:70px;right:20px;" @click="showModal()">
+            <md-button class="button button-calm button-fab">
+                <i class="icon ion-plus"></i>
+            </md-button>
+        </div>
+    </div>
+</script>
+
+<script type="text/x-template" id="bill">
+    <div class="page" v-tabbar-menu-index="1">
+        <tabs :tab-items="tabs" :tab-index="tabIndex" :on-tab-click="onTabClick" style="top:0px;"></tabs>
+        <scroll class="page-content" :on-refresh="onRefresh" :on-infinite="onInfinite">
+            <item v-for="(item, index) in tableData" style="margin-top:10px;" @click.native="showModal(item)"  class="item-icon-right"> <!--:class="{'item-stable': index % 2 == 0}"-->
+                账期：{{item.period}}
+                <span class="item-note">{{item.price}}(元)</span>
+                <i class="icon ion-ios-arrow-right" style="color: #DDD;"></i>
+            </item>
+            <div v-if="q.page >= totalPage && totalPage!=0" slot="infinite" class="text-center">没有更多数据</div>
+            <div v-if="totalPage==0" slot="infinite" class="item item-divider text-center">暂无账单</div>
+        </scroll>
+    </div>
+</script>
+
+<script type="text/x-template" id="my">
+
+    <div class="page-content" v-tabbar-menu-index="2">
+        <p style="text-align: right;margin: 10px;"><i class="icon ion-ios-gear-outline" style="font-size: 26px;"></i></p>
+        <div class="text-center">
+            <img style="border-radius: 10%" :src="user.headImg" />
+            <p> {{user.nickName}} </p>
+            <p v-if="user.status==2 || user.status==30" style="background: lightgrey;border-radius: 30px;padding: 8px 15px;min-width:118px;display:inline-block;">{{user.status==2?"待认证":user.status==30?"审核不通过:"+user.auditReason:""}}</p>
+            <p><i style="font-size:20px;" class="icon ion-ios-compose-outline"></i><a :href="basePath+'/info'">信息编辑</a></p>
+        </div>
+        <list>
+            <item> 姓名 <span class="item-note"> {{user.name}} </span></item>
+            <item>手机号 <span class="item-note"> {{user.cell}} </span></item>
+            <item> 身份证 <span class="item-note">  {{user.idNumber}}</span></item>
+        </list>
+    </div>
+</script>
+
+<script type="text/x-template" id="bill_modal">
+    <div class="page-content padding-top">
+        <div class="weui-form-preview" v-for="(item,index) in billDetail.items" style="margin-bottom:5px;">
             <div class="weui-form-preview__bd">
                 <div class="weui-form-preview__item">
-                    <label class="weui-form-preview__label">托寄物：</label>
-                    <span class="weui-form-preview__value">{{item.goods}}</span>
-                </div>
-                <!--<div class="weui-form-preview__item">
-                    <label class="weui-form-preview__label">客户：</label>
-                    <span class="weui-form-preview__value">{{item.name}}</span>
+                    <label class="weui-form-preview__label">{{item.express}}：</label>
+                    <span class="weui-form-preview__value">{{item.expressNo}}</span>
                 </div>
                 <div class="weui-form-preview__item">
-                    <label class="weui-form-preview__label">手机：</label>
-                    <span class="weui-form-preview__value">{{item.cell}}</span>
-                </div>-->
-                <div class="weui-form-preview__item">
-                    <label class="weui-form-preview__label">备注：</label>
-                    <span class="weui-form-preview__value">{{item.remark}}</span>
+                    <label class="weui-form-preview__label">目的地：</label>
+                    <span class="weui-form-preview__value">{{item.addr}}</span>
                 </div>
                 <div class="weui-form-preview__item">
-                    <label class="weui-form-preview__label">总重量(kg):{{item.weight}} | 总件数:{{item.num}}</label>
-                </div>
-                <div v-if="q.status==1" class="weui-form-preview__item">
-					<h3 style="font-weight: 400;font-size: 15px;margin-top: .34em;">驾驶员信息</>
-				</div>
-                <div v-if="q.status==1" class="weui-form-preview__item">
-                    <label class="weui-form-preview__label">{{item.name}} | {{item.carNumber}} | {{item.cell}}</label>
+                    <label class="weui-form-preview__label">总体积(m³):{{item.volume}} | 总重量(kg):{{item.actualWeight}} | 总件数:{{item.count}}</label>
                 </div>
             </div>
-            
-        </div>
-    </item>
-	<div v-if="q.page >= pages && pages!=0" slot="infinite" class="text-center">没有更多数据</div>
-	<div v-if="pages==0" slot="infinite" class="item item-divider text-center">暂无订单</div>
-	
-    </scroll>
-	<div style="display:block;text-align:right;position:fixed;bottom:70px;right:20px;" @click="showModal()">
-		<md-button class="button button-calm button-fab">
-    		<i class="icon ion-plus"></i>
-  		</md-button>
-	</div>
-</div>
 
-</script> <script type="text/x-template" id="bill">
-<div class="page" v-tabbar-menu-index="1">
-	<tabs :tab-items="tabs" :tab-index="tabIndex" :on-tab-click="onTabClick" style="top:0px;"></tabs>
-	<scroll class="page-content" :on-refresh="onRefresh" :on-infinite="onInfinite">
-	<item v-for="(item, index) in tableData" style="margin-top:10px;" @click.native="showModal(item)"  class="item-icon-right"> <!--:class="{'item-stable': index % 2 == 0}"-->
-                            账期：{{item.period}}
-		<span class="item-note">{{item.price}}(元)</span>
-            <i class="icon ion-ios-arrow-right" style="color: #DDD;"></i>
-    </item>
-	<div v-if="q.page >= totalPage && totalPage!=0" slot="infinite" class="text-center">没有更多数据</div>
-	<div v-if="totalPage==0" slot="infinite" class="item item-divider text-center">暂无账单</div>
-	
-    </scroll>
-</div>
-
-
-</script>
-<script type="text/x-template" id="bill_modal">
-<div class="page-content padding-top">
-    <div class="weui-form-preview" v-for="(item,index) in billDetail.items" style="margin-bottom:5px;">
-        <div class="weui-form-preview__bd">
-             <div class="weui-form-preview__item">
-                  <label class="weui-form-preview__label">{{item.express}}：</label>
-                  <span class="weui-form-preview__value">{{item.expressNo}}</span>
-             </div>
-             <div class="weui-form-preview__item">
-                  <label class="weui-form-preview__label">目的地：</label>
-                  <span class="weui-form-preview__value">{{item.addr}}</span>
-             </div>
-             <div class="weui-form-preview__item">
-                  <label class="weui-form-preview__label">总体积(m³):{{item.volume}} | 总重量(kg):{{item.actualWeight}} | 总件数:{{item.count}}</label>
-            </div>
-       </div>
-            
-       <div class="weui-form-preview__hd" style="padding: 0px 15px 10px;text-align:right;">
-           <!--            <em class="weui-form-preview__value">折扣抵减(元)：{{item.rebate}}</em>-->
-<!--            <label class="weui-form-preview__label">运费总计(元)：{{item.price}}</label>-->
-            <em class="weui-form-preview__value">运费总计(元)：{{item.price}}</em>
-       </div>
-   </div>
-   <div class="weui-form-preview" style="bottom:60px; position:fixed;width:100%;display: flex; align-items: center;" v-if="!isPay">
-            
-       <div class="weui-form-preview__bd" style="flex: 1;font-weight: bold;text-align: right;">
-           <div class="weui-form-preview__item" >
-               <label class="weui-form-preview__label">合计</label>
-               <span class="weui-form-preview__value" style="color:#000;">¥{{billDetail.price | number}}</span>
-           </div>
-           <div class="weui-form-preview__item" v-if="billDetail.rebate>0">
-               <label class="weui-form-preview__label">折扣抵减</label>
-               <span class="weui-form-preview__value" style="color:red;">-¥{{billDetail.rebate | number}}</span>
-           </div>
-       </div>
-   </div>
-
-    <div class="weui-form-preview" style="bottom:0px; position:fixed;width:100%;display: flex; align-items: center;" v-if="!isPay">
-
-        <div class="weui-form-preview__bd" style="flex: 1;text-align: right;">
-            <div class="weui-form-preview__item">
-                <label>实付</label>
-                <span style="color:red;">¥{{(billDetail.price-billDetail.rebate) | number}}</span>
+            <div class="weui-form-preview__hd" style="padding: 0px 15px 10px;text-align:right;">
+                <!--            <em class="weui-form-preview__value">折扣抵减(元)：{{item.rebate}}</em>-->
+                <!--            <label class="weui-form-preview__label">运费总计(元)：{{item.price}}</label>-->
+                <em class="weui-form-preview__value">运费总计(元)：{{item.price}}</em>
             </div>
         </div>
-        <div class="weui-form-preview__ft" style="text-align: right">
+        <div class="weui-form-preview" style="bottom:60px; position:fixed;width:100%;display: flex; align-items: center;" v-if="!isPay">
 
-            <md-button class="button button-assertive button-block" style="min-height: 30px;line-height: 26px;border-radius:20px;" @click.native="pay()">
-                立即支付
-            </md-button>
+            <div class="weui-form-preview__bd" style="flex: 1;font-weight: bold;text-align: right;">
+                <div class="weui-form-preview__item" >
+                    <label class="weui-form-preview__label">合计</label>
+                    <span class="weui-form-preview__value" style="color:#000;">¥{{billDetail.price | number}}</span>
+                </div>
+                <div class="weui-form-preview__item" v-if="billDetail.rebate>0">
+                    <label class="weui-form-preview__label">折扣抵减</label>
+                    <span class="weui-form-preview__value" style="color:red;">-¥{{billDetail.rebate | number}}</span>
+                </div>
+            </div>
+        </div>
 
+        <div class="weui-form-preview" style="bottom:0px; position:fixed;width:100%;display: flex; align-items: center;" v-if="!isPay">
+
+            <div class="weui-form-preview__bd" style="flex: 1;text-align: right;">
+                <div class="weui-form-preview__item">
+                    <label>实付</label>
+                    <span style="color:red;">¥{{(billDetail.price-billDetail.rebate) | number}}</span>
+                </div>
+            </div>
+            <div class="weui-form-preview__ft" style="text-align: right">
+
+                <md-button class="button button-assertive button-block" style="min-height: 30px;line-height: 26px;border-radius:20px;" @click.native="pay()">
+                    立即支付
+                </md-button>
+
+            </div>
         </div>
     </div>
-</div>
-</div>
-
-</script>
- <script type="text/x-template" id="my">
-
-<div class="page-content padding-top" v-tabbar-menu-index="2">
-	<div class="text-center">
-		<img style="border-radius: 10%"
-			:src="user.headImg" />
-	
-	
-	<p> {{user.nickName}} </p>
-	<p v-if="user.status==2 || user.status==30" style="background: lightgrey;border-radius: 30px;padding: 8px 15px;min-width:118px;display:inline-block;">{{user.status==2?"待认证":user.status==30?"审核不通过:"+user.auditReason:""}}</p>
-	<p><i style="font-size:20px;" class="icon ion-ios-compose-outline"></i><a :href="basePath+'/info'">信息编辑</a></p>
-	</div>
-	<list> <item> 姓名 <span class="item-note"> {{user.name}} </span> </item> <item>
-	手机号 <span class="item-note"> {{user.cell}} </span> </item> <item> 身份证 <span
-		class="item-note">  {{user.idNumber}}  </span> </item> </list>
-</div>
-
-
-
-</script> <script type="text/x-template" id="modal">
-<div class="page-content padding padding-top">
-    <von-input type="text" v-model="order.addr" placeholder="揽件地址" label="揽件地址"></von-input>
-	<von-input type="text" v-model="order.goods" placeholder="托寄物"
-		label="托寄物"></von-input>
-	<von-input type="text" v-model="order.num" placeholder="总件数"
-		label="总件数"></von-input>
-	<von-input type="text" v-model="order.weight" placeholder="总重量"
-		label="总重量"></von-input>
-    <von-input type="text" v-model="order.remark" placeholder="备注"
-               label="备注"></von-input>
-<!--	<div class="item item-divider" style="padding-bottom: 0px; min-height: 36px;">备注</div>-->
-<!--	<textarea v-model="order.remark" rows="3" class="weui-textarea" />-->
-	<div class="padding">
-        <div class="button button-positive button-block" @click="onCreate()">提交</div>
     </div>
-  </div>
-</script> </#assign>
+</script>
+
+<script type="text/x-template" id="modal">
+    <div class="page-content padding padding-top">
+        <von-input type="text" v-model="order.addr" placeholder="揽件地址" label="揽件地址"></von-input>
+        <von-input type="text" v-model="order.goods" placeholder="托寄物" label="托寄物"></von-input>
+        <von-input type="text" v-model="order.num" placeholder="总件数" label="总件数"></von-input>
+        <von-input type="text" v-model="order.weight" placeholder="总重量" label="总重量"></von-input>
+        <von-input type="text" v-model="order.remark" placeholder="备注" label="备注"></von-input>
+        <!--	<div class="item item-divider" style="padding-bottom: 0px; min-height: 36px;">备注</div>-->
+        <!--	<textarea v-model="order.remark" rows="3" class="weui-textarea" />-->
+        <div class="padding">
+            <div class="button button-positive button-block" @click="onCreate()">提交</div>
+        </div>
+    </div>
+</script>
+
+<script type="text/x-template" id="package_address_modal">
+    <div class="page-content padding padding-top">
+        <von-input type="text" v-model="order.addr" placeholder="揽件地址" label="揽件地址"></von-input>
+        <von-input type="text" v-model="order.goods" placeholder="托寄物" label="托寄物"></von-input>
+        <von-input type="text" v-model="order.num" placeholder="总件数" label="总件数"></von-input>
+        <von-input type="text" v-model="order.weight" placeholder="总重量" label="总重量"></von-input>
+        <von-input type="text" v-model="order.remark" placeholder="备注" label="备注"></von-input>
+        <!--	<div class="item item-divider" style="padding-bottom: 0px; min-height: 36px;">备注</div>-->
+        <!--	<textarea v-model="order.remark" rows="3" class="weui-textarea" />-->
+        <div class="padding">
+            <div class="button button-positive button-block" @click="onCreate()">提交</div>
+        </div>
+    </div>
+</script>
+</#assign>
 
 
 
-<#assign body> <script type="text/javascript">
+<#assign body>
+<script type="text/javascript">
     var billId=0;
     var isPay=false;
     var Modal = {
@@ -252,11 +266,11 @@
                 });
             }
         }
-    }
+    };
 
     var Index = {
         template: '#index',
-        data:function() {
+        data: function () {
             return {
                 menus: [
                     {
@@ -291,90 +305,91 @@
     };
 
     var Order = {
-          template: '#order'
-          , data: function () {
-              return {
-                  tabs: [
-                      "待接单",
-                      "已接单"//,
-                      //"已拒单"
-                  ],
-                  q: {
-                      status: 0,
-                      page: 1
-                  },
-                  dataTable: [],
-                  pages: 0,
-                  modal: undefined
-              }
-          },
-          methods: {
-              onTabClick: function (index) {
-                  this.dataTable = [];
-                  this.q = {
-                      status: index,
-                      page: 1
-                  };
-                  this.queryByStatus();
-              },
-              queryByStatus: function () {
-                  var self = this;
-                  axios.post(basePath + "/c/q", this.q).then(function (res) {
-                      if (self.q.page === 1)
-                          self.dataTable = res.data.data;
-                      else
-                          self.dataTable = self.dataTable.concat(res.data.data);
+        template: '#order',
+        data: function () {
+            return {
+                tabs: [
+                    "待接单",
+                    "已接单"//,
+                    //"已拒单"
+                ],
+                q: {
+                    status: 0,
+                    page: 1
+                },
+                dataTable: [],
+                pages: 0,
+                modal: undefined
+            }
+        },
+        methods: {
+            onTabClick: function (index) {
+                this.dataTable = [];
+                this.q = {
+                    status: index,
+                    page: 1
+                };
+                this.queryByStatus();
+            },
+            queryByStatus: function () {
+                var self = this;
+                axios.post(basePath + "/c/q", this.q).then(function (res) {
+                    if (self.q.page === 1)
+                        self.dataTable = res.data.data;
+                    else
+                        self.dataTable = self.dataTable.concat(res.data.data);
 
-                      self.pages = res.data.totalPage;
-                  }).catch(function (err) {
-                      console.log(err);
-                  });
-              },
-              onRefresh: function (done) {
-                  var self = this;
-                  setTimeout(function () {
-                      self.q.page = 1;
-                      self.queryByStatus();
-                      done()
-                  }, 1500)
-              },
-              onInfinite: function (done) {
-                  setTimeout(function () {
-                      if (this.q.page < this.pages) {
-                          this.q.page++;
-                          this.queryByStatus();
-                      }
+                    self.pages = res.data.totalPage;
+                }).catch(function (err) {
+                    console.log(err);
+                });
+            },
+            onRefresh: function (done) {
+                var self = this;
+                setTimeout(function () {
+                    self.q.page = 1;
+                    self.queryByStatus();
+                    done()
+                }, 1500)
+            },
+            onInfinite: function (done) {
+                setTimeout(function () {
+                    if (this.q.page < this.pages) {
+                        this.q.page++;
+                        this.queryByStatus();
+                    }
 
-                      done()
-                  }, 1500)
-              },
-              showModal: function () {
-                  if (this.modal)
-                      this.modal.show();
-              }
-          },
-          mounted: function () {
-              this.queryByStatus();
-              var self = this;
-              $modal.fromComponent(Modal, {
-                  title: '创建订单',
-                  theme: 'default',
-                  onHide: function () {
-                      self.queryByStatus();
-                  }
-              }).then(function (modal) {
-                  self.modal = modal
-              })
-          },
+                    done()
+                }, 1500)
+            },
+            showModal: function () {
+                if (this.modal)
+                    this.modal.show();
+            }
+        },
+        mounted: function () {
+            this.queryByStatus();
+            var self = this;
+            $modal.fromComponent(Modal, {
+                title: '创建订单',
+                theme: 'default',
+                onHide: function () {
+                    self.queryByStatus();
+                }
+            }).then(function (modal) {
+                self.modal = modal
+            })
+        },
 
-          destroyed:function() {
-              if (this.modal)
-                  $modal.destroy(this.modal)
-          }
+        destroyed: function () {
+            if (this.modal)
+                $modal.destroy(this.modal)
+        }
     };
+
     var Bill = {
         template: '#bill',
-        data:function() {
+        data: function () {
             return {
                 tabs: [
                     "待付款",
@@ -452,12 +467,11 @@
             this.getBills();
 
         },
-
         destroyed: function () {
             if (this.modal)
                 $modal.destroy(this.modal)
         }
-    }
+    };
 
 	var BillModal= {
         template: "#bill_modal",
@@ -552,46 +566,46 @@
 
         }
     };
-	
-      var My = {
-          template: '#my',
-          data: function () {
-              return {
-                  user: {
-                      status: 0,
-                      auditReason: ''
-                  }
-              };
-          },
-          methods: {
-              getS: function () {
-                  var self = this;
-                  axios.get(basePath + "/personalinfo").then(function (data) {
-                      self.user = data.data;
 
-                  })
-              }
-          },
-          mounted: function () {
-              this.getS();
-          }
-      };
-      // Routes
-      var routes = [
-          {
-              path: '/',
-              component: Index,
-              children: [
-                  {path: '/', component: Order},
-                  {path: 'bill', component: Bill},
-                  {path: 'my', component: My}
-              ]
-          }
-      ];
-      // Start up
-      Vue.use(Vonic.app, {
-          routes: routes
-      })
+    var My = {
+        template: '#my',
+        data: function () {
+            return {
+                user: {
+                    status: 0,
+                    auditReason: ''
+                }
+            };
+        },
+        methods: {
+            getS: function () {
+                var self = this;
+                axios.get(basePath + "/personalinfo").then(function (data) {
+                    self.user = data.data;
+
+                })
+            }
+        },
+        mounted: function () {
+            this.getS();
+        }
+    };
+    // Routes
+    var routes = [
+        {
+            path: '/',
+            component: Index,
+            children: [
+                {path: '/', component: Order},
+                {path: 'bill', component: Bill},
+                {path: 'my', component: My}
+            ]
+        }
+    ];
+    // Start up
+    Vue.use(Vonic.app, {
+        routes: routes
+    })
 </script> </#assign>
 
 
