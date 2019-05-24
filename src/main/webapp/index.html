@@ -1,25 +1,28 @@
 <#assign title> 鑫恒辉物流-运费查询 </#assign>
 
-<#assign contentBody> <!-- 组件 --> <script
-	type="text/x-template" id="index">
-<div class="page" v-nav="{hideNavbar: true}">
-	<div class="page-content">
-		<div class="item item-divider">选择您寄送的目的地：</div>
-		<cascade :fields="fields" :data="cities" :value="query.dest"></cascade>
-		<von-input type="text" v-model:number="query.vol" placeholder="体积"
-			label="体积(m³)"></von-input>
-		<von-input type="text" v-model:number="query.weight" placeholder="重量"
-			label="重量(kg)"></von-input>
-		<div class="padding">
-			<div class="button button-positive button-block" @click="onSerch()">查询</div>
+<#assign contentBody>
+<!-- 组件 -->
+<script	type="text/x-template" id="index">
+	<div class="page" v-nav="{hideNavbar: true}">
+		<div class="page-content">
+			<div class="item item-divider">选择您寄送的目的地：</div>
+			<cascade :fields="fields" :data="cities" :value="query.dest"></cascade>
+			<von-input type="text" v-model:number="query.vol" placeholder="体积" label="体积(m³)"></von-input>
+			<von-input type="text" v-model:number="query.weight" placeholder="重量" label="重量(kg)"></von-input>
+			<div class="padding">
+				<div class="button button-positive button-block" @click="onSerch()">查询</div>
+			</div>
+			<div class="item item-divider" v-if="tableData.length>0">查询结果</div>
+			<div class="item item-divider" v-if="dis">暂无该目的地的报价</div>
+			<list>
+				<item v-for="item in tableData"> {{item.express}}
+					<span class="item-note"> {{item.price | number}}元 </span>
+				</item>
+			</list>
 		</div>
-		<div class="item item-divider" v-if="tableData.length>0">查询结果</div>
-		<div class="item item-divider" v-if="dis">暂无该目的地的报价</div>
-		<list> <item v-for="item in tableData"> {{item.express}}
-		<span class="item-note"> {{item.price | number}}元 </span> </item> </list>
 	</div>
-</div>
-    </script> </#assign>
+</script>
+</#assign>
 
 
 <#assign body> <script type="text/javascript">

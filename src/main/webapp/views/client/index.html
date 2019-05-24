@@ -2,28 +2,30 @@
 
 <#assign head>
 <style type="text/css">
-.tabs-top>.tabs {
-	top: 0px;
-}
+    .tabs-top>.tabs {
+        top: 0px;
+    }
 
-.tabbar {
-	overflow: hidden;
-}
+    .tabbar {
+        overflow: hidden;
+    }
 
-.scroll-inner {
-	padding-bottom: 50px;
-}
+    .scroll-inner {
+        padding-bottom: 50px;
+    }
 
-.pull-to-refresh-layer {
-	height: 50px;
-}
+    .pull-to-refresh-layer {
+        height: 50px;
+    }
+
+
 </style>
 </#assign>
 <#assign contentBody>
 <script type="x-template" id="index">
-      <div class="page" v-tabbar="{'menus': menus, menuColor: '#B5B5B5', activeMenuColor: '#44CC00', onMenuClick: menuClicked}">
+    <div class="page" v-tabbar="{'menus': menus, menuColor: '#B5B5B5', activeMenuColor: '#44CC00', onMenuClick: menuClicked}">
         <router-view></router-view>
-      </div>
+    </div>
 </script>
 
 <script type="text/x-template" id="order">
@@ -170,7 +172,13 @@
 
 <script type="text/x-template" id="modal">
     <div class="page-content padding padding-top">
-        <von-input type="text" v-model="order.addr" placeholder="揽件地址" label="揽件地址"></von-input>
+
+        <item class="item-icon-right" id="expressArea" @click.native="dropselect">
+            揽件地址
+            <span class="item-note">{{order.addr}}</span>
+            <i class="icon ion-ios-arrow-right" style="color: #DDD;"></i>
+        </item>
+<!--        <von-input type="text" v-model="order.addr" placeholder="揽件地址" label="揽件地址"></von-input>-->
         <von-input type="text" v-model="order.goods" placeholder="托寄物" label="托寄物"></von-input>
         <von-input type="text" v-model="order.num" placeholder="总件数" label="总件数"></von-input>
         <von-input type="text" v-model="order.weight" placeholder="总重量" label="总重量"></von-input>
@@ -181,6 +189,44 @@
             <div class="button button-positive button-block" @click="onCreate()">提交</div>
         </div>
     </div>
+
+
+    <!--选择地区弹层-->
+    <section id="areaLayer" class="express-area-box">
+        <header>
+            <h3>选择省市区</h3>
+            <div class="selet-area-wrap">
+                <p><span class="one"></span></p>
+                <p><span class="two"></span></p>
+                <p><span class="three"></span></p>
+            </div>
+            <div class="hot-city">
+                <p>热门城市</p>
+                <ul>
+                    <li onclick="selectPP(0,1)">北京</li>
+                    <li onclick="selectPP(10,1)">上海</li>
+                    <li onclick="quickselectC(18,0)">广州</li>
+                    <li onclick="quickselectC(18,1)">深圳</li>
+                    <li onclick="quickselectC(12,0)">杭州</li>
+                    <li onclick="quickselectC(11,0)">南京</li>
+                    <li onclick="quickselectC(11,4)">苏州</li>
+                    <li onclick="selectPP(1,1)">天津</li>
+                    <li onclick="quickselectC(16,0)">武汉</li>
+                    <li onclick="quickselectC(17,0)">长沙</li>
+                    <li onclick="selectPP(21,1)">重庆</li>
+                    <li onclick="quickselectC(22,0)">成都</li>
+                </ul>
+                <p>选择省份/地区</p>
+            </div>
+            <a id="backUp" class="back" href="javascript:void(0)" title="返回"></a>
+            <a id="closeArea" class="close" href="javascript:void(0)" title="关闭"></a>
+        </header>
+        <article id="areaBox">
+            <ul id="areaList" class="area-list"></ul>
+        </article>
+    </section>
+    <!--遮罩层-->
+    <div id="areaMask" class="mask"></div>
 </script>
 
 <script type="text/x-template" id="package_address_modal">
@@ -197,11 +243,14 @@
         </div>
     </div>
 </script>
+
+
 </#assign>
 
 
 
 <#assign body>
+<script type="text/javascript" src="${request.getContextPath()}/assets/js/zepto.area.js"></script>
 <script type="text/javascript">
     var billId=0;
     var isPay=false;
@@ -219,6 +268,16 @@
             }
         },
         methods: {
+            dropselect:function(){
+                console.log(1);
+                areaList = $("#areaList");
+                console.log(areaList);
+                areaTop = areaList.offset().top;
+                console.log(areaTop);
+                intProvince(1);
+                $("#areaMask").fadeIn();
+                $("#areaLayer").animate({"bottom": 0}).attr("flag","0");
+            },
             onCreate: function () {
                 $modal.destroy();
                 if (!this.order.addr) {
@@ -265,6 +324,10 @@
                     console.log(err);
                 });
             }
+        },
+        mounted:function () {
+
+
         }
     };
 
@@ -606,7 +669,8 @@
     Vue.use(Vonic.app, {
         routes: routes
     })
-</script> </#assign>
+</script>
+</#assign>
 
 
 
