@@ -98,7 +98,7 @@
 <script type="text/x-template" id="my">
 
     <div class="page-content" v-tabbar-menu-index="2">
-        <p style="text-align: right;margin: 10px;"><i class="icon ion-ios-gear-outline" style="font-size: 26px;"></i></p>
+        <p style="text-align: right;margin: 10px;"><i class="icon ion-ios-gear-outline" style="font-size: 26px;" @click="showModal"></i></p>
         <div class="text-center">
             <img style="border-radius: 10%" :src="user.headImg" />
             <p> {{user.nickName}} </p>
@@ -173,11 +173,7 @@
 <script type="text/x-template" id="modal">
     <div class="page-content padding padding-top">
 
-        <item class="item-icon-right" id="expressArea" @click.native="dropselect">
-            揽件地址
-            <span class="item-note">{{order.addr}}</span>
-            <i class="icon ion-ios-arrow-right" style="color: #DDD;"></i>
-        </item>
+
 <!--        <von-input type="text" v-model="order.addr" placeholder="揽件地址" label="揽件地址"></von-input>-->
         <von-input type="text" v-model="order.goods" placeholder="托寄物" label="托寄物"></von-input>
         <von-input type="text" v-model="order.num" placeholder="总件数" label="总件数"></von-input>
@@ -190,46 +186,9 @@
         </div>
     </div>
 
-
-    <!--选择地区弹层-->
-    <section id="areaLayer" class="express-area-box">
-        <header>
-            <h3>选择省市区</h3>
-            <div class="selet-area-wrap">
-                <p><span class="one"></span></p>
-                <p><span class="two"></span></p>
-                <p><span class="three"></span></p>
-            </div>
-            <div class="hot-city">
-                <p>热门城市</p>
-                <ul>
-                    <li onclick="selectPP(0,1)">北京</li>
-                    <li onclick="selectPP(10,1)">上海</li>
-                    <li onclick="quickselectC(18,0)">广州</li>
-                    <li onclick="quickselectC(18,1)">深圳</li>
-                    <li onclick="quickselectC(12,0)">杭州</li>
-                    <li onclick="quickselectC(11,0)">南京</li>
-                    <li onclick="quickselectC(11,4)">苏州</li>
-                    <li onclick="selectPP(1,1)">天津</li>
-                    <li onclick="quickselectC(16,0)">武汉</li>
-                    <li onclick="quickselectC(17,0)">长沙</li>
-                    <li onclick="selectPP(21,1)">重庆</li>
-                    <li onclick="quickselectC(22,0)">成都</li>
-                </ul>
-                <p>选择省份/地区</p>
-            </div>
-            <a id="backUp" class="back" href="javascript:void(0)" title="返回"></a>
-            <a id="closeArea" class="close" href="javascript:void(0)" title="关闭"></a>
-        </header>
-        <article id="areaBox">
-            <ul id="areaList" class="area-list"></ul>
-        </article>
-    </section>
-    <!--遮罩层-->
-    <div id="areaMask" class="mask"></div>
 </script>
 
-<script type="text/x-template" id="package_address_modal">
+<script type="text/x-template" id="package_address_list">
     <div class="page-content padding padding-top">
         <von-input type="text" v-model="order.addr" placeholder="揽件地址" label="揽件地址"></von-input>
         <von-input type="text" v-model="order.goods" placeholder="托寄物" label="托寄物"></von-input>
@@ -244,6 +203,20 @@
     </div>
 </script>
 
+<script type="text/x-template" id="package_address_edit">
+    <div class="page-content padding padding-top">
+        <von-input type="text" v-model="order.addr" placeholder="揽件地址" label="揽件地址"></von-input>
+        <von-input type="text" v-model="order.goods" placeholder="托寄物" label="托寄物"></von-input>
+        <von-input type="text" v-model="order.num" placeholder="总件数" label="总件数"></von-input>
+        <von-input type="text" v-model="order.weight" placeholder="总重量" label="总重量"></von-input>
+        <von-input type="text" v-model="order.remark" placeholder="备注" label="备注"></von-input>
+        <!--	<div class="item item-divider" style="padding-bottom: 0px; min-height: 36px;">备注</div>-->
+        <!--	<textarea v-model="order.remark" rows="3" class="weui-textarea" />-->
+        <div class="padding">
+            <div class="button button-positive button-block" @click="onCreate()">提交</div>
+        </div>
+    </div>
+</script>
 
 </#assign>
 
@@ -531,8 +504,11 @@
 
         },
         destroyed: function () {
-            if (this.modal)
-                $modal.destroy(this.modal)
+            if (this.modal){
+                $modal.destroy(this.modal);
+                billId=0;
+                isPay=false;
+            }
         }
     };
 
@@ -637,7 +613,8 @@
                 user: {
                     status: 0,
                     auditReason: ''
-                }
+                },
+                modal:undefined
             };
         },
         methods: {
@@ -647,12 +624,46 @@
                     self.user = data.data;
 
                 })
+            },
+            showModal: function () {
+                var self = this;
+                $modal.fromComponent(packAddressListModel, {
+                    title: '我的揽件地址',
+                    theme: 'default',
+                    onHide: function () {
+
+                    }
+                }).then(function (modal) {
+                    self.modal = modal;
+
+                    self.modal.show();
+                })
             }
         },
         mounted: function () {
             this.getS();
         }
     };
+
+    var packAddressListModel={
+        template: "#package_address_list",
+        data: function () {
+            return {
+
+            }
+        },
+        methods: {
+            getPackaddress: function () {
+
+            }
+        },
+        mounted: function () {
+            this.getPackaddress();
+
+        }
+
+    }
+
     // Routes
     var routes = [
         {
