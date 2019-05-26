@@ -33,7 +33,7 @@ public final class WxPayOrder {
             paraMap.put("appid", appId);
             paraMap.put("mch_id", mchId);
             paraMap.put("nonce_str", WXPayUtil.generateNonceStr());
-            paraMap.put("body", String.format("鑫恒辉-%s期账单",period));
+            paraMap.put("body", new String(String.format("鑫恒辉-%s期账单",period).getBytes("iso8859-1")));
             paraMap.put("openid", SessionManager.getUser().getOpenId());
 
             paraMap.put("out_trade_no", tradeNo);//订单号
@@ -42,7 +42,7 @@ public final class WxPayOrder {
 
             paraMap.put("notify_url", "http://c.supaotui.com/wxpay/notify");// 此路径是微信服务器调用支付结果通知路径随意写
             paraMap.put("trade_type", "JSAPI");
-            paraMap.put("sign_type", "MD5");
+            paraMap.put("sign_type", WXPayConstants.MD5);
             String sign = WXPayUtil.generateSignature(paraMap, paternerKey);
             paraMap.put("sign", sign);
             String xml = WXPayUtil.mapToXml(paraMap);//将所有参数(map)转xml格式
@@ -58,7 +58,7 @@ public final class WxPayOrder {
 
             //以下内容是返回前端页面的json数据
             Map<String, String> map = WXPayUtil.xmlToMap(xmlStr);
-            if (!map.get("return_code").toLowerCase().equals("SUCCESS")) {
+            if (!map.get("return_code").equals("SUCCESS")) {
                 return  OptResult.Failed(map.get("return_msg"));
             }
             String prepay_id = map.get("prepay_id");//预支付id

@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import cn.xhh.application.BillService;
+import cn.xhh.infrastructure.Utils;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
@@ -94,6 +95,8 @@ public class BillServiceImpl implements BillService {
 		//去掉折扣实际支付费用
 		BigDecimal b  =   new BigDecimal(totalPrice-totalRate);
 		float fee=b.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();
+
+		bill.setBillNumber(Utils.generateCode());
 
 		//折扣后价格
 		bill.setDiscountPrice(fee);
