@@ -72,12 +72,12 @@ public class WxPayController {
         return null;
     }
 
-    @RequestMapping("/notify")
-    public String wxpaySuccess(HttpServletRequest request, HttpServletResponse response){
-
-        String result=null;
-
-
-        return result;
-    }
+//    @RequestMapping("/notify")
+//    public String wxpaySuccess(HttpServletRequest request, HttpServletResponse response){
+//
+//        String result=null;
+//
+//
+//        return result;
+//    }
 }
