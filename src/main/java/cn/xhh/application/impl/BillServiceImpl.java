@@ -6,7 +6,10 @@ import java.util.Date;
 import java.util.List;
 
 import cn.xhh.application.BillService;
+import cn.xhh.domain.business.*;
+import cn.xhh.infrastructure.OptResult;
 import cn.xhh.infrastructure.Utils;
+import cn.xhh.infrastructure.wxpay.WxPayOrder;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
@@ -18,18 +21,22 @@ import org.springframework.stereotype.Service;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
-import cn.xhh.domain.business.Bill;
-import cn.xhh.domain.business.BillItem;
-import cn.xhh.domain.business.BillRepository;
 import cn.xhh.domainservice.identity.SessionManager;
 import cn.xhh.dto.BillDto;
 import cn.xhh.infrastructure.ListResult;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class BillServiceImpl implements BillService {
 
 	@Autowired
 	private BillRepository billRepository;
+
+	@Autowired
+	private FlowRepository flowRepository;
+
+	@Autowired
+	private WxPayOrder wxPayOrder;
 	
 	@Override
 	public ListResult<BillDto> queryBillByStatus(int page, int status) {
@@ -81,33 +88,44 @@ public class BillServiceImpl implements BillService {
 	}
 
 	@Override
-	public Bill getBill(int billId) {
+	@Transactional
+	public OptResult createPay(int billId, String channel, String ip) {
 
 		List<BillItem> items=countDiscount(billId);
 		if(items==null || items.size()<=0)
 			return null;
 
 		Bill bill=billRepository.getBillById(billId);
-		//计算总价格
-		float totalPrice=bill.getPrice();
-		//计算总折扣后的费用
-		float totalRate=(float)items.stream().mapToDouble(BillItem::getDis).sum();
-		//去掉折扣实际支付费用
-		BigDecimal b  =   new BigDecimal(totalPrice-totalRate);
-		float fee=b.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();
 
-		bill.setBillNumber(Utils.generateCode());
-
-		//折扣后价格
-		bill.setDiscountPrice(fee);
-		bill.setRealPrice(fee);
-		bill.setPayChannel((byte) 10);
-		bill.setPayTime(new Date());
-
+		Flow flow=new Flow();
+		flow.setId(Utils.generateCode());
+		flow.setAddTime(new Date());
+		flow.setBillId(bill.getId());
+		flow.setChannel(channel);
+		flow.setCreateIp(ip);
+		flow.setOptTime(new Date());
+		flow.setStatus((byte) 10);
+		flow.setUserId(SessionManager.getUserId());
+		flow.setTenantId(SessionManager.getTenantId());
+		flow.setClose(false);
+		if(!bill.isAdjust()){
+			//计算总价格
+			float totalPrice=bill.getPrice();
+			//计算总折扣后的费用
+			float totalRate=(float)items.stream().mapToDouble(BillItem::getDis).sum();
+			//去掉折扣实际支付费用
+			BigDecimal b  =   new BigDecimal(totalPrice-totalRate);
+			float fee=b.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();
+			flow.setAmount((int)fee*100);
+		}
+		else{
+			flow.setAmount((int)bill.getAdjustPrice()*100);
+		}
+		bill.setBillNumber(flow.getId());
+		flowRepository.add(flow);
 		billRepository.update(bill);
+		return wxPayOrder.create(flow.getId(),Integer.toString(flow.getAmount()),bill.getPeriod(),ip);
 
-//		String s=String.format("%.2f",fee*100);
-		return bill;
 	}
 
 	@Override

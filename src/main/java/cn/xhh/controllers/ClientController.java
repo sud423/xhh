@@ -1,6 +1,7 @@
 package cn.xhh.controllers;
 
 import cn.xhh.domain.business.Bill;
+import cn.xhh.infrastructure.IpUtil;
 import cn.xhh.infrastructure.Utils;
 import cn.xhh.infrastructure.wxpay.WxPayOrder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,9 +75,7 @@ public class ClientController {
 	@RequestMapping(value = "/o", method = RequestMethod.POST)
 	public OptResult createPayOrder(HttpServletRequest request, int id){
 
-		Bill bill=billService.getBill(id);
-
-		OptResult result=wxPayOrder.create(request, bill.getBillNumber(),bill.getPeriod(),String.valueOf((int)(bill.getRealPrice()*100)));
+		OptResult result=billService.createPay(id,"wx_jsapi",IpUtil.getIp(request));
 
 		return result;
 	}

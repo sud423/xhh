@@ -1,13 +1,10 @@
 package cn.xhh.infrastructure.wxpay;
 
 import cn.xhh.domainservice.identity.SessionManager;
-import cn.xhh.infrastructure.IpUtil;
 import cn.xhh.infrastructure.OptResult;
-import cn.xhh.infrastructure.wechat.WxClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.log4j.Logger;
@@ -16,6 +13,9 @@ import org.apache.log4j.Logger;
 public final class WxPayOrder {
 
     private final static Logger log = Logger.getLogger(WxPayOrder.class);
+
+    private WXPayConfig payConfig;
+
     @Value("${app_id}")
     private String appId;
 
@@ -25,59 +25,50 @@ public final class WxPayOrder {
     @Value("${paterner_key}")
     private String paternerKey;
 
-
-    public OptResult create(HttpServletRequest request, String tradeNo, String period, String fee){
+    public OptResult create(String out_trade_no,String total_fee,String period,String spbill_create_ip){
         try {
-            //拼接统一下单地址参数
+            //统一下单参数
             Map<String, String> paraMap = new HashMap<>();
-            paraMap.put("appid", appId);
-            paraMap.put("mch_id", mchId);
-            paraMap.put("nonce_str", WXPayUtil.generateNonceStr());
-            paraMap.put("body", new String(String.format("鑫恒辉-%s期账单",period).getBytes("iso8859-1")));
+            paraMap.put("body", new String(String.format("鑫恒辉-%s期账单", period).getBytes("ISO8859-1")));
             paraMap.put("openid", SessionManager.getUser().getOpenId());
-
-            paraMap.put("out_trade_no", tradeNo);//订单号
-            paraMap.put("total_fee", fee);
-            paraMap.put("spbill_create_ip", IpUtil.getIp(request));
+            paraMap.put("out_trade_no", out_trade_no);//订单号
+            paraMap.put("total_fee", total_fee);
+            paraMap.put("spbill_create_ip", spbill_create_ip);
 
             paraMap.put("notify_url", "http://c.supaotui.com/wxpay/notify");// 此路径是微信服务器调用支付结果通知路径随意写
             paraMap.put("trade_type", "JSAPI");
             paraMap.put("sign_type", WXPayConstants.MD5);
-            String sign = WXPayUtil.generateSignature(paraMap, paternerKey);
-            paraMap.put("sign", sign);
-            String xml = WXPayUtil.mapToXml(paraMap);//将所有参数(map)转xml格式
 
-            log.debug(xml);
+            WXPay wxPay=new WXPay(payConfig);
 
-            // 统一下单 https://api.mch.weixin.qq.com/pay/unifiedorder
-            String unifiedorder_url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
+            Map<String,String> responseMap= wxPay.unifiedOrder(paraMap);
 
-            String xmlStr = HttpRequest.sendPost(unifiedorder_url, xml);//发送post请求"统一下单接口"返回预支付id:prepay_id
-
-            log.debug(xmlStr);
-
-            //以下内容是返回前端页面的json数据
-            Map<String, String> map = WXPayUtil.xmlToMap(xmlStr);
-            if (!map.get("return_code").equals("SUCCESS")) {
-                return  OptResult.Failed(map.get("return_msg"));
+            //判断通信返回状态码 是否成功
+            if (!"SUCCESS".equals(responseMap.get("return_code"))) {
+                return OptResult.Failed(responseMap.get("return_msg"));
             }
-            String prepay_id = map.get("prepay_id");//预支付id
-            log.debug(prepay_id);
 
-            System.out.println(prepay_id);
+            //判断交易标识返回状态码 是否成功
+            if (!"SUCCESS".equals(responseMap.get("result_code"))) {
+                return OptResult.Failed(responseMap.get("err_code_des"));
+            }
+
             Map<String, String> payMap = new HashMap<>();
-            payMap.put("appId", appId);
+            payMap.put("appId", payConfig.getAppID());
             payMap.put("timeStamp", WXPayUtil.getCurrentTimestamp() + "");
             payMap.put("nonceStr", WXPayUtil.generateNonceStr());
-            payMap.put("signType", "MD5");
-            payMap.put("package", "prepay_id=" + prepay_id);
+            payMap.put("signType", WXPayConstants.MD5);
+            payMap.put("package", "prepay_id=" + responseMap.get("prepay_id"));
             String paySign = WXPayUtil.generateSignature(payMap, paternerKey);
             payMap.put("paySign", paySign);
             return OptResult.Successed(payMap);
         }
-        catch (Exception e){
-            e.printStackTrace();
+        catch (Exception ex){
+            log.error(ex);
+            return  OptResult.Failed(ex.getMessage());
         }
-        return null;
+
     }
+
+
 }

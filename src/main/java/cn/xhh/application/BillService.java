@@ -1,8 +1,9 @@
 package cn.xhh.application;
 
-import cn.xhh.domain.business.Bill;
+
 import cn.xhh.dto.BillDto;
 import cn.xhh.infrastructure.ListResult;
+import cn.xhh.infrastructure.OptResult;
 
 public interface BillService {
 
@@ -26,7 +27,7 @@ public interface BillService {
 	 * @param billId
 	 * @return
 	 */
-	Bill getBill(int billId);
+	OptResult createPay(int billId, String channel, String ip);
 
 	/**
 	 * 微信支付成功后回调

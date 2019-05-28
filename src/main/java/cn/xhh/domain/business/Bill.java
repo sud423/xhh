@@ -25,10 +25,11 @@ private int id;
 	/**折后价格*/
 	private float discountPrice;
 
+	private boolean isAdjust;
 	/**
 	 * 支付金额
 	 */
-	private float realPrice;
+	private float adjustPrice;
 	
 	/**实际到账金额*/
 	private float amount;
@@ -130,12 +131,20 @@ private int id;
 		return discountPrice;
 	}
 
-	public float getRealPrice() {
-		return realPrice;
+	public boolean isAdjust() {
+		return isAdjust;
 	}
 
-	public void setRealPrice(float realPrice) {
-		this.realPrice = realPrice;
+	public void setAdjust(boolean adjust) {
+		isAdjust = adjust;
+	}
+
+	public float getAdjustPrice() {
+		return adjustPrice;
+	}
+
+	public void setAdjustPrice(float adjustPrice) {
+		this.adjustPrice = adjustPrice;
 	}
 
 	public void setDiscountPrice(float discountPrice) {
