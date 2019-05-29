@@ -12,7 +12,7 @@ private int id;
 	
 	/**账单流水号*/
 	private String billNumber;
-	
+
 	/**账期*/
 	private String period;
 	
@@ -45,20 +45,8 @@ private int id;
 	/**实际到账时间*/
 	private Date arrivalTime;
 	
-	/**状态 1：未推送 10：已推送，待支付 20：已支付*/
+	/**状态 1：未推送 10：已推送，待支付 20:在途中 30：已支付*/
 	private byte status;
-	
-	/**推送时间*/
-	private Date pushTime;
-	
-	//推送人编号
-	private int pusherId;
-	
-	/**备注*/
-	private String remark;
-	
-	/**做账人编号*/
-	private int maintainId;
 	
 	/**添加时间*/
 	private Date addTime;
@@ -76,36 +64,25 @@ private int id;
 		this.id = id;
 	}
 
-
 	public int getTenantId() {
 		return tenantId;
 	}
-
 
 	public void setTenantId(int tenantId) {
 		this.tenantId = tenantId;
 	}
 
-
 	public String getBillNumber() {
 		return billNumber;
 	}
-
 
 	public void setBillNumber(String billNumber) {
 		this.billNumber = billNumber;
 	}
 
-
 	public String getPeriod() {
 		return period;
 	}
-
-
-	public void setPeriod(String period) {
-		this.period = period;
-	}
-
 
 	public int getUserId() {
 		return userId;
@@ -121,68 +98,25 @@ private int id;
 		return price;
 	}
 
-
-	public void setPrice(float price) {
-		this.price = price;
-	}
-
-
-	public float getDiscountPrice() {
-		return discountPrice;
-	}
-
 	public boolean isAdjust() {
 		return isAdjust;
-	}
-
-	public void setAdjust(boolean adjust) {
-		isAdjust = adjust;
 	}
 
 	public float getAdjustPrice() {
 		return adjustPrice;
 	}
 
-	public void setAdjustPrice(float adjustPrice) {
-		this.adjustPrice = adjustPrice;
-	}
-
-	public void setDiscountPrice(float discountPrice) {
-		this.discountPrice = discountPrice;
-	}
-
-
-	public float getAmount() {
-		return amount;
-	}
-
-
 	public void setAmount(float amount) {
 		this.amount = amount;
-	}
-
-	public byte getPayChannel() {
-		return payChannel;
 	}
 
 	public void setPayChannel(byte payChannel) {
 		this.payChannel = payChannel;
 	}
 
-	public Date getPayTime() {
-		return payTime;
-	}
-
-
 	public void setPayTime(Date payTime) {
 		this.payTime = payTime;
 	}
-
-
-	public Date getArrivalTime() {
-		return arrivalTime;
-	}
-
 
 	public void setArrivalTime(Date arrivalTime) {
 		this.arrivalTime = arrivalTime;
@@ -197,47 +131,6 @@ private int id;
 	public void setStatus(byte status) {
 		this.status = status;
 	}
-
-
-	public Date getPushTime() {
-		return pushTime;
-	}
-
-
-	public void setPushTime(Date pushTime) {
-		this.pushTime = pushTime;
-	}
-
-
-	public int getPusherId() {
-		return pusherId;
-	}
-
-
-	public void setPusherId(int pusherId) {
-		this.pusherId = pusherId;
-	}
-
-
-	public String getRemark() {
-		return remark;
-	}
-
-
-	public void setRemark(String remark) {
-		this.remark = remark;
-	}
-
-
-	public int getMaintainId() {
-		return maintainId;
-	}
-
-
-	public void setMaintainId(int maintainId) {
-		this.maintainId = maintainId;
-	}
-
 
 	public Date getAddTime() {
 		return addTime;

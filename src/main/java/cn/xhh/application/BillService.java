@@ -5,6 +5,8 @@ import cn.xhh.dto.BillDto;
 import cn.xhh.infrastructure.ListResult;
 import cn.xhh.infrastructure.OptResult;
 
+import java.util.Map;
+
 public interface BillService {
 
 	/**
@@ -30,10 +32,16 @@ public interface BillService {
 	OptResult createPay(int billId, String channel, String ip);
 
 	/**
-	 * 微信支付成功后回调
-	 * @param outTradeNo 订单交易号
-	 * @param fee 实付金额
+	 * 支付完成ajax请求处理
+	 * @param billId 账单编号
 	 * @return
 	 */
-	int updateCallback(String outTradeNo,String fee);
+	OptResult payComplete(int billId);
+
+	/**
+	 * 微信支付成功后回调
+	 * @param notifyMap 通知结果返回参数
+	 * @return
+	 */
+	OptResult updateCallback(Map<String,String> notifyMap);
 }

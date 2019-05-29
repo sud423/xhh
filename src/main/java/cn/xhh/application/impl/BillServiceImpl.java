@@ -4,18 +4,21 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import cn.xhh.application.BillService;
 import cn.xhh.domain.business.*;
 import cn.xhh.infrastructure.OptResult;
 import cn.xhh.infrastructure.Utils;
-import cn.xhh.infrastructure.wxpay.WxPayOrder;
+import cn.xhh.infrastructure.wxpay.WXPayUtil;
+import cn.xhh.infrastructure.wxpay.WXPayOrder;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.github.pagehelper.PageHelper;
@@ -28,6 +31,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class BillServiceImpl implements BillService {
+	/**
+	 * 密钥
+	 */
+	@Value("${paterner_key}")
+	private String paternerKey;
 
 	@Autowired
 	private BillRepository billRepository;
@@ -36,7 +44,7 @@ public class BillServiceImpl implements BillService {
 	private FlowRepository flowRepository;
 
 	@Autowired
-	private WxPayOrder wxPayOrder;
+	private WXPayOrder wxPayOrder;
 	
 	@Override
 	public ListResult<BillDto> queryBillByStatus(int page, int status) {
@@ -122,6 +130,8 @@ public class BillServiceImpl implements BillService {
 			flow.setAmount((int)bill.getAdjustPrice()*100);
 		}
 		bill.setBillNumber(flow.getId());
+		bill.setPayTime(new Date());
+		bill.setPayChannel((byte)10);
 		flowRepository.add(flow);
 		billRepository.update(bill);
 		return wxPayOrder.create(flow.getId(),Integer.toString(flow.getAmount()),bill.getPeriod(),ip);
@@ -129,20 +139,101 @@ public class BillServiceImpl implements BillService {
 	}
 
 	@Override
-	public int updateCallback(String outTradeNo, String fee) {
+	@Transactional
+	public OptResult payComplete(int billId) {
+		Bill bill = billRepository.getBillById(billId);
 
-		Bill bill=billRepository.getBillByNumber(outTradeNo);
-		bill.setArrivalTime(new Date());
+		OptResult result = wxPayOrder.orderQuery(bill.getBillNumber());
 
-		BigDecimal b  =   new BigDecimal(Float.parseFloat(fee)/100);
-		float amount=b.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();
+		if (result.getCode() != 0)
+			return result;
 
-		bill.setAmount(amount);
-		bill.setStatus((byte)20);
+		Flow flow = flowRepository.get(bill.getBillNumber());
 
-		int result=billRepository.update(bill);
+		Map<String, String> resData = (Map<String, String>) result.getResult();
 
-		return result;
+		String tradeState = resData.get("trade_state");
+
+		boolean isSucc = false;
+		String msg;
+
+		switch (tradeState) {
+			case "SUCCESSS":
+				isSucc = true;
+				flow.setStatus((byte) 20);
+				bill.setStatus((byte) 20);
+
+				billRepository.update(bill);
+				msg = "支付成功";
+				break;
+			case "NOTPAY":
+				flow.setStatus((byte) 30);
+				msg = "转入退款";
+				break;
+			case "REFUND":
+				flow.setStatus((byte) 50);
+				msg = "未支付";
+				break;
+			case "CLOSED":
+				flow.setStatus((byte) 60);
+				msg = "已关闭";
+				break;
+			case "REVOKED":
+				flow.setStatus((byte) 70);
+				msg = "已撤销（付款码支付）";
+				break;
+			case "USERPAYING":
+				flow.setStatus((byte) 80);
+				msg = "用户支付中（付款码支付）";
+				break;
+			default:
+				flow.setStatus((byte) 40);
+				msg = "支付失败(其他原因，如银行返回失败)";
+				break;
+		}
+
+		flow.setResultMsg(msg);
+		flow.setOptTime(new Date());
+		flowRepository.update(flow);
+		if (isSucc)
+			return OptResult.Successed();
+		else
+			return OptResult.Failed(msg);
+	}
+
+	@Override
+	public OptResult updateCallback(Map<String,String> notifyMap) {
+
+		try {
+			if (!WXPayUtil.isSignatureValid(notifyMap, paternerKey)) {
+				Bill bill=billRepository.getBillByNumber(notifyMap.get("out_trade_no"));
+
+				BigDecimal b  =   new BigDecimal(notifyMap.get("total_fee"));
+				float amount=b.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue()/100;
+				bill.setStatus((byte)30);
+				bill.setAmount(amount);
+				bill.setArrivalTime(new Date());
+				billRepository.update(bill);
+
+
+				Flow flow=flowRepository.get(bill.getBillNumber());
+				if(flow.getStatus()!=20){
+					flow.setStatus((byte)20);
+					flow.setResultMsg("支付成功");
+					flow.setOptTime(new Date());
+
+					flowRepository.update(flow);
+				}
+
+				return OptResult.Successed();
+
+			}
+
+		}
+		catch (Exception ex){
+			ex.printStackTrace();
+		}
+		return OptResult.Failed("签名验证失败");
 	}
 
 	private List<BillItem> countDiscount(int billId){

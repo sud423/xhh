@@ -1,6 +1,7 @@
 package cn.xhh.controllers;
 
 import cn.xhh.application.BillService;
+import cn.xhh.infrastructure.OptResult;
 import cn.xhh.infrastructure.wxpay.WXPayUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,37 +30,7 @@ public class WxPayController {
 
             if(notifyMap.get("return_code").equals("SUCCESS")){
                 if(notifyMap.get("result_code").equals("SUCCESS")){
-                    String ordersSn = notifyMap.get("out_trade_no");//商户订单号
-                    String amountpaid = notifyMap.get("total_fee");//实际支付的订单金额:单位 分
-//                    BigDecimal amountPay = (new BigDecimal(amountpaid).divide(new BigDecimal("100"))).setScale(2);//将分转换成元-实际支付金额:元
-                    //String openid = notifyMap.get("openid");  //如果有需要可以获取
-                    //String trade_type = notifyMap.get("trade_type");
-                    billService.updateCallback(ordersSn,amountpaid);
-                    /*以下是自己的业务处理------仅做参考
-                     * 更新order对应字段/已支付金额/状态码
-                     */
-//                    Orders order = ordersService.selectOrdersBySn(ordersSn);
-//                    if(order != null) {
-//                        order.setLastmodifieddate(new Date());
-//                        order.setVersion(order.getVersion().add(BigDecimal.ONE));
-//                        order.setAmountpaid(amountPay);//已支付金额
-//                        order.setStatus(2L);//修改订单状态为待发货
-//                        int num = ordersService.updateOrders(order);//更新order
-//
-//                        String amount = amountPay.setScale(0, BigDecimal.ROUND_FLOOR).toString();//实际支付金额向下取整-123.23--123
-//                        /*
-//                         * 更新用户经验值
-//                         */
-//                        Member member = accountService.findObjectById(order.getMemberId());
-//                        accountService.updateMemberByGrowth(amount, member);
-//
-//                        /*
-//                         * 添加用户积分数及添加积分记录表记录
-//                         */
-//                        pointService.updateMemberPointAndLog(amount, member, "购买商品,订单号为:"+ordersSn);
-
-//                    }
-
+                    billService.updateCallback(notifyMap);
                 }
             }
 
@@ -72,12 +43,4 @@ public class WxPayController {
         return null;
     }
 
-//    @RequestMapping("/notify")
-//    public String wxpaySuccess(HttpServletRequest request, HttpServletResponse response){
-//
-//        String result=null;
-//
-//
-//        return result;
-//    }
 }

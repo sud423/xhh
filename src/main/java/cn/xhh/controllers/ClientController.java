@@ -1,9 +1,7 @@
 package cn.xhh.controllers;
 
-import cn.xhh.domain.business.Bill;
 import cn.xhh.infrastructure.IpUtil;
-import cn.xhh.infrastructure.Utils;
-import cn.xhh.infrastructure.wxpay.WxPayOrder;
+import cn.xhh.infrastructure.wxpay.WXPayOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +17,6 @@ import cn.xhh.infrastructure.ListResult;
 import cn.xhh.infrastructure.OptResult;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
 
 @Controller
 @RequestMapping(value = "/c", method = RequestMethod.GET)
@@ -29,7 +26,7 @@ public class ClientController {
 	@Autowired
 	private BillService billService;
 	@Autowired
-	private WxPayOrder wxPayOrder;
+	private WXPayOrder wxPayOrder;
 	
 	@RequestMapping(value = "/index", method = RequestMethod.GET)
 	public String index() {
@@ -76,6 +73,19 @@ public class ClientController {
 	public OptResult createPayOrder(HttpServletRequest request, int id){
 
 		OptResult result=billService.createPay(id,"wx_jsapi",IpUtil.getIp(request));
+
+		return result;
+	}
+
+	/**
+	 * 支付完成操作
+	 * @param id
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/pc", method = RequestMethod.POST)
+	public OptResult payComplete(int id){
+		OptResult result=billService.payComplete(id);
 
 		return result;
 	}
