@@ -26,6 +26,9 @@ public class WxPayController {
         try {
             is = request.getInputStream();//获取请求的流信息(这里是微信发的xml格式所有只能使用流来读)
             String xml = WXPayUtil.inputStreamToString(is, "UTF-8");
+
+            WXPayUtil.getLogger().warn(xml);
+
             Map<String, String> notifyMap = WXPayUtil.xmlToMap(xml);//将微信发的xml转map
 
             if(notifyMap.get("return_code").equals("SUCCESS")){

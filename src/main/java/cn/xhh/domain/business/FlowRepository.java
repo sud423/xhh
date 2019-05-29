@@ -1,5 +1,7 @@
 package cn.xhh.domain.business;
 
+import org.apache.ibatis.annotations.Param;
+
 public interface FlowRepository {
     /**
      * 新增支付订单
@@ -20,5 +22,5 @@ public interface FlowRepository {
      * @param id
      * @return
      */
-    Flow get(String id);
+    Flow get(@Param("id") String id);
 }

@@ -2,6 +2,8 @@ package cn.xhh.infrastructure.wxpay;
 
 import cn.xhh.domainservice.identity.SessionManager;
 import cn.xhh.infrastructure.OptResult;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -13,6 +15,7 @@ public final class WXPayOrder {
 
     private final static Logger log = Logger.getLogger(WXPayOrder.class);
 
+    @Autowired
     private WXPayConfig payConfig;
 
     /**
@@ -57,8 +60,9 @@ public final class WXPayOrder {
             payMap.put("nonceStr", WXPayUtil.generateNonceStr());
             payMap.put("signType", WXPayConstants.MD5);
             payMap.put("package", "prepay_id=" + responseMap.get("prepay_id"));
-            String paySign = WXPayUtil.generateSignature(payMap, payConfig.getKey());
+            String paySign = WXPayUtil.generateSignature(payMap, payConfig.getKey(),WXPayConstants.SignType.HMACSHA256);
             payMap.put("paySign", paySign);
+
             return OptResult.Successed(payMap);
         }
         catch (Exception ex){
@@ -80,6 +84,7 @@ public final class WXPayOrder {
             Map<String, String> reqData = new HashMap<>();
 
             reqData.put("out_trade_no",out_trade_no);
+            reqData.put("sign_type", WXPayConstants.MD5);
 
             Map<String, String> responseMap= wxPay.orderQuery(reqData);
 

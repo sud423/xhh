@@ -4,7 +4,16 @@
 	<select id="getBillByStatus"
 		resultType="cn.xhh.domain.business.Bill">
 		select * from bill where tenant_id=#{tenantId} and
-		user_id=#{userId} and `status`=#{status}
+		user_id=#{userId}
+		<choose>
+			<when test="status=10">
+				and `status`=10
+			</when>
+			<otherwise>
+				and `status` in (20,30)
+			</otherwise>
+		</choose>
+
 	</select>
 	<select id="getItemByBillId"
 		resultType="cn.xhh.domain.business.BillItem">
@@ -38,7 +47,7 @@
 	</select>
 
 	<update id="update" parameterType="cn.xhh.domain.business.Bill">
-		update bill set bill_number=#{billNumber},discount_price=#{discountPrice},real_price=#{realPrice},pay_channel=#{payChannel},
+		update bill set bill_number=#{billNumber},discount_price=#{discountPrice},amount=#{amount},pay_channel=#{payChannel},
 		pay_time=#{payTime},arrival_time=#{arrivalTime},`status`=#{status},version=version+1
 		where id=${id}
 	</update>

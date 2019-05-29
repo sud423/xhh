@@ -223,7 +223,6 @@
 
 
 <#assign body>
-<script type="text/javascript" src="${request.getContextPath()}/assets/js/zepto.area.js"></script>
 <script type="text/javascript">
     var billId=0;
     var isPay=false;
@@ -548,7 +547,9 @@
                 //       console.log('alert hide.')
                 //     })
                 var self=this;
+                $loading.show('发起支付...');
                 axios.post(basePath + "/c/o", {id: billId}).then(function (value) {
+                    $loading.hide();
                     var res=value.data;
                     if(res.code>0){
                         $toast.show(res.result);
@@ -569,46 +570,58 @@
                         self.onBridgeReady();
                     }
                 }).catch(function (reason) {
+                    $loading.hide();
                     console.log(reason);
                 })
 
             },
             onBridgeReady:function(){
-                console.log(this.wxpay);
+                var self=this;
                 WeixinJSBridge.invoke('getBrandWCPayRequest',this.wxpay,function (res) {
 
-                    axios.post(basePath+"c/pc",{id:billId}).then(function(value){
-                        var res=value.data;
-                        if(res.code>0){
-                            $toast.show(res.result);
-                        }
-                        else{
-                            $toast.show('支付成功');
-                        }
-                    }).catch(function (reason) {
-                        console.log(reason);
-                    })
-
-                    // if(res.err_msg == "get_brand_wcpay_request:ok" ) {
-                    //     $toast.show('支付成功');
-                    //     console.log('支付成功');
-                    //     //支付成功后跳转的页面
-                    // }else if(res.err_msg == "get_brand_wcpay_request:cancel"){
-                    //     console.log('支付取消');
-                    //     $toast.show('已取消支付');
-                    // }else if(res.err_msg == "get_brand_wcpay_request:fail"){
-                    //     console.log('支付失败');
-                    //     $toast.show('网络异常，请重试');
-                    // }
+                    if(res.err_msg == "get_brand_wcpay_request:ok" ) {
+                        self.payComplete();
+                        console.log('支付成功');
+                        //支付成功后跳转的页面
+                    }else if(res.err_msg == "get_brand_wcpay_request:cancel"){
+                        console.log('支付取消');
+                        self.payComplete();
+                    }else if(res.err_msg == "get_brand_wcpay_request:fail"){
+                        console.log('支付失败');
+                        self.payComplete();
+                    }
                     //使用以上方式判断前端返回,微信团队郑重提示：res.err_msg将在用户支付成功后返回ok,但并不保证它绝对可靠。
 
                 });
             },
+            payComplete:function(){
+                $loading.show('支付处理中..')
+                axios.post(basePath+"/c/pc",{id:billId}).then(function(value){
+                    $loading.hide()
+                    var res=value.data;
+                    if(res.code>0){
+                        setTimeout(function()  {
+                            $toast.show(res.result)
+                        }, 1000);
+                    }
+                    else{
+                        setTimeout(function()  {
+                            $toast.show('支付成功');
+                        }, 1000);
+                    }
+                }).catch(function (reason) {
+                    $loading.hide()
+                    console.log(reason);
+                })
+            },
             getItems: function () {
                 var self = this;
+                $loading.show('正在获取订单...');
                 axios.post(basePath + "/c/i", {billId: billId}).then(function (res) {
+                    $loading.hide()
                     self.billDetail = res.data;
                 }).catch(function (err) {
+                    $loading.hide()
                     console.log(err);
                 });
             }

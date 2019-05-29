@@ -28,7 +28,6 @@ public class Flow implements Entity<Flow> {
 
     private Date optTime;
 
-    private boolean isClose;
 
     public String getId() {
         return id;
@@ -116,14 +115,6 @@ public class Flow implements Entity<Flow> {
 
     public void setOptTime(Date optTime) {
         this.optTime = optTime;
-    }
-
-    public boolean isClose() {
-        return isClose;
-    }
-
-    public void setClose(boolean close) {
-        isClose = close;
     }
 
     @Override

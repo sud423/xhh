@@ -10,6 +10,7 @@ import cn.xhh.application.BillService;
 import cn.xhh.domain.business.*;
 import cn.xhh.infrastructure.OptResult;
 import cn.xhh.infrastructure.Utils;
+import cn.xhh.infrastructure.wxpay.WXPayConstants;
 import cn.xhh.infrastructure.wxpay.WXPayUtil;
 import cn.xhh.infrastructure.wxpay.WXPayOrder;
 import org.modelmapper.AbstractConverter;
@@ -115,7 +116,7 @@ public class BillServiceImpl implements BillService {
 		flow.setStatus((byte) 10);
 		flow.setUserId(SessionManager.getUserId());
 		flow.setTenantId(SessionManager.getTenantId());
-		flow.setClose(false);
+
 		if(!bill.isAdjust()){
 			//计算总价格
 			float totalPrice=bill.getPrice();
@@ -123,16 +124,17 @@ public class BillServiceImpl implements BillService {
 			float totalRate=(float)items.stream().mapToDouble(BillItem::getDis).sum();
 			//去掉折扣实际支付费用
 			BigDecimal b  =   new BigDecimal(totalPrice-totalRate);
-			float fee=b.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();
-			flow.setAmount((int)fee*100);
+			float fee=b.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue()*100;
+			flow.setAmount((int)fee);
 		}
 		else{
-			flow.setAmount((int)bill.getAdjustPrice()*100);
+			flow.setAmount((int)(bill.getAdjustPrice()*100));
 		}
+
+		flowRepository.add(flow);
 		bill.setBillNumber(flow.getId());
 		bill.setPayTime(new Date());
 		bill.setPayChannel((byte)10);
-		flowRepository.add(flow);
 		billRepository.update(bill);
 		return wxPayOrder.create(flow.getId(),Integer.toString(flow.getAmount()),bill.getPeriod(),ip);
 
@@ -155,7 +157,7 @@ public class BillServiceImpl implements BillService {
 		String tradeState = resData.get("trade_state");
 
 		boolean isSucc = false;
-		String msg;
+		String msg=resData.get("trade_state_desc");
 
 		switch (tradeState) {
 			case "SUCCESSS":
@@ -164,27 +166,21 @@ public class BillServiceImpl implements BillService {
 				bill.setStatus((byte) 20);
 
 				billRepository.update(bill);
-				msg = "支付成功";
 				break;
 			case "NOTPAY":
 				flow.setStatus((byte) 30);
-				msg = "转入退款";
 				break;
 			case "REFUND":
 				flow.setStatus((byte) 50);
-				msg = "未支付";
 				break;
 			case "CLOSED":
 				flow.setStatus((byte) 60);
-				msg = "已关闭";
 				break;
 			case "REVOKED":
 				flow.setStatus((byte) 70);
-				msg = "已撤销（付款码支付）";
 				break;
 			case "USERPAYING":
 				flow.setStatus((byte) 80);
-				msg = "用户支付中（付款码支付）";
 				break;
 			default:
 				flow.setStatus((byte) 40);
@@ -205,7 +201,7 @@ public class BillServiceImpl implements BillService {
 	public OptResult updateCallback(Map<String,String> notifyMap) {
 
 		try {
-			if (!WXPayUtil.isSignatureValid(notifyMap, paternerKey)) {
+			if (!WXPayUtil.isSignatureValid(notifyMap, paternerKey, WXPayConstants.SignType.HMACSHA256)) {
 				Bill bill=billRepository.getBillByNumber(notifyMap.get("out_trade_no"));
 
 				BigDecimal b  =   new BigDecimal(notifyMap.get("total_fee"));
