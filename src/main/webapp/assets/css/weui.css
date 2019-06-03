@@ -254,3 +254,34 @@ button.weui-form-preview__btn {
 	line-height: inherit;
 	outline: 0;
 }
+
+
+
+/**********************用户协议**********************************/
+.protocol{
+	height: 100%;
+	overflow: auto;
+	color: #333;
+	font-size: 12px;
+	
+}
+
+.protocol h3 {
+    border: 1px solid #cc9966;
+    color: #ff6600;
+    font-size: 14px;
+    background: #ffffcc;
+    line-height: 30px;
+}
+
+.protocol h4 {
+    margin: 5px 0px 5px 0px;
+    font-size: 14px;
+    color: #333;
+    font-weight: bold;
+}
+
+.protocol span {
+    margin-left: 20px;
+    display: block;
+}

@@ -223,4 +223,13 @@ public class AccountController {
 		return result;
 	}
 	
+
+	/**
+	 * 协议
+	 * @return
+	 */
+	@RequestMapping(value="/term",method=RequestMethod.GET)
+	public String protocol() {
+		return "term";
+	}
 }
