@@ -109,7 +109,8 @@ public class BillServiceImpl implements BillService {
 		Flow flow=new Flow();
 		flow.setId(Utils.generateCode());
 		flow.setAddTime(new Date());
-		flow.setBillId(bill.getId());
+		flow.setSourceId(bill.getId());
+		flow.setSourceName("bill");
 		flow.setChannel(channel);
 		flow.setCreateIp(ip);
 		flow.setOptTime(new Date());

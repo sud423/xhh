@@ -26,7 +26,7 @@
 		<input id="backImg" class="weui-uploader__input" @change="convertToBase64" type="file" accept="image/*" multiple="">
 	</div>
 	<label class="weui-agree" style="clear:both;">
-    	<input id="weuiAgree" type="checkbox" class="weui-agree__checkbox">
+    	<input v-model="reg.agree" id="weuiAgree" type="checkbox" class="weui-agree__checkbox">
         <span class="weui-agree__text">阅读并同意</span>
     </label>
 	<a href="${request.getContextPath()}/term">《用户注册协议》</a><br>
@@ -52,7 +52,8 @@
 					cell : '',
 					type:getQueryString("t"),
 					backImg:'',
-					frontImg:''
+					frontImg:'',
+					agree:false
 				}
 			}
 		},
@@ -105,6 +106,13 @@
 					$toast.show('请上传身份证背面照');
 					return false;
 				}
+				
+				if(!this.reg.agree){
+					$toast.show('请阅读并同意用户注册协议');
+					return false;
+				}
+				
+				
 				return true;
 			},
 			convertToBase64:function(e){
