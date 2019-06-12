@@ -3,17 +3,15 @@
 <mapper namespace="cn.xhh.domain.business.PriceRepository">
 	<select id="priceCount"
 		resultType="cn.xhh.domain.business.PriceSearchResult">
-
-		select (@i:=@i+1) as seqNo,	express,if(${volume}*100*100*100/coefficient>${weight},
-		${volume}*100*100*100/coefficient,${weight}) weight,
-		if(if(${volume}*100*100*100/coefficient>${weight},${volume}*100*100*100/coefficient,${weight})
-		*standard_price>lowest_price,
-		if(${volume}*100*100*100/coefficient>${weight},${volume}*100*100*100/coefficient,${weight})
-		*standard_price,lowest_price) price
-		from price_config,(select @i:=0) as
-		it
-		where
-		tenant_id=#{tenantId} and province=#{province}
+		select (@i:=@i+1) as seqNo,express,`type`,if(${volume}*100*100*100/coefficient>${weight},${volume}*100*100*100/coefficient,${weight}) weight,
+		case `type` when 10 then if(if(${volume}*100*100*100/coefficient>${weight},${volume}*100*100*100/coefficient,${weight}) *standard_price>lowest_price,
+		if(${volume}*100*100*100/coefficient>${weight},${volume}*100*100*100/coefficient,${weight}) *standard_price,lowest_price)
+		else
+		if(${weight} &lt;= first_weight,${weight}*first_price,first_price*first_weight+(${weight}-first_weight)/continued_weight* continued_price)
+		end price
+		from price_config ,
+		(select @i:=0) as it
+		where tenant_id=#{tenantId} and province=#{province}
 		<if test="city != null and city != ''">
 			<bind name="keyinfo" value="'%' + city + '%'" />
 			and city like #{keyinfo}
