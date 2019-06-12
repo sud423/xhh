@@ -5,8 +5,8 @@
 	src="${request.getContextPath()}/assets/js/MegaPixImage.js"></script></#assign>
 <#assign contentBody> <script type="text/x-template"
 	id="register">
-      
-<div class="page-content padding-top">
+<div class="page">
+<div class="page-content">
 	<von-input type="text" v-model="reg.name" placeholder="姓名" label="姓名"></von-input>
 	<von-input type="text" v-model="reg.idNumber" placeholder="身份证号"
 		label="身份证号"></von-input>
@@ -25,12 +25,18 @@
 		<span v-else>选择身份证背面照</span>
 		<input id="backImg" class="weui-uploader__input" @change="convertToBase64" type="file" accept="image/*" multiple="">
 	</div>
-
+	<label class="weui-agree" style="clear:both;">
+    	<input v-model="reg.agree" id="weuiAgree" type="checkbox" class="weui-agree__checkbox">
+        <span class="weui-agree__text">阅读并同意</span>
+    </label>
+	<a href="${request.getContextPath()}/term">《用户注册协议》</a><br>
+	<a href="${request.getContextPath()}/regul">《禁止寄递物品管理规定》</a><br>
+	<a href="${request.getContextPath()}/contents">《禁止寄递物品指导目录》</a>
 	<div class="padding">
-            <div class="button button-positive button-block" @click="onRegister()">注册</div>
-          </div>
+        <div class="button button-positive button-block" @click="onRegister()">注册</div>
+    </div>
 </div>
-
+</div>
 </script> </#assign>
 
 <#assign body> <script type="text/javascript"
@@ -46,7 +52,8 @@
 					cell : '',
 					type:getQueryString("t"),
 					backImg:'',
-					frontImg:''
+					frontImg:'',
+					agree:false
 				}
 			}
 		},
@@ -99,6 +106,13 @@
 					$toast.show('请上传身份证背面照');
 					return false;
 				}
+				
+				if(!this.reg.agree){
+					$toast.show('请阅读并同意用户注册协议');
+					return false;
+				}
+				
+				
 				return true;
 			},
 			convertToBase64:function(e){

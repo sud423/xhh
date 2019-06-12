@@ -10,7 +10,9 @@ public class Flow implements Entity<Flow> {
 
     private int tenantId;
 
-    private int billId;
+    private int sourceId;
+    
+    private String sourceName;
 
     private int userId;
 
@@ -45,15 +47,24 @@ public class Flow implements Entity<Flow> {
         this.tenantId = tenantId;
     }
 
-    public int getBillId() {
-        return billId;
+    public int getSourceId() {
+        return sourceId;
     }
 
-    public void setBillId(int billId) {
-        this.billId = billId;
+    public void setSourceId(int sourceId) {
+        this.sourceId = sourceId;
     }
+    
 
-    public int getUserId() {
+    public String getSourceName() {
+		return sourceName;
+	}
+
+	public void setSourceName(String sourceName) {
+		this.sourceName = sourceName;
+	}
+
+	public int getUserId() {
         return userId;
     }
 
