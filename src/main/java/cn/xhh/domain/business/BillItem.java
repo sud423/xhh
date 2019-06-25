@@ -23,7 +23,9 @@ public class BillItem {
 
 	private float volume;
 
-	private float dis;
+	private float discount;
+
+	private float lowPrice;
 
 	public int getId() {
 		return id;
@@ -50,7 +52,8 @@ public class BillItem {
 	}
 
 	public float getPrice() {
-		return price;
+		BigDecimal m = new BigDecimal(price);
+		return m.setScale(2,BigDecimal.ROUND_HALF_UP).floatValue();
 	}
 
 	public void setPrice(float price) {
@@ -58,7 +61,8 @@ public class BillItem {
 	}
 
 	public float getCost() {
-		return cost;
+		BigDecimal m = new BigDecimal(cost);
+		return m.setScale(2,BigDecimal.ROUND_HALF_UP).floatValue();
 	}
 
 	public void setCost(float cost) {
@@ -66,7 +70,8 @@ public class BillItem {
 	}
 
 	public float getActualWeight() {
-		return actualWeight;
+		BigDecimal m = new BigDecimal(actualWeight);
+		return m.setScale(2,BigDecimal.ROUND_HALF_UP).floatValue();
 	}
 
 	public void setActualWeight(float actualWeight) {
@@ -97,12 +102,22 @@ public class BillItem {
 		this.remark = remark;
 	}
 
-	public float getDis() {
-		return dis;
+	public float getDiscount() {
+		BigDecimal m = new BigDecimal(discount);
+		return m.setScale(2,BigDecimal.ROUND_HALF_UP).floatValue();
 	}
 
-	public void setDis(float dis) {
-		this.dis = dis;
+	public void setDiscount(float discount) {
+		this.discount = discount;
+	}
+
+	public float getLowPrice() {
+		BigDecimal m = new BigDecimal(lowPrice);
+		return m.setScale(2,BigDecimal.ROUND_HALF_UP).floatValue();
+	}
+
+	public void setLowPrice(float lowPrice) {
+		this.lowPrice = lowPrice;
 	}
 
 	public float getVolume() {
@@ -117,6 +132,20 @@ public class BillItem {
 
 	public void setVolume(float volume) {
 		this.volume = volume;
+	}
+
+
+	public float count(){
+		BigDecimal b = new BigDecimal(discount / 100);
+//		float discount = b.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();
+
+		float rebate = price * (1 - b.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue());
+
+		float amount=price-rebate;
+		if(lowPrice >0 && amount<lowPrice)
+			return price-lowPrice;
+
+		return rebate;
 	}
 
 }

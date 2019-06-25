@@ -2,6 +2,7 @@ package cn.xhh.domain.business;
 
 import cn.xhh.domain.Entity;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 public class Discount implements Entity<Discount> {
@@ -45,6 +46,11 @@ public class Discount implements Entity<Discount> {
      * 是否叠加使用
      */
     private boolean overlayUse;
+
+    /**
+     *最低运费
+     */
+    private float lowPrice;
 
     /**
      * 备注
@@ -112,7 +118,9 @@ public class Discount implements Entity<Discount> {
     }
 
     public float getDiscount() {
-        return discount;
+
+        BigDecimal m = new BigDecimal(discount);
+        return m.setScale(2,BigDecimal.ROUND_HALF_UP).floatValue();
     }
 
     public void setDiscount(float discount) {
@@ -133,6 +141,15 @@ public class Discount implements Entity<Discount> {
 
     public void setOverlayUse(boolean overlayUse) {
         this.overlayUse = overlayUse;
+    }
+
+    public float getLowPrice() {
+        BigDecimal m = new BigDecimal(lowPrice);
+        return m.setScale(2,BigDecimal.ROUND_HALF_UP).floatValue();
+    }
+
+    public void setLowPrice(float lowPrice) {
+        this.lowPrice = lowPrice;
     }
 
     public String getRemark() {
@@ -177,6 +194,7 @@ public class Discount implements Entity<Discount> {
     public void setUserId(int userId) {
         this.userId = userId;
     }
+
 
 
     @Override

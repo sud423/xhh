@@ -81,7 +81,7 @@ public class BillServiceImpl implements BillService {
 	@Override
 	public BillDto queryBillItem(int billId) {
 		
-		List<BillItem> items=countDiscount(billId);
+		List<BillItem> items=billRepository.getItemByBillId(billId);
 		if(items==null || items.size()<=0)
 			return  null;
 
@@ -91,7 +91,8 @@ public class BillServiceImpl implements BillService {
 		dto.setPrice(totalPrice);
 
 		dto.setItems(items);
-		float totalRate=(float)items.stream().mapToDouble(BillItem::getDis).sum();
+		float totalRate=(float)items.stream().mapToDouble(BillItem::count).sum();
+
 		dto.setRebate(totalRate);
 		return dto;
 	}
@@ -100,7 +101,7 @@ public class BillServiceImpl implements BillService {
 	@Transactional
 	public OptResult createPay(int billId, String channel, String ip) {
 
-		List<BillItem> items=countDiscount(billId);
+		List<BillItem> items=billRepository.getItemByBillId(billId);
 		if(items==null || items.size()<=0)
 			return null;
 
@@ -122,7 +123,7 @@ public class BillServiceImpl implements BillService {
 			//计算总价格
 			float totalPrice=bill.getPrice();
 			//计算总折扣后的费用
-			float totalRate=(float)items.stream().mapToDouble(BillItem::getDis).sum();
+			float totalRate=(float)items.stream().mapToDouble(BillItem::count).sum();
 			//去掉折扣实际支付费用
 			BigDecimal b  =   new BigDecimal(totalPrice-totalRate);
 			float fee=b.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue()*100;
@@ -233,24 +234,6 @@ public class BillServiceImpl implements BillService {
 		return OptResult.Failed("签名验证失败");
 	}
 
-	private List<BillItem> countDiscount(int billId){
-
-		List<BillItem> items=billRepository.getItemByBillId(billId);
-
-		if(items==null || items.size()==0)
-		return items;
-
-		for(int i=0;i<items.size();i++){
-			BigDecimal b  =   new BigDecimal(items.get(i).getDis()/100);
-			float   discount   =  b.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();
-
-			float rebate=items.get(i).getPrice()*(1-discount);
-
-			items.get(i).setDis(rebate);
-		}
-
-		return items;
-	}
 
 
 }

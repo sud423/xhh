@@ -17,7 +17,6 @@
 	</select>
 	<select id="getItemByBillId"
 		resultType="cn.xhh.domain.business.BillItem">
-
 		select i.id,
 		i.express,
 		express_no,
@@ -28,11 +27,13 @@
 		i.remark,
 		t.volume,
 		CONCAT_WS( '', province, city, area, address ) addr,
-		ifnull((select discount from discount d where d.express=i.express and d.start_period &lt;=DATEDIFF(now(),b.push_time) and (d.end_period &gt; datediff(now(),b.push_time) or d.end_period=0) order by sort asc limit 1),100) dis
+		ifnull(discount,100) discount
+		,
+		low_price
 		from bill_item i
 		inner join bill b on i.bill_id=b.id
 		INNER JOIN ( SELECT sum( len * width * height * count ) AS volume, bill_item_id FROM bill_item_package GROUP BY bill_item_id ) AS t ON t.bill_item_id = i.id
-
+		left join discount d on d.express=i.express  and d.start_period &lt;=DATEDIFF(now(),b.push_time) and (d.end_period >datediff(now(),b.push_time) or d.end_period=0)
 		where bill_id=#{billId}
 	</select>
 
