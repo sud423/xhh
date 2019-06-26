@@ -136,6 +136,10 @@ public class BillItem {
 
 
 	public float count(){
+
+		if(price<lowPrice)
+			return 0;
+
 		BigDecimal b = new BigDecimal(discount / 100);
 //		float discount = b.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();
 
