@@ -191,14 +191,14 @@ public class AccountController {
 		OptResult result = userService.saveReg(user);
 		if (result.getCode() == 0) {
 			result = userManager.signIn(wxUser.getOpenId());
-			SavedRequest savedReq = WebUtils.getSavedRequest(request);
-
-			if (savedReq == null || savedReq.getRequestUrl() == null) {
+//			SavedRequest savedReq = WebUtils.getSavedRequest(request);
+//
+//			if (savedReq == null || savedReq.getRequestUrl() == null) {
 				result.setResult(request.getContextPath() + "/my?t=" + user.getType());
-			} else {
-				// 返回上次请求的地址
-				result.setResult(savedReq.getRequestUrl());
-			}
+//			} else {
+//				// 返回上次请求的地址
+//				result.setResult(savedReq.getRequestUrl());
+//			}
 		}
 		return result;
 	}
